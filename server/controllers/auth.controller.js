@@ -18,7 +18,10 @@ const register = async (req, res) => {
     const user = await prisma.user.create({ data: { name, email, passwordHash } })
     const token = signToken({ id: user.id, role: user.role })
     setTokenCookie(res, token)
-    res.status(201).json({ message: 'Registrasi berhasil.', user: { id: user.id, name: user.name, email: user.email, role: user.role } })
+    res.status(201).json({
+      message: 'Registrasi berhasil.',
+      user: { id: user.id, name: user.name, email: user.email, role: user.role },
+    })
   } catch (err) {
     console.error(err)
     res.status(500).json({ message: 'Terjadi kesalahan server.' })
@@ -37,7 +40,10 @@ const login = async (req, res) => {
     if (!isMatch) return res.status(401).json({ message: 'Email atau password salah.' })
     const token = signToken({ id: user.id, role: user.role })
     setTokenCookie(res, token)
-    res.json({ message: 'Login berhasil.', user: { id: user.id, name: user.name, email: user.email, role: user.role, avatarUrl: user.avatarUrl } })
+    res.json({
+      message: 'Login berhasil.',
+      user: { id: user.id, name: user.name, email: user.email, role: user.role, avatarUrl: user.avatarUrl },
+    })
   } catch (err) {
     console.error(err)
     res.status(500).json({ message: 'Terjadi kesalahan server.' })
@@ -48,16 +54,47 @@ const googleAuth = async (req, res) => {
   try {
     const { idToken } = req.body
     if (!idToken) return res.status(400).json({ message: 'Google ID token diperlukan.' })
-    const ticket = await googleClient.verifyIdToken({ idToken, audience: process.env.GOOGLE_CLIENT_ID })
-    const { sub: googleId, email, name, picture } = ticket.getPayload()
-    const user = await prisma.user.upsert({
-      where: { googleId },
-      update: { name, avatarUrl: picture },
-      create: { googleId, email, name, avatarUrl: picture },
+
+    // 1. Verifikasi token ke Google
+    const ticket = await googleClient.verifyIdToken({
+      idToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
     })
+    const { sub: googleId, email, name, picture } = ticket.getPayload()
+
+    // 2. Cari user berdasarkan googleId dulu
+    let user = await prisma.user.findUnique({ where: { googleId } })
+
+    if (user) {
+      // Sudah pernah login Google → update nama & avatar saja
+      user = await prisma.user.update({
+        where: { googleId },
+        data: { name, avatarUrl: picture },
+      })
+    } else {
+      // 3. Belum ada googleId → cek apakah email sudah terdaftar (akun email/password)
+      const existingByEmail = await prisma.user.findUnique({ where: { email } })
+
+      if (existingByEmail) {
+        // Akun email sudah ada → link googleId ke akun tersebut
+        user = await prisma.user.update({
+          where: { email },
+          data: { googleId, avatarUrl: existingByEmail.avatarUrl ?? picture },
+        })
+      } else {
+        // Benar-benar user baru → buat akun baru
+        user = await prisma.user.create({
+          data: { googleId, email, name, avatarUrl: picture },
+        })
+      }
+    }
+
     const token = signToken({ id: user.id, role: user.role })
     setTokenCookie(res, token)
-    res.json({ message: 'Login Google berhasil.', user: { id: user.id, name: user.name, email: user.email, role: user.role, avatarUrl: user.avatarUrl } })
+    res.json({
+      message: 'Login Google berhasil.',
+      user: { id: user.id, name: user.name, email: user.email, role: user.role, avatarUrl: user.avatarUrl },
+    })
   } catch (err) {
     console.error(err)
     res.status(401).json({ message: 'Token Google tidak valid.' })
@@ -78,7 +115,11 @@ const getMe = async (req, res) => {
 }
 
 const logout = (req, res) => {
-  res.clearCookie('token')
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+  })
   res.json({ message: 'Logout berhasil.' })
 }
 
