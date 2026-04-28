@@ -1,0 +1,29 @@
+# Dependency (Sampah paling besar)
+node_modules/
+dist/
+build/
+.cache/
+
+# Rahasia / Credentials (SANGAT PENTING)
+.env
+.env.local
+.env.*.local
+
+# File Log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# File Sistem / Editor
+.DS_Store
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Kubernetes / Docker (Opsional, tapi bagus untuk dirapikan)
+.docker/

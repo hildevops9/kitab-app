@@ -1,0 +1,132 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  USTADZ
+  ADMIN
+}
+
+enum QuestionStatus {
+  PENDING_AI
+  AI_ANSWERED
+  ESCALATED
+  USTADZ_ANSWERED
+}
+
+enum AnswerSource {
+  AI
+  USTADZ
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String?
+  googleId     String?  @unique
+  avatarUrl    String?
+  role         Role     @default(USER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  questions Question[]
+  answers   Answer[]
+  progress  Progress[]
+  bookmarks Bookmark[]
+}
+
+model Kitab {
+  id          String   @id @default(uuid())
+  title       String
+  author      String
+  description String?
+  coverUrl    String?
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  babs Bab[]
+}
+
+model Bab {
+  id        String   @id @default(uuid())
+  kitabId   String
+  title     String
+  orderNum  Int      @default(0)
+  createdAt DateTime @default(now())
+
+  kitab   Kitab    @relation(fields: [kitabId], references: [id], onDelete: Cascade)
+  materis Materi[]
+}
+
+model Materi {
+  id        String   @id @default(uuid())
+  babId     String
+  title     String
+  content   Json
+  orderNum  Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  bab       Bab        @relation(fields: [babId], references: [id], onDelete: Cascade)
+  questions Question[]
+  progress  Progress[]
+  bookmarks Bookmark[]
+}
+
+model Question {
+  id        String         @id @default(uuid())
+  userId    String
+  materiId  String?
+  question  String
+  status    QuestionStatus @default(PENDING_AI)
+  createdAt DateTime       @default(now())
+
+  user    User     @relation(fields: [userId], references: [id])
+  materi  Materi?  @relation(fields: [materiId], references: [id])
+  answers Answer[]
+}
+
+model Answer {
+  id          String       @id @default(uuid())
+  questionId  String
+  responderId String?
+  content     String
+  source      AnswerSource
+  createdAt   DateTime     @default(now())
+
+  question  Question @relation(fields: [questionId], references: [id])
+  responder User?    @relation(fields: [responderId], references: [id])
+}
+
+model Progress {
+  id          String    @id @default(uuid())
+  userId      String
+  materiId    String
+  isCompleted Boolean   @default(false)
+  completedAt DateTime?
+
+  user   User   @relation(fields: [userId], references: [id])
+  materi Materi @relation(fields: [materiId], references: [id])
+
+  @@unique([userId, materiId])
+}
+
+model Bookmark {
+  id        String   @id @default(uuid())
+  userId    String
+  materiId  String
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  materi Materi @relation(fields: [materiId], references: [id])
+
+  @@unique([userId, materiId])
+}
