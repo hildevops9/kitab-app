@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { GoogleLogin } from '@react-oauth/google'
 import api from '../lib/api'
-import { useAuth } from '../contexts/AuthContext'
+import { useAuth } from '../contexts/Authcontext'
 
 const IslamicPattern = () => (
   <svg width="180" height="180" viewBox="0 0 180 180" fill="none"

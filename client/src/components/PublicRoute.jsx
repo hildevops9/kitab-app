@@ -1,5 +1,5 @@
 import { Navigate } from 'react-router-dom'
-import { useAuth } from '../contexts/AuthContext'
+import { useAuth } from '../contexts/Authcontext'
 
 // Untuk halaman publik (login, register) — kalau sudah login, redirect ke home
 export default function PublicRoute({ children, redirectTo = '/home' }) {

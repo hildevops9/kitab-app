@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../lib/api'
-import { useAuth } from '../contexts/AuthContext'
+import { useAuth } from '../contexts/Authcontext'
 
 const typeConfig = {
   QURAN:   { icon: '🕌', badge: 'Al-Quran',  badgeColor: '#1C3D2E' },

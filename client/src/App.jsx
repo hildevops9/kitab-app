@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { GoogleOAuthProvider } from '@react-oauth/google'
-import { AuthProvider } from './contexts/AuthContext'
+import { AuthProvider } from './contexts/Authcontext'
 import ProtectedRoute from './components/ProtectedRoute'
 import PublicRoute from './components/PublicRoute'
 import LandingPage from './pages/LandingPage'
