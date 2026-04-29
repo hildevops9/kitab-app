@@ -1,4 +1,8 @@
 const express = require('express')
 const router = express.Router()
-router.get('/', (req, res) => res.json({ message: 'bab ok' }))
+const { getBab } = require('../controllers/bab.controller')
+const { protect } = require('../middleware/auth.middleware')
+
+router.get('/:kitabSlug/:babSlug', protect, getBab)
+
 module.exports = router

@@ -5,6 +5,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")         // direct (5432) untuk migrate
 }
 
 enum Role {
@@ -25,6 +26,12 @@ enum AnswerSource {
   USTADZ
 }
 
+enum KitabType {
+  QURAN
+  HIKAM
+  GENERAL
+}
+
 model User {
   id           String   @id @default(uuid())
   name         String
@@ -43,14 +50,18 @@ model User {
 }
 
 model Kitab {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
+  slug        String    @unique
+  type        KitabType @default(GENERAL)
   title       String
+  arabicTitle String?
   author      String
   description String?
   coverUrl    String?
-  isPublished Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  coverColor  String?   // hex color untuk UI card
+  isPublished Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   babs Bab[]
 }
@@ -58,12 +69,16 @@ model Kitab {
 model Bab {
   id        String   @id @default(uuid())
   kitabId   String
+  slug      String
   title     String
+  arabicTitle String?
   orderNum  Int      @default(0)
   createdAt DateTime @default(now())
 
   kitab   Kitab    @relation(fields: [kitabId], references: [id], onDelete: Cascade)
   materis Materi[]
+
+  @@unique([kitabId, slug])
 }
 
 model Materi {

@@ -34,7 +34,12 @@ app.use((err, req, res, next) => {
   console.error(err.stack)
   res.status(err.status || 500).json({ message: err.message || 'Terjadi kesalahan.' })
 })
+// Kalau jalan di lokal (bukan di Vercel), app.listen bakal dieksekusi
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`Server berjalan di http://localhost:${PORT}`)
+  })
+}
 
-app.listen(PORT, () => {
-  console.log(`Server berjalan di http://localhost:${PORT}`)
-})
+// Wajib buat Vercel Serverless
+module.exports = app
