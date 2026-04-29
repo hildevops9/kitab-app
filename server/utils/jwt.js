@@ -11,9 +11,12 @@ const verifyToken = (token) =>
 
 const setTokenCookie = (res, token) => {
   res.cookie('token', token, {
-    httpOnly: true,        // tidak bisa diakses JS browser
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    httpOnly: true,     // Tetap true untuk keamanan
+    // Wajib TRUE di Vercel karena Vercel otomatis HTTPS. 
+    // Jika localhost lo belum HTTPS, ganti sementara ke false atau pakai logic NODE_ENV
+    secure: true,       
+    // Wajib 'none' agar cookie bisa dikirim antara domain client dan api yang berbeda
+    sameSite: 'none',   
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 hari
   })
 }
