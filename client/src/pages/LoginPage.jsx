@@ -4,8 +4,58 @@ import { GoogleLogin } from '@react-oauth/google'
 import api from '../lib/api'
 import { useAuth } from '../contexts/AuthContext'
 
+const IslamicPattern = () => (
+  <svg width="180" height="180" viewBox="0 0 180 180" fill="none"
+    style={{ position:'absolute', top:-20, right:-20, opacity:0.12, pointerEvents:'none' }}>
+    {/* Outer star 12-point */}
+    <g transform="translate(90,90)">
+      {Array.from({length:12}).map((_,i) => (
+        <polygon key={i}
+          points="0,-72 6,-50 20,-62"
+          transform={`rotate(${i*30})`}
+          fill="#1C3D2E" stroke="#1C3D2E" strokeWidth="0.5"
+        />
+      ))}
+      {/* Inner rings */}
+      <circle r="55" stroke="#1C3D2E" strokeWidth="1" fill="none"/>
+      <circle r="42" stroke="#C9A84C" strokeWidth="0.8" fill="none"/>
+      <circle r="28" stroke="#1C3D2E" strokeWidth="1" fill="none"/>
+      {/* Inner star 8-point */}
+      {Array.from({length:8}).map((_,i) => (
+        <polygon key={i}
+          points="0,-28 4,-16 14,-22"
+          transform={`rotate(${i*45})`}
+          fill="#C9A84C" opacity="0.6"
+        />
+      ))}
+      {/* Geometric lines */}
+      {Array.from({length:12}).map((_,i) => (
+        <line key={i} x1="0" y1="0" x2="0" y2="-55"
+          transform={`rotate(${i*30})`}
+          stroke="#1C3D2E" strokeWidth="0.4" opacity="0.5"
+        />
+      ))}
+      <circle r="10" fill="#C9A84C" opacity="0.3"/>
+    </g>
+  </svg>
+)
+
+const IslamicPatternBL = () => (
+  <svg width="120" height="120" viewBox="0 0 120 120" fill="none"
+    style={{ position:'absolute', bottom:-10, left:-10, opacity:0.07, pointerEvents:'none' }}>
+    <g transform="translate(60,60)">
+      {Array.from({length:8}).map((_,i) => (
+        <polygon key={i} points="0,-55 5,-35 18,-48"
+          transform={`rotate(${i*45})`} fill="#1C3D2E"/>
+      ))}
+      <circle r="40" stroke="#C9A84C" strokeWidth="1" fill="none"/>
+      <circle r="25" stroke="#1C3D2E" strokeWidth="0.8" fill="none"/>
+    </g>
+  </svg>
+)
+
 export default function LoginPage() {
-  const [form, setForm] = useState({ email: '', password: '' })
+  const [form, setForm] = useState({ email:'', password:'' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const { login } = useAuth()
@@ -14,282 +64,250 @@ export default function LoginPage() {
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
+    e.preventDefault(); setLoading(true); setError('')
     try {
       const res = await api.post('/auth/login', form)
-      login(res.data.user)
-      navigate('/')
+      login(res.data.user); navigate('/home')
     } catch (err) {
       setError(err.response?.data?.message || 'Login gagal.')
-    } finally {
-      setLoading(false)
-    }
+    } finally { setLoading(false) }
   }
 
   const handleGoogle = async (credentialResponse) => {
     setError('')
     try {
       const res = await api.post('/auth/google', { idToken: credentialResponse.credential })
-      login(res.data.user)
-      navigate('/')
-    } catch {
-      setError('Login Google gagal.')
-    }
+      login(res.data.user); navigate('/home')
+    } catch { setError('Login Google gagal.') }
   }
 
   return (
     <div style={s.root}>
-      {/* Left panel — decorative */}
-      <div style={s.left}>
-        <div style={s.leftInner}>
-          <div style={s.arabicText}>بِسْمِ اللَّهِ</div>
-          <h1 style={s.appName}>Aplikasi Kitab</h1>
-          <p style={s.appDesc}>Platform belajar kitab klasik Islam secara modern dan terstruktur</p>
-          <div style={s.dots}>
-            {[...Array(12)].map((_, i) => (
-              <div key={i} style={{ ...s.dot, opacity: 0.2 + (i % 4) * 0.2 }} />
-            ))}
-          </div>
-        </div>
+      <style>{css}</style>
+
+      {/* Decorative patterns */}
+      <IslamicPattern />
+      <IslamicPatternBL />
+
+      {/* Back nav */}
+      <div style={s.topNav}>
+        <Link to="/" style={s.backBtn}>← Kembali ke Beranda</Link>
+        <Link to="/register" style={s.switchBtn}>Daftar</Link>
       </div>
 
-      {/* Right panel — form */}
-      <div style={s.right}>
-        <div style={s.card}>
-          <div style={s.cardHeader}>
-            <h2 style={s.title}>Masuk Akun</h2>
-            <p style={s.subtitle}>Lanjutkan perjalanan belajarmu</p>
-          </div>
+      {/* Content */}
+      <div style={s.content}>
+        <div style={s.header}>
+          <h1 style={s.title}>Masuk Akun</h1>
+          <p style={s.subtitle}>Lanjutkan perjalanan belajarmu</p>
+        </div>
 
-          {error && (
-            <div style={s.errorBox}>
-              <span>⚠</span> {error}
-            </div>
-          )}
+        {error && (
+          <div style={s.errorBox}>⚠ {error}</div>
+        )}
 
-          <form onSubmit={handleSubmit} style={s.form}>
-            <div style={s.field}>
-              <label style={s.label}>Email</label>
-              <input
-                name="email" type="email"
-                placeholder="email@contoh.com"
-                value={form.email}
-                onChange={handleChange}
-                required
-                style={s.input}
-                onFocus={e => e.target.style.borderColor = '#2D6A4F'}
-                onBlur={e => e.target.style.borderColor = '#D9D0C0'}
-              />
-            </div>
-
-            <div style={s.field}>
-              <label style={s.label}>Password</label>
-              <input
-                name="password" type="password"
-                placeholder="••••••••"
-                value={form.password}
-                onChange={handleChange}
-                required
-                style={s.input}
-                onFocus={e => e.target.style.borderColor = '#2D6A4F'}
-                onBlur={e => e.target.style.borderColor = '#D9D0C0'}
-              />
-            </div>
-
-            <button type="submit" disabled={loading} style={s.btnPrimary}>
-              {loading ? 'Memuat...' : 'Masuk →'}
-            </button>
-          </form>
-
-          <div style={s.divider}>
-            <div style={s.divLine} />
-            <span style={s.divText}>atau masuk dengan</span>
-            <div style={s.divLine} />
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <GoogleLogin
-              onSuccess={handleGoogle}
-              onError={() => setError('Login Google gagal.')}
-              shape="rectangular"
-              text="signin_with"
-              locale="id"
-              width="320"
+        <form onSubmit={handleSubmit} style={s.form}>
+          <div style={s.field}>
+            <label style={s.label}>Email</label>
+            <input
+              name="email" type="email"
+              placeholder="email@contoh.com"
+              value={form.email} onChange={handleChange} required
+              style={s.input} className="auth-input"
             />
           </div>
+          <div style={s.field}>
+            <label style={s.label}>Password</label>
+            <input
+              name="password" type="password"
+              placeholder="••••••••"
+              value={form.password} onChange={handleChange} required
+              style={s.input} className="auth-input"
+            />
+          </div>
+          <button type="submit" disabled={loading}
+            style={{...s.btnPrimary, opacity: loading ? 0.7 : 1}}
+            className="btn-primary">
+            {loading ? 'Memuat...' : 'Masuk →'}
+          </button>
+        </form>
 
-          <p style={s.footer}>
-            Belum punya akun?{' '}
-            <Link to="/register" style={s.link}>Daftar sekarang</Link>
-          </p>
+        <div style={s.divider}>
+          <div style={s.divLine}/>
+          <span style={s.divText}>atau masuk dengan</span>
+          <div style={s.divLine}/>
         </div>
+
+        <div style={s.googleWrap}>
+          <GoogleLogin
+            onSuccess={handleGoogle}
+            onError={() => setError('Login Google gagal.')}
+            shape="rectangular" text="signin_with" locale="id"
+            width={document.body.clientWidth > 480 ? 432 : document.body.clientWidth - 48}
+          />
+        </div>
+
+        <p style={s.footer}>
+          Belum punya akun?{' '}
+          <Link to="/register" style={s.link}>Daftar sekarang</Link>
+        </p>
       </div>
     </div>
   )
 }
 
+const css = `
+  @import url('https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=Nunito:wght@400;500;600;700&display=swap');
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html, body, #root { background:#F5EFE4; min-height:100dvh; }
+
+  .auth-input:focus {
+    border-color: #1C3D2E !important;
+    box-shadow: 0 0 0 3px rgba(28,61,46,0.1) !important;
+    outline: none !important;
+  }
+  .btn-primary:active { transform: scale(0.98); }
+`
+
 const s = {
   root: {
-    display: 'flex',
     minHeight: '100dvh',
-    fontFamily: "'Plus Jakarta Sans', sans-serif",
-  },
-  left: {
-    display: 'none',
-    flex: 1,
-    background: 'linear-gradient(160deg, #1C3D2E 0%, #2D6A4F 60%, #1C3D2E 100%)',
-    position: 'relative',
-    overflow: 'hidden',
-    '@media (min-width: 768px)': { display: 'flex' },
-  },
-  leftInner: {
+    background: '#F5EFE4',
+    fontFamily: "'Nunito', sans-serif",
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'center',
-    padding: '60px 50px',
+    maxWidth: '480px',
+    margin: '0 auto',
     position: 'relative',
-    zIndex: 1,
+    overflow: 'hidden',
+    padding: '0 24px 40px',
   },
-  arabicText: {
-    fontFamily: 'serif',
-    fontSize: '42px',
-    color: '#C9A84C',
-    marginBottom: '24px',
-    letterSpacing: '2px',
-  },
-  appName: {
-    fontFamily: 'Lora, serif',
-    fontSize: '36px',
-    fontWeight: '700',
-    color: '#F8F4ED',
-    marginBottom: '16px',
-    lineHeight: 1.2,
-  },
-  appDesc: {
-    fontSize: '15px',
-    color: 'rgba(248,244,237,0.7)',
-    lineHeight: 1.7,
-    maxWidth: '300px',
-  },
-  dots: {
+  topNav: {
     display: 'flex',
-    flexWrap: 'wrap',
-    gap: '10px',
-    marginTop: '48px',
-    maxWidth: '160px',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingTop: '20px',
+    paddingBottom: '8px',
+    position: 'relative',
+    zIndex: 2,
   },
-  dot: {
-    width: '8px',
-    height: '8px',
-    borderRadius: '50%',
-    background: '#C9A84C',
+  backBtn: {
+    fontSize: '13px',
+    fontWeight: '600',
+    color: '#1C3D2E',
+    textDecoration: 'none',
+    opacity: 0.7,
   },
-  right: {
+  switchBtn: {
+    fontSize: '13px',
+    fontWeight: '700',
+    color: '#1C3D2E',
+    textDecoration: 'none',
+    padding: '6px 16px',
+    border: '1.5px solid rgba(28,61,46,0.25)',
+    borderRadius: '20px',
+  },
+  content: {
     flex: 1,
     display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '24px 16px',
-    background: '#F8F4ED',
+    flexDirection: 'column',
+    paddingTop: '32px',
+    position: 'relative',
+    zIndex: 2,
   },
-  card: {
-    width: '100%',
-    maxWidth: '400px',
-  },
-  cardHeader: {
+  header: {
     marginBottom: '32px',
   },
   title: {
     fontFamily: 'Lora, serif',
-    fontSize: '28px',
+    fontSize: '34px',
     fontWeight: '700',
     color: '#1C3D2E',
-    marginBottom: '6px',
+    lineHeight: 1.2,
+    marginBottom: '8px',
   },
   subtitle: {
-    fontSize: '14px',
-    color: '#6B6B6B',
+    fontSize: '15px',
+    color: '#8A7A65',
   },
   errorBox: {
     background: '#FEF2F2',
     border: '1px solid #FECACA',
     color: '#DC2626',
     padding: '12px 16px',
-    borderRadius: '10px',
-    marginBottom: '20px',
-    fontSize: '14px',
-    display: 'flex',
-    gap: '8px',
-    alignItems: 'center',
+    borderRadius: '12px',
+    marginBottom: '16px',
+    fontSize: '13px',
+    fontWeight: '600',
   },
   form: {
     display: 'flex',
     flexDirection: 'column',
     gap: '16px',
-    marginBottom: '24px',
+    marginBottom: '28px',
   },
   field: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '6px',
+    gap: '8px',
   },
   label: {
     fontSize: '13px',
-    fontWeight: '600',
+    fontWeight: '700',
     color: '#1C3D2E',
-    letterSpacing: '0.3px',
   },
   input: {
-    padding: '13px 16px',
-    borderRadius: '10px',
-    border: '1.5px solid #D9D0C0',
+    padding: '15px 16px',
+    borderRadius: '12px',
+    border: '1.5px solid rgba(28,61,46,0.2)',
     fontSize: '16px',
-    background: '#fff',
+    background: 'rgba(255,255,255,0.7)',
     color: '#1A1A1A',
     outline: 'none',
-    transition: 'border-color 0.2s',
     width: '100%',
+    WebkitAppearance: 'none',
+    transition: 'border-color 0.2s, box-shadow 0.2s',
   },
   btnPrimary: {
-    marginTop: '4px',
-    padding: '14px',
-    borderRadius: '10px',
+    marginTop: '8px',
+    padding: '16px',
+    borderRadius: '12px',
     border: 'none',
-    background: 'linear-gradient(135deg, #1C3D2E, #2D6A4F)',
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: '15px',
+    background: '#1C3D2E',
+    color: '#F5EFE4',
+    fontWeight: '700',
+    fontSize: '16px',
     cursor: 'pointer',
     letterSpacing: '0.3px',
-    transition: 'opacity 0.2s',
+    WebkitTapHighlightColor: 'transparent',
+    transition: 'transform 0.1s',
   },
   divider: {
     display: 'flex',
     alignItems: 'center',
     gap: '12px',
-    margin: '24px 0',
+    marginBottom: '20px',
   },
-  divLine: {
-    flex: 1,
-    height: '1px',
-    background: '#D9D0C0',
-  },
+  divLine: { flex: 1, height: '1px', background: 'rgba(28,61,46,0.15)' },
   divText: {
     fontSize: '12px',
-    color: '#9E9E9E',
+    color: '#A0906E',
     whiteSpace: 'nowrap',
+    fontWeight: '600',
+  },
+  googleWrap: {
+    marginBottom: '28px',
+    display: 'flex',
+    justifyContent: 'center',
   },
   footer: {
     textAlign: 'center',
-    fontSize: '13px',
-    color: '#6B6B6B',
-    marginTop: '24px',
+    fontSize: '14px',
+    color: '#8A7A65',
   },
   link: {
-    color: '#2D6A4F',
-    fontWeight: '600',
+    color: '#1C3D2E',
+    fontWeight: '700',
     textDecoration: 'none',
   },
 }

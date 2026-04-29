@@ -5,15 +5,18 @@ const api = axios.create({
   withCredentials: true,
 })
 
-// Jangan redirect kalau sudah di halaman login/register
+// Redirect ke /login kalau 401, KECUALI:
+// 1. Request dari /auth/me (cek sesi awal — boleh gagal, ditangani AuthContext)
+// 2. Sudah di halaman publik (/, /login, /register)
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401) {
-      const pub = ['/login', '/register']
-      if (!pub.includes(window.location.pathname)) {
-        window.location.href = '/login'
-      }
+    const isAuthCheck = err.config?.url?.includes('/auth/me')
+    const pubPages = ['/', '/login', '/register']
+    const isOnPubPage = pubPages.includes(window.location.pathname)
+
+    if (err.response?.status === 401 && !isAuthCheck && !isOnPubPage) {
+      window.location.href = '/login'
     }
     return Promise.reject(err)
   }

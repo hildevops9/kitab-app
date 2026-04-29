@@ -3,9 +3,13 @@ import { GoogleOAuthProvider } from '@react-oauth/google'
 import { AuthProvider } from './contexts/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import PublicRoute from './components/PublicRoute'
+import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import HomePage from './pages/HomePage'
+import KitabPage from './pages/KitabPage'
+import BabPage from './pages/BabPage'
+import MateriPage from './pages/MateriPage'
 
 export default function App() {
   return (
@@ -13,14 +17,15 @@ export default function App() {
       <AuthProvider>
         <BrowserRouter>
           <Routes>
-            {/* Halaman publik — kalau sudah login, redirect ke home */}
-            <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
-            <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
+            <Route path="/" element={<PublicRoute redirectTo="/home"><LandingPage /></PublicRoute>} />
+            <Route path="/login" element={<PublicRoute redirectTo="/home"><LoginPage /></PublicRoute>} />
+            <Route path="/register" element={<PublicRoute redirectTo="/home"><RegisterPage /></PublicRoute>} />
 
-            {/* Halaman protected — kalau belum login, redirect ke /login */}
-            <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
+            <Route path="/home" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
+            <Route path="/kitab/:kitabSlug" element={<ProtectedRoute><KitabPage /></ProtectedRoute>} />
+            <Route path="/kitab/:kitabSlug/:babSlug" element={<ProtectedRoute><BabPage /></ProtectedRoute>} />
+            <Route path="/materi/:materiId" element={<ProtectedRoute><MateriPage /></ProtectedRoute>} />
 
-            {/* Fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>

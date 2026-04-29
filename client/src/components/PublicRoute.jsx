@@ -2,7 +2,7 @@ import { Navigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 
 // Untuk halaman publik (login, register) — kalau sudah login, redirect ke home
-export default function PublicRoute({ children }) {
+export default function PublicRoute({ children, redirectTo = '/home' }) {
   const { user, loading } = useAuth()
 
   if (loading) return (
@@ -11,7 +11,7 @@ export default function PublicRoute({ children }) {
     </div>
   )
 
-  if (user) return <Navigate to="/" replace />
+  if (user) return <Navigate to={redirectTo} replace />
 
   return children
 }
