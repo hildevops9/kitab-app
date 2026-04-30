@@ -1,7 +1,8 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL + '/api',
+  // baseURL-nya dibikin relative gini aja biar mancing vercel.json beraksi
+  baseURL: '/api', 
   withCredentials: true,
 })
 

@@ -1,5 +1,8 @@
 {
   "rewrites": [
-    { "source": "/(.*)", "destination": "/" }
+    {
+      "source": "/api/:match*",
+      "destination": "https://bedah-kitab-app.vercel.app/api/:match*"
+    }
   ]
 }
