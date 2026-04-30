@@ -70,7 +70,7 @@ export default function RegisterPage() {
       {/* ── Header image dari Cloudinary ── */}
       <div style={s.heroWrap}>
         <img
-          src="https://res.cloudinary.com/dikusbh82/image/upload/v1777573827/1_-_Copy-c_hpssya.png"
+          src="https://res.cloudinary.com/dikusbh82/image/upload/v1777577345/ui_8k_clean_mup8re.jpg"
           alt="ornamen islami"
           style={s.heroImg}
         />
