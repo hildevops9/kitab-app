@@ -70,7 +70,7 @@ export default function RegisterPage() {
       {/* ── Header image dari Cloudinary ── */}
       <div style={s.heroWrap}>
         <img
-          src="https://res.cloudinary.com/dikusbh82/image/upload/v1777577345/ui_8k_clean_mup8re.jpg"
+          src="https://res.cloudinary.com/dikusbh82/image/upload/v1777625177/1.1_d68obs.png"
           alt="ornamen islami"
           style={s.heroImg}
         />
@@ -155,10 +155,7 @@ export default function RegisterPage() {
             <input type="checkbox" checked={agree}
               onChange={e => setAgree(e.target.checked)}/>
             <span style={s.checkText}>
-              Saya setuju dengan{' '}
-              <span style={s.termsLink}>Syarat & Ketentuan</span>
-              {' '}dan{' '}
-              <span style={s.termsLink}>Kebijakan Privasi</span>
+              Saya setuju
             </span>
           </label>
 

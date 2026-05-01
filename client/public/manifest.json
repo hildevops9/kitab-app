@@ -2,7 +2,7 @@
   "name": "Bedah Kitab Islam",
   "short_name": "Bedah Kitab App",
   "description": "Platform belajar kitab klasik Islam secara modern dan terstruktur",
-  "start_url": "/home",
+  "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#F2E8D5",
@@ -64,7 +64,7 @@
       "name": "Buka Kitab",
       "short_name": "Kitab",
       "description": "Langsung ke daftar kitab",
-      "url": "/home",
+      "url": "/",
       "icons": [{ "src": "/icons/icon-96.png", "sizes": "96x96" }]
     }
   ],

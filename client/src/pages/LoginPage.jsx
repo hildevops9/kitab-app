@@ -60,7 +60,7 @@ export default function LoginPage() {
       {/* ── Header image dari Cloudinary ── */}
       <div style={s.heroWrap}>
         <img
-          src="https://res.cloudinary.com/dikusbh82/image/upload/v1777577345/ui_8k_clean_mup8re.jpg"
+          src="hhttps://res.cloudinary.com/dikusbh82/image/upload/v1777625177/1.1_d68obs.png"
           alt="ornamen islami"
           style={s.heroImg}
         />
