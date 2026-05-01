@@ -3,7 +3,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google'
 import { AuthProvider } from './contexts/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import PublicRoute from './components/PublicRoute'
-
+import UpdatePrompt from './components/UpdatePrompt'
 // Pages
 import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
@@ -41,6 +41,7 @@ export default function App() {
             {/* Fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          <UpdatePrompt />
         </BrowserRouter>
       </AuthProvider>
     </GoogleOAuthProvider>
