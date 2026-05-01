@@ -9,8 +9,11 @@
   padding-bottom: calc(64px + env(safe-area-inset-bottom));
 }
 
-/* Desktop centering */
-@media (min-width: 500px) {
+/*
+  Desktop centering — HANYA aktif di layar >= 768px (tablet/desktop)
+  Di HP ukuran apapun (iPhone, Samsung, Xiaomi, dll) TIDAK aktif
+*/
+@media (min-width: 768px) {
   .page-root {
     max-width: 480px;
     margin: 0 auto;
