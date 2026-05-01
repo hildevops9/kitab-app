@@ -67,7 +67,7 @@ export default function LandingPage() {
   }, [])
 
   return (
-    <div style={s.root}>
+    <div style={s.root} className="page-root">
       {/* ── Navbar ── */}
       <nav style={{ ...s.nav, ...(scrolled ? s.navScrolled : {}) }}>
         <div style={s.navInner}>

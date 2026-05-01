@@ -38,7 +38,7 @@ export default function KitabListPage() {
   })
 
   return (
-    <div style={s.root}>
+    <div style={s.root} className="page-root">
       <style>{css}</style>
 
       {/* Header */}
@@ -117,7 +117,6 @@ export default function KitabListPage() {
 
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=Nunito:wght@400;500;600;700&display=swap');
-  * { box-sizing:border-box; margin:0; padding:0; }
   html,body,#root { background:#F8F5EF; }
   .card-press:active { transform: scale(0.98) !important; }
   .search-input:focus { outline:none; border-color: #1C3D2E !important; }
@@ -126,7 +125,7 @@ const css = `
 `
 
 const s = {
-  root: { minHeight:'100dvh', background:'#F8F5EF', fontFamily:"'Nunito',sans-serif", maxWidth:'480px', margin:'0 auto', paddingBottom:'80px' },
+  root: { minHeight:'100dvh', background:'#F8F5EF', fontFamily:"'Nunito',sans-serif", paddingBottom:'80px' },
   header: { background:'#fff', padding:'20px 16px 0', borderBottom:'1px solid #F0EBE0' },
   title: { fontFamily:'Lora,serif', fontSize:'24px', fontWeight:'700', color:'#1C3D2E', marginBottom:'14px' },
   searchWrap: { display:'flex', alignItems:'center', gap:'8px', background:'#F8F5EF', borderRadius:'12px', padding:'10px 14px', marginBottom:'14px', border:'1.5px solid transparent' },

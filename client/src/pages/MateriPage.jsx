@@ -97,7 +97,7 @@ export default function MateriPage() {
   const content = materi.content
 
   return (
-    <div style={s.root}>
+    <div style={s.root} className="page-root">
       <style>{css}</style>
 
       {/* Top bar */}
@@ -196,14 +196,13 @@ const r = {
 
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,600;0,700;1,400&family=Nunito:wght@400;500;600;700&display=swap');
-  * { box-sizing:border-box; margin:0; padding:0; }
   html,body,#root { background:#F8F5EF; }
   @keyframes spin { to { transform:rotate(360deg); } }
   .spin { animation:spin 0.8s linear infinite; }
 `
 
 const s = {
-  root: { minHeight:'100dvh', background:'#F8F5EF', fontFamily:"'Nunito',sans-serif", maxWidth:'480px', margin:'0 auto', display:'flex', flexDirection:'column' },
+  root: { minHeight:'100dvh', background:'#F8F5EF', fontFamily:"'Nunito',sans-serif", display:'flex', flexDirection:'column' },
   loadScreen: { minHeight:'100dvh', display:'flex', alignItems:'center', justifyContent:'center', background:'#F8F5EF' },
   spinner: { width:'32px', height:'32px', border:'3px solid #E8E0D0', borderTop:'3px solid #1C3D2E', borderRadius:'50%' },
   topBar: { display:'flex', justifyContent:'space-between', alignItems:'center', padding:'16px 20px', background:'#F8F5EF', position:'sticky', top:0, zIndex:10, borderBottom:'1px solid rgba(0,0,0,0.05)' },

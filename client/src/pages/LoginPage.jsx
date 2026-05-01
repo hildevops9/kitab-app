@@ -54,13 +54,13 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={s.root}>
+    <div style={s.root} className="page-root">
       <style>{css}</style>
 
       {/* ── Header image dari Cloudinary ── */}
       <div style={s.heroWrap}>
         <img
-          src="hhttps://res.cloudinary.com/dikusbh82/image/upload/v1777625177/1.1_d68obs.png"
+          src="https://res.cloudinary.com/dikusbh82/image/upload/v1777625177/1.1_d68obs.png"
           alt="ornamen islami"
           style={s.heroImg}
         />
@@ -160,7 +160,6 @@ export default function LoginPage() {
 
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=Nunito:wght@400;500;600;700&display=swap');
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html, body, #root { background: #F7F4EF; }
 
   .kitab-input { transition: border-color 0.2s, box-shadow 0.2s !important; }
@@ -178,7 +177,6 @@ const s = {
   root: {
     minHeight: '100dvh', background: '#F7F4EF',
     fontFamily: "'Nunito', sans-serif",
-    maxWidth: '430px', margin: '0 auto',
     display: 'flex', flexDirection: 'column',
   },
   // Hero image

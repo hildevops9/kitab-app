@@ -26,7 +26,7 @@ export default function HomePage() {
   const lanjutkan = kitabs.filter(k => k.completedCount > 0)
 
   return (
-    <div style={s.root}>
+    <div style={s.root} className="page-root">
       <style>{css}</style>
 
       {/* Header */}
@@ -166,7 +166,6 @@ export default function HomePage() {
 
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=Nunito:wght@400;500;600;700&display=swap');
-  * { box-sizing:border-box; margin:0; padding:0; }
   html,body,#root { background:#F8F5EF; }
   .card-press:active { transform: scale(0.97) !important; }
   @keyframes pulse { 0%,100%{opacity:0.5} 50%{opacity:1} }
@@ -174,7 +173,7 @@ const css = `
 `
 
 const s = {
-  root: { minHeight:'100dvh', background:'#F8F5EF', fontFamily:"'Nunito',sans-serif", maxWidth:'480px', margin:'0 auto', paddingBottom:'80px' },
+  root: { minHeight:'100dvh', background:'#F8F5EF', fontFamily:"'Nunito',sans-serif", paddingBottom:'80px' },
   // Header
   header: { background:'linear-gradient(160deg,#0F2318,#1C3D2E)', padding:'20px 20px 24px' },
   headerTop: { display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'20px' },

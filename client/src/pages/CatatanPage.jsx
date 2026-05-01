@@ -2,7 +2,7 @@ import BottomNav from '../components/BottomNav'
 
 export function CatatanPage() {
   return (
-    <div style={s.root}>
+    <div style={s.root} className="page-root">
       <style>{css}</style>
       <div style={s.header}><h1 style={s.title}>Catatan</h1></div>
       <div style={s.body}>
@@ -19,12 +19,11 @@ export function CatatanPage() {
 
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=Nunito:wght@400;500;600;700&display=swap');
-  * { box-sizing:border-box; margin:0; padding:0; }
   html,body,#root { background:#F8F5EF; }
 `
 
 const s = {
-  root: { minHeight:'100dvh', background:'#F8F5EF', fontFamily:"'Nunito',sans-serif", maxWidth:'480px', margin:'0 auto', paddingBottom:'80px' },
+  root: { minHeight:'100dvh', background:'#F8F5EF', fontFamily:"'Nunito',sans-serif", paddingBottom:'80px' },
   header: { background:'#fff', padding:'24px 20px 16px', borderBottom:'1px solid #F0EBE0' },
   title: { fontFamily:'Lora,serif', fontSize:'24px', fontWeight:'700', color:'#1C3D2E' },
   body: { padding:'16px' },
