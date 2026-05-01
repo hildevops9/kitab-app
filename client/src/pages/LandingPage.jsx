@@ -267,7 +267,7 @@ const s = {
     boxShadow: '0 4px 30px rgba(28,61,46,0.06)',
   },
   navInner: {
-    maxWidth: '1100px', margin: '0 auto',
+    width: '100%', maxWidth: '1100px', margin: '0 auto',
     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
   },
   navBrand: { display: 'flex', alignItems: 'center', gap: '10px' },
@@ -424,7 +424,7 @@ const s = {
     position: 'relative', overflow: 'hidden',
   },
   howInner: {
-    maxWidth: '1000px', margin: '0 auto',
+    width: '100%', maxWidth: '1000px', margin: '0 auto',
     display: 'flex', gap: '80px',
     flexWrap: 'wrap', alignItems: 'center',
   },
