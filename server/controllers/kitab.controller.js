@@ -1,44 +1,113 @@
 const prisma = require('../utils/prisma')
 
-// GET /api/kitab — semua kitab yang published
 const getAllKitab = async (req, res) => {
   try {
+    const { type } = req.query
+    const where = { isPublished: true }
+    if (type && type !== 'SEMUA') where.type = type
+
     const kitabs = await prisma.kitab.findMany({
-      where: { isPublished: true },
-      orderBy: { createdAt: 'asc' },
-      select: {
-        id: true, slug: true, type: true,
-        title: true, arabicTitle: true,
-        author: true, description: true,
-        coverColor: true, coverUrl: true,
+      where,
+      include: {
         _count: { select: { babs: true } },
+        babs: { include: { _count: { select: { materis: true } } } }
       },
+      orderBy: { createdAt: 'asc' }
     })
-    res.json({ kitabs })
+
+    // Hitung progress user per kitab
+    const userId = req.user?.id
+    const result = await Promise.all(kitabs.map(async (k) => {
+      const totalMateri = k.babs.reduce((s, b) => s + b._count.materis, 0)
+      let completedCount = 0
+      let lastRead = null
+
+      if (userId) {
+        const materiIds = []
+        for (const bab of k.babs) {
+          const materis = await prisma.materi.findMany({ where: { babId: bab.id }, select: { id: true } })
+          materiIds.push(...materis.map(m => m.id))
+        }
+        completedCount = await prisma.progress.count({
+          where: { userId, materiId: { in: materiIds }, isCompleted: true }
+        })
+        // Last read
+        const lastProgress = await prisma.progress.findFirst({
+          where: { userId, materiId: { in: materiIds }, isCompleted: true },
+          orderBy: { completedAt: 'desc' },
+          include: { materi: { include: { bab: true } } }
+        })
+        if (lastProgress) {
+          lastRead = `${lastProgress.materi.bab.title} : ${lastProgress.materi.title}`
+        }
+      }
+
+      return {
+        id: k.id, slug: k.slug, title: k.title,
+        arabicTitle: k.arabicTitle, author: k.author,
+        description: k.description, coverColor: k.coverColor,
+        type: k.type, totalBab: k._count.babs,
+        totalMateri, completedCount, lastRead,
+        progressPct: totalMateri > 0 ? Math.round((completedCount / totalMateri) * 100) : 0,
+      }
+    }))
+
+    res.json({ kitabs: result })
   } catch (err) {
     console.error(err)
     res.status(500).json({ message: 'Terjadi kesalahan server.' })
   }
 }
 
-// GET /api/kitab/:slug — detail kitab + daftar bab
 const getKitabBySlug = async (req, res) => {
   try {
+    const { slug } = req.params
+    const userId = req.user?.id
+
     const kitab = await prisma.kitab.findUnique({
-      where: { slug: req.params.slug, isPublished: true },
+      where: { slug },
       include: {
         babs: {
-          orderBy: { orderNum: 'asc' },
-          select: {
-            id: true, slug: true, title: true,
-            arabicTitle: true, orderNum: true,
-            _count: { select: { materis: true } },
-          },
-        },
-      },
+          include: { _count: { select: { materis: true } } },
+          orderBy: { orderNum: 'asc' }
+        }
+      }
     })
-    if (!kitab) return res.status(404).json({ message: 'Kitab tidak ditemukan.' })
-    res.json({ kitab })
+
+    if (!kitab || !kitab.isPublished)
+      return res.status(404).json({ message: 'Kitab tidak ditemukan.' })
+
+    // Progress per bab
+    let completedTotal = 0
+    const babsWithProgress = await Promise.all(kitab.babs.map(async (bab) => {
+      const materis = await prisma.materi.findMany({ where: { babId: bab.id }, select: { id: true } })
+      const materiIds = materis.map(m => m.id)
+      let completedBab = 0
+      if (userId && materiIds.length > 0) {
+        completedBab = await prisma.progress.count({
+          where: { userId, materiId: { in: materiIds }, isCompleted: true }
+        })
+      }
+      completedTotal += completedBab
+      return {
+        id: bab.id, slug: bab.slug, title: bab.title,
+        arabicTitle: bab.arabicTitle, orderNum: bab.orderNum,
+        totalMateri: bab._count.materis, completedCount: completedBab,
+      }
+    }))
+
+    const totalMateri = babsWithProgress.reduce((s, b) => s + b.totalMateri, 0)
+
+    res.json({
+      kitab: {
+        id: kitab.id, slug: kitab.slug, title: kitab.title,
+        arabicTitle: kitab.arabicTitle, author: kitab.author,
+        description: kitab.description, coverColor: kitab.coverColor, type: kitab.type,
+        totalMateri, completedCount: completedTotal,
+        progressPct: totalMateri > 0 ? Math.round((completedTotal / totalMateri) * 100) : 0,
+      },
+      babs: babsWithProgress,
+    })
   } catch (err) {
     console.error(err)
     res.status(500).json({ message: 'Terjadi kesalahan server.' })

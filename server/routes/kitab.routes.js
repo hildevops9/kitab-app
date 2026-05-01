@@ -1,3 +1,4 @@
+// kitab.routes.js
 const express = require('express')
 const router = express.Router()
 const { getAllKitab, getKitabBySlug } = require('../controllers/kitab.controller')

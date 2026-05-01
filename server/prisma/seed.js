@@ -1,203 +1,190 @@
-/**
- * Seed data untuk 2 kitab:
- * 1. Al-Quran (surah Al-Fatihah + Al-Baqarah ayat 1-5 sebagai contoh)
- * 2. Al-Hikam karya Ibnu Atha'illah As-Sakandari (10 hikam pertama)
- *
- * Jalankan: node prisma/seed.js
- */
-
 const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('🌱 Memulai seeding...')
+  console.log('🌱 Seeding database...')
 
-  // ─── 1. AL-QURAN ──────────────────────────────────────────────────────────
-  const quran = await prisma.kitab.upsert({
-    where: { slug: 'al-quran' },
+  // ─── KITAB 1: Al-Quran ───────────────────────────────────
+  const alquran = await prisma.kitab.upsert({
+    where: { slug: 'al-quran-al-karim' },
     update: {},
     create: {
-      slug: 'al-quran',
-      type: 'QURAN',
+      slug: 'al-quran-al-karim',
       title: 'Al-Quran Al-Karim',
-      arabicTitle: 'الْقُرْآنُ الْكَرِيمُ',
-      author: 'Kalamullah',
-      description: 'Kitab suci umat Islam. Terjemahan bahasa Indonesia oleh Kementerian Agama RI.',
+      arabicTitle: 'الْقُرْآنُ الْكَرِيم',
+      author: 'Allah SWT',
+      description: 'Kitab suci umat Islam yang diturunkan kepada Nabi Muhammad SAW. Dilengkapi terjemahan bahasa Indonesia.',
       coverColor: '#1C3D2E',
+      type: 'QURAN',
       isPublished: true,
-      babs: {
-        create: [
-          {
-            slug: 'al-fatihah',
-            title: 'Al-Fatihah',
-            arabicTitle: 'الْفَاتِحَةُ',
-            orderNum: 1,
-            materis: {
-              create: [
-                {
-                  title: 'Ayat 1-7 (Lengkap)',
-                  orderNum: 1,
-                  content: {
-                    type: 'quran',
-                    surahNumber: 1,
-                    surahName: 'Al-Fatihah',
-                    ayat: [
-                      { number: 1, arabic: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ', translation: 'Dengan nama Allah Yang Maha Pengasih, Maha Penyayang.' },
-                      { number: 2, arabic: 'الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ', translation: 'Segala puji bagi Allah, Tuhan seluruh alam.' },
-                      { number: 3, arabic: 'الرَّحْمَٰنِ الرَّحِيمِ', translation: 'Yang Maha Pengasih, Maha Penyayang.' },
-                      { number: 4, arabic: 'مَالِكِ يَوْمِ الدِّينِ', translation: 'Pemilik hari pembalasan.' },
-                      { number: 5, arabic: 'إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ', translation: 'Hanya kepada Engkaulah kami menyembah dan hanya kepada Engkaulah kami mohon pertolongan.' },
-                      { number: 6, arabic: 'اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ', translation: 'Tunjukilah kami jalan yang lurus.' },
-                      { number: 7, arabic: 'صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ', translation: 'Yaitu jalan orang-orang yang telah Engkau beri nikmat kepadanya; bukan (jalan) mereka yang dimurkai, dan bukan (pula jalan) mereka yang sesat.' },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-          {
-            slug: 'al-baqarah',
-            title: 'Al-Baqarah',
-            arabicTitle: 'الْبَقَرَةُ',
-            orderNum: 2,
-            materis: {
-              create: [
-                {
-                  title: 'Ayat 1-5',
-                  orderNum: 1,
-                  content: {
-                    type: 'quran',
-                    surahNumber: 2,
-                    surahName: 'Al-Baqarah',
-                    ayat: [
-                      { number: 1, arabic: 'الم', translation: 'Alif Lam Mim.' },
-                      { number: 2, arabic: 'ذَٰلِكَ الْكِتَابُ لَا رَيْبَ ۛ فِيهِ ۛ هُدًى لِّلْمُتَّقِينَ', translation: 'Kitab (Al-Qur\'an) ini tidak ada keraguan padanya; petunjuk bagi mereka yang bertakwa.' },
-                      { number: 3, arabic: 'الَّذِينَ يُؤْمِنُونَ بِالْغَيْبِ وَيُقِيمُونَ الصَّلَاةَ وَمِمَّا رَزَقْنَاهُمْ يُنفِقُونَ', translation: 'Yaitu mereka yang beriman kepada yang gaib, melaksanakan salat, dan menginfakkan sebagian rezeki yang Kami berikan kepada mereka.' },
-                      { number: 4, arabic: 'وَالَّذِينَ يُؤْمِنُونَ بِمَا أُنزِلَ إِلَيْكَ وَمَا أُنزِلَ مِن قَبْلِكَ وَبِالْآخِرَةِ هُمْ يُوقِنُونَ', translation: 'Dan mereka yang beriman kepada (Al-Qur\'an) yang diturunkan kepadamu (Muhammad) dan (kitab-kitab) yang telah diturunkan sebelum engkau, dan mereka yakin akan adanya akhirat.' },
-                      { number: 5, arabic: 'أُولَٰئِكَ عَلَىٰ هُدًى مِّن رَّبِّهِمْ ۖ وَأُولَٰئِكَ هُمُ الْمُفْلِحُونَ', translation: 'Merekalah yang mendapat petunjuk dari Tuhannya, dan mereka itulah orang-orang yang beruntung.' },
-                    ],
-                  },
-                },
-                {
-                  title: 'Ayat 255 (Ayat Kursi)',
-                  orderNum: 2,
-                  content: {
-                    type: 'quran',
-                    surahNumber: 2,
-                    surahName: 'Al-Baqarah',
-                    ayat: [
-                      { number: 255, arabic: 'اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَن ذَا الَّذِي يَشْفَعُ عِندَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ', translation: 'Allah, tidak ada tuhan selain Dia. Yang Mahahidup, Yang terus menerus mengurus (makhluk-Nya), tidak mengantuk dan tidak tidur. Milik-Nya apa yang ada di langit dan apa yang ada di bumi. Tidak ada yang dapat memberi syafaat di sisi-Nya tanpa izin-Nya. Dia mengetahui apa yang di hadapan mereka dan apa yang di belakang mereka, dan mereka tidak mengetahui sesuatu apa pun tentang ilmu-Nya melainkan apa yang Dia kehendaki. Kursi-Nya meliputi langit dan bumi. Dan Dia tidak merasa berat memelihara keduanya, dan Dia Mahatinggi, Mahaagung.' },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
+    }
   })
 
-  // ─── 2. AL-HIKAM ──────────────────────────────────────────────────────────
-  const hikam = await prisma.kitab.upsert({
+  const fatihah = await prisma.bab.upsert({
+    where: { kitabId_slug: { kitabId: alquran.id, slug: 'al-fatihah' } },
+    update: {},
+    create: {
+      kitabId: alquran.id,
+      slug: 'al-fatihah',
+      title: 'Al-Fatihah',
+      arabicTitle: 'الْفَاتِحَة',
+      orderNum: 1,
+    }
+  })
+
+  const baqarah = await prisma.bab.upsert({
+    where: { kitabId_slug: { kitabId: alquran.id, slug: 'al-baqarah' } },
+    update: {},
+    create: {
+      kitabId: alquran.id,
+      slug: 'al-baqarah',
+      title: 'Al-Baqarah',
+      arabicTitle: 'الْبَقَرَة',
+      orderNum: 2,
+    }
+  })
+
+  const aliImran = await prisma.bab.upsert({
+    where: { kitabId_slug: { kitabId: alquran.id, slug: 'ali-imran' } },
+    update: {},
+    create: {
+      kitabId: alquran.id,
+      slug: 'ali-imran',
+      title: 'Ali Imran',
+      arabicTitle: 'آلِ عِمْرَان',
+      orderNum: 3,
+    }
+  })
+
+  // Ayat Al-Fatihah
+  const fatihahAyat = [
+    { id: 'q-fatihah-1', num: 1, title: 'Ayat 1', arabic: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ', latin: 'Bismillāhir-raḥmānir-raḥīm', terjemahan: 'Dengan nama Allah Yang Maha Pengasih, Maha Penyayang.' },
+    { id: 'q-fatihah-2', num: 2, title: 'Ayat 2', arabic: 'الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ', latin: 'Al-ḥamdu lillāhi rabbil-\'ālamīn', terjemahan: 'Segala puji bagi Allah, Tuhan seluruh alam.' },
+    { id: 'q-fatihah-3', num: 3, title: 'Ayat 3', arabic: 'الرَّحْمَٰنِ الرَّحِيمِ', latin: 'Ar-raḥmānir-raḥīm', terjemahan: 'Yang Maha Pengasih, Maha Penyayang.' },
+    { id: 'q-fatihah-4', num: 4, title: 'Ayat 4', arabic: 'مَالِكِ يَوْمِ الدِّينِ', latin: 'Māliki yawmid-dīn', terjemahan: 'Pemilik hari pembalasan.' },
+    { id: 'q-fatihah-5', num: 5, title: 'Ayat 5', arabic: 'إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ', latin: 'Iyyāka na\'budu wa iyyāka nasta\'īn', terjemahan: 'Hanya kepada Engkaulah kami menyembah dan hanya kepada Engkaulah kami mohon pertolongan.' },
+    { id: 'q-fatihah-6', num: 6, title: 'Ayat 6', arabic: 'اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ', latin: 'Ihdinash-shirāṭal-mustaqīm', terjemahan: 'Tunjukkanlah kami jalan yang lurus.' },
+    { id: 'q-fatihah-7', num: 7, title: 'Ayat 7', arabic: 'صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ', latin: 'Shirāṭallażīna an\'amta \'alaihim ghairil-maghḍūbi \'alaihim wa laḍ-ḍāllīn', terjemahan: 'Yaitu jalan orang-orang yang telah Engkau beri nikmat kepadanya; bukan jalan mereka yang dimurkai, dan bukan pula jalan mereka yang sesat.' },
+  ]
+
+  for (const a of fatihahAyat) {
+    await prisma.materi.upsert({
+      where: { id: a.id },
+      update: {},
+      create: {
+        id: a.id, babId: fatihah.id, title: a.title, orderNum: a.num,
+        content: { type: 'quran', number: a.num, arabic: a.arabic, latin: a.latin, terjemahan: a.terjemahan }
+      }
+    })
+  }
+
+  // Ayat Al-Baqarah (sample)
+  const baqarahAyat = [
+    { id: 'q-baqarah-1', num: 1, title: 'Ayat 1', arabic: 'الم', latin: 'Alif lām mīm', terjemahan: 'Alif Lam Mim.' },
+    { id: 'q-baqarah-2', num: 2, title: 'Ayat 2', arabic: 'ذَٰلِكَ الْكِتَابُ لَا رَيْبَ ۛ فِيهِ ۛ هُدًى لِّلْمُتَّقِينَ', latin: 'Żālikal-kitābu lā raiba fīh, hudal lil-muttaqīn', terjemahan: 'Kitab (Al-Quran) ini tidak ada keraguan padanya; petunjuk bagi mereka yang bertakwa.' },
+    { id: 'q-baqarah-3', num: 3, title: 'Ayat 3', arabic: 'الَّذِينَ يُؤْمِنُونَ بِالْغَيْبِ وَيُقِيمُونَ الصَّلَاةَ وَمِمَّا رَزَقْنَاهُمْ يُنفِقُونَ', latin: 'Allażīna yu\'minūna bil-gaibi wa yuqīmūnaṣ-ṣalāta wa mimmā razaqnāhum yunfiqūn', terjemahan: 'Yaitu mereka yang beriman kepada yang gaib, melaksanakan salat, dan menginfakkan sebagian rezeki yang Kami berikan kepada mereka.' },
+    { id: 'q-baqarah-255', num: 255, title: 'Ayat 255 — Ayat Kursi', arabic: 'اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ', latin: 'Allāhu lā ilāha illā huw, al-ḥayyul-qayyūm, lā ta\'khużuhū sinatuw wa lā naum', terjemahan: 'Allah, tidak ada tuhan selain Dia. Yang Mahahidup, Yang terus menerus mengurus (makhluk-Nya), tidak mengantuk dan tidak tidur.' },
+  ]
+
+  for (const a of baqarahAyat) {
+    await prisma.materi.upsert({
+      where: { id: a.id },
+      update: {},
+      create: {
+        id: a.id, babId: baqarah.id, title: a.title, orderNum: a.num,
+        content: { type: 'quran', number: a.num, arabic: a.arabic, latin: a.latin, terjemahan: a.terjemahan }
+      }
+    })
+  }
+
+  // ─── KITAB 2: Al-Hikam ───────────────────────────────────
+  const alhikam = await prisma.kitab.upsert({
     where: { slug: 'al-hikam' },
     update: {},
     create: {
       slug: 'al-hikam',
-      type: 'HIKAM',
       title: 'Al-Hikam',
-      arabicTitle: 'الْحِكَمُ الْعَطَائِيَّةُ',
+      arabicTitle: 'الْحِكَمُ الْعَطَائِيَّة',
       author: 'Ibnu Atha\'illah As-Sakandari',
-      description: 'Kumpulan hikmah dan nasihat spiritual karya Syekh Ibnu Atha\'illah, dilengkapi terjemahan dan penjelasan.',
+      description: 'Kumpulan hikmah spiritual dari Syaikh Ibnu Atha\'illah. Salah satu karya tasawuf terpenting dalam Islam. Dilengkapi terjemahan dan penjelasan.',
       coverColor: '#5C3A1E',
+      type: 'HIKAM',
       isPublished: true,
-      babs: {
-        create: [
-          {
-            slug: 'muqaddimah',
-            title: 'Muqaddimah',
-            arabicTitle: 'مُقَدِّمَةٌ',
-            orderNum: 1,
-            materis: {
-              create: [
-                {
-                  title: 'Hikam ke-1: Tanda Bergantung pada Amal',
-                  orderNum: 1,
-                  content: {
-                    type: 'hikam',
-                    number: 1,
-                    arabic: 'مِنْ عَلَامَاتِ الاِعْتِمَادِ عَلَى الْعَمَلِ نُقْصَانُ الرَّجَاءِ عِنْدَ وُجُودِ الزَّلَلِ',
-                    translation: 'Di antara tanda-tanda bergantung pada amal adalah berkurangnya harapan (kepada Allah) ketika melakukan kesalahan.',
-                    explanation: 'Syekh mengajarkan bahwa seseorang yang bergantung pada amalnya akan merasa putus asa ketika berbuat dosa, karena ia menyangka pintu rahmat telah tertutup. Padahal, rahmat Allah jauh lebih luas dari segala dosa. Orang yang benar-benar mengenal Allah justru semakin bertambah harapannya kepada Allah setelah berbuat salah, karena ia tahu bahwa Allah adalah Maha Pengampun dan Maha Penyayang. Amal adalah anugerah dari Allah, bukan modal yang bisa dibanggakan.',
-                  },
-                },
-                {
-                  title: 'Hikam ke-2: Iradah-mu adalah Hijabmu',
-                  orderNum: 2,
-                  content: {
-                    type: 'hikam',
-                    number: 2,
-                    arabic: 'إِرَادَتُكَ التَّجْرِيدَ مَعَ إِقَامَةِ اللَّهِ إِيَّاكَ فِي الأَسْبَابِ مِنَ الشَّهْوَةِ الْخَفِيَّةِ',
-                    translation: 'Keinginanmu untuk melepaskan diri dari sebab-sebab duniawi padahal Allah telah menempatkanmu di dalamnya, adalah bagian dari nafsu yang tersembunyi.',
-                    explanation: 'Banyak orang menyangka bahwa meninggalkan pekerjaan dan usaha duniawi lalu ber-uzlah adalah puncak kedekatan kepada Allah. Padahal jika Allah telah menempatkanmu dalam kehidupan berusaha, maka bersabar dan ikhlas di dalamnya itulah yang dikehendaki-Nya darimu. Keinginan untuk tampak zuhud bisa menjadi nafsu yang lebih halus dan berbahaya.',
-                  },
-                },
-                {
-                  title: 'Hikam ke-3: Amal yang Terbit dari Cahaya',
-                  orderNum: 3,
-                  content: {
-                    type: 'hikam',
-                    number: 3,
-                    arabic: 'السَّوَابِقُ الْهِمَمِ لَا تَخْرِقُ أَسْوَارَ الأَقْدَارِ',
-                    translation: 'Kemauan dan tekad yang kuat sekalipun tidak mampu menembus dinding-dinding takdir.',
-                    explanation: 'Syekh mengingatkan bahwa seberapa pun kuat keinginan dan ikhtiar manusia, semuanya tetap berada dalam genggaman takdir Allah. Ini bukan berarti kita bermalas-malasan, namun agar kita tidak sombong atas keberhasilan dan tidak putus asa atas kegagalan. Segala sesuatu berjalan sesuai kehendak Allah yang Mahabijaksana.',
-                  },
-                },
-              ],
-            },
-          },
-          {
-            slug: 'bab-tawakkal',
-            title: 'Bab Tawakkal',
-            arabicTitle: 'بَابُ التَّوَكُّلِ',
-            orderNum: 2,
-            materis: {
-              create: [
-                {
-                  title: 'Hikam ke-4: Beristirahatlah dari Mengatur',
-                  orderNum: 1,
-                  content: {
-                    type: 'hikam',
-                    number: 4,
-                    arabic: 'أَرِحْ نَفْسَكَ مِنَ التَّدْبِيرِ، فَمَا قَامَ بِهِ غَيْرُكَ عَنْكَ لَا تَقُمْ بِهِ لِنَفْسِكَ',
-                    translation: 'Istirahatkanlah dirimu dari mengatur (urusanmu sendiri). Apa yang telah diurus oleh selainmu (Allah) untukmu, janganlah kamu lakukan itu untuk dirimu sendiri.',
-                    explanation: 'Allah Subhanahu wa Ta\'ala telah mengurusi segala keperluan kita jauh sebelum kita lahir ke dunia. Rezeki, ajal, jodoh — semuanya telah diatur. Tugas kita adalah berikhtiar dan lalu berserah diri, bukan terus-menerus resah mengatur skenario kehidupan. Tawakkal yang sesungguhnya adalah ketenangan hati setelah berusaha maksimal.',
-                  },
-                },
-                {
-                  title: 'Hikam ke-5: Nur yang Menerangi Hati',
-                  orderNum: 2,
-                  content: {
-                    type: 'hikam',
-                    number: 5,
-                    arabic: 'أَعْمَالُكَ قَوَالِبُ قَائِمَةٌ وَأَرْوَاحُهَا وُجُودُ سِرِّ الإِخْلَاصِ فِيهَا',
-                    translation: 'Amal-amalmu adalah wadah (yang tampak di luar), sedangkan ruhnya adalah adanya rahasia ikhlas di dalamnya.',
-                    explanation: 'Syekh menggambarkan bahwa shalat, puasa, dan ibadah lainnya ibarat jasad tanpa ruh jika tidak ada keikhlasan. Keikhlasan adalah nyawa dari setiap amal. Amal yang banyak namun tanpa keikhlasan tidak akan mengangkat derajat seseorang di sisi Allah, sedangkan amal yang sedikit namun ikhlas bisa menghantarkan ke puncak kedekatan dengan Allah.',
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
+    }
   })
 
-  console.log('✅ Seed selesai!')
-  console.log(`   📖 Al-Quran: ${quran.id}`)
-  console.log(`   📖 Al-Hikam: ${hikam.id}`)
+  const babTawakkal = await prisma.bab.upsert({
+    where: { kitabId_slug: { kitabId: alhikam.id, slug: 'tawakkal-dan-amal' } },
+    update: {},
+    create: { kitabId: alhikam.id, slug: 'tawakkal-dan-amal', title: 'Tawakkal & Amal', arabicTitle: 'التَّوَكُّل', orderNum: 1 }
+  })
+
+  const babMakrifat = await prisma.bab.upsert({
+    where: { kitabId_slug: { kitabId: alhikam.id, slug: 'makrifat-dan-ikhlas' } },
+    update: {},
+    create: { kitabId: alhikam.id, slug: 'makrifat-dan-ikhlas', title: 'Ma\'rifat & Ikhlas', arabicTitle: 'الْمَعْرِفَة', orderNum: 2 }
+  })
+
+  const babZuhud = await prisma.bab.upsert({
+    where: { kitabId_slug: { kitabId: alhikam.id, slug: 'zuhud-dan-dunia' } },
+    update: {},
+    create: { kitabId: alhikam.id, slug: 'zuhud-dan-dunia', title: 'Zuhud & Dunia', arabicTitle: 'الزُّهْد', orderNum: 3 }
+  })
+
+  const hikamList = [
+    {
+      id: 'h-001', babId: babTawakkal.id, num: 1,
+      title: 'Hikam 1 — Tanda Bergantung pada Amal',
+      arabic: 'مِنْ عَلَامَاتِ الِاعْتِمَادِ عَلَى الْعَمَلِ نُقْصَانُ الرَّجَاءِ عِنْدَ وُجُودِ الزَّلَلِ',
+      terjemahan: 'Di antara tanda-tanda bergantung pada amal adalah berkurangnya harapan kepada Allah ketika terjadi kesalahan.',
+      penjelasan: 'Syaikh Ibnu Atha\'illah mengajarkan bahwa orang yang benar-benar bertawakal tidak akan putus asa ketika berbuat salah. Keputusasaan menunjukkan bahwa seseorang lebih bergantung pada amalnya daripada kepada rahmat Allah. Seorang mukmin sejati selalu memperbaharui harapannya kepada Allah.'
+    },
+    {
+      id: 'h-002', babId: babTawakkal.id, num: 2,
+      title: 'Hikam 2 — Keinginan Melepas Sebab',
+      arabic: 'إِرَادَتُكَ التَّجْرِيدَ مَعَ إِقَامَةِ اللهِ إِيَّاكَ فِي الْأَسْبَابِ مِنَ الشَّهْوَةِ الْخَفِيَّةِ',
+      terjemahan: 'Keinginanmu untuk melepaskan diri dari sebab-sebab duniawi, padahal Allah menempatkanmu di dalamnya, adalah syahwat tersembunyi.',
+      penjelasan: 'Setiap orang memiliki kedudukan yang telah ditentukan Allah. Keinginan meninggalkan posisi itu tanpa izin Allah justru merupakan mengikuti hawa nafsu yang tersembunyi. Terimalah posisimu dan jalankan dengan ikhlas.'
+    },
+    {
+      id: 'h-003', babId: babMakrifat.id, num: 3,
+      title: 'Hikam 3 — Tembok Takdir',
+      arabic: 'سَوَابِقُ الْهِمَمِ لَا تَخْرِقُ أَسْوَارَ الْأَقْدَارِ',
+      terjemahan: 'Kehendak-kehendak yang kuat tidak dapat menembus tembok-tembok takdir.',
+      penjelasan: 'Manusia boleh berusaha sekuat tenaga, namun pada akhirnya takdir Allah-lah yang menentukan. Bukan mengajak kepasifan, melainkan mengajarkan kerendahan hati. Berusahalah semaksimal mungkin, namun serahkan hasilnya kepada Allah SWT.'
+    },
+    {
+      id: 'h-004', babId: babMakrifat.id, num: 4,
+      title: 'Hikam 4 — Istirahat dari Pengaturan',
+      arabic: 'أَرِحْ نَفْسَكَ مِنَ التَّدْبِيرِ، فَمَا قَامَ بِهِ غَيْرُكَ عَنْكَ لَا تَقُمْ بِهِ أَنْتَ عَنْ نَفْسِكَ',
+      terjemahan: 'Istirahatkanlah dirimu dari mengatur segala sesuatu. Apa yang telah diurus oleh selain dirimu (Allah) untukmu, janganlah kamu urus sendiri.',
+      penjelasan: 'Allah SWT telah menjamin rezeki dan urusan setiap makhluk-Nya. Ketika hamba terlalu sibuk mengatur hidupnya sendiri, ia sesungguhnya tidak mempercayai jaminan Allah. Bertawakallah dengan sepenuh hati.'
+    },
+    {
+      id: 'h-005', babId: babZuhud.id, num: 5,
+      title: 'Hikam 5 — Hakikat Pemberi',
+      arabic: 'لَا تَمُدَّنَّ يَدَكَ إِلَى الْأَخْذِ مِنَ الْخَلْقِ إِلَّا أَنْ تَرَى أَنَّ الْمُعْطِيَ هُوَ الْحَقُّ',
+      terjemahan: 'Janganlah kamu mengulurkan tanganmu untuk mengambil dari makhluk, kecuali jika kamu meyakini bahwa sesungguhnya yang memberi adalah Allah.',
+      penjelasan: 'Ketika menerima pemberian dari sesama manusia, seorang arif tetap melihat bahwa hakikatnya Allah-lah yang memberi melalui perantara tersebut. Hatinya tidak terikat pada pemberi, tidak merasa terhutang budi kepada selain Allah.'
+    },
+  ]
+
+  for (const h of hikamList) {
+    await prisma.materi.upsert({
+      where: { id: h.id },
+      update: {},
+      create: {
+        id: h.id, babId: h.babId, title: h.title, orderNum: h.num,
+        content: { type: 'hikam', number: h.num, arabic: h.arabic, terjemahan: h.terjemahan, penjelasan: h.penjelasan }
+      }
+    })
+  }
+
+  console.log('✅ Seeding selesai!')
+  console.log('   📖 Al-Quran Al-Karim — 3 surah, 11 ayat')
+  console.log('   📜 Al-Hikam — 3 bab, 5 hikam')
 }
 
 main()
-  .catch((e) => { console.error('❌ Seed gagal:', e); process.exit(1) })
+  .catch(e => { console.error(e); process.exit(1) })
   .finally(() => prisma.$disconnect())

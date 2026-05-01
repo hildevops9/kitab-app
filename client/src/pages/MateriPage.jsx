@@ -2,51 +2,64 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import api from '../lib/api'
 
-// ── Renderer: Al-Quran ──────────────────────────────────────────────────────
-const QuranContent = ({ content }) => (
-  <div style={r.quranWrap}>
-    <div style={r.surahLabel}>
-      Surah {content.surahName} ({content.surahNumber})
-    </div>
-    {content.ayat?.map((a) => (
-      <div key={a.number} style={r.ayatBlock}>
-        <div style={r.ayatNum}>{a.number}</div>
-        <div style={r.arabicText}>{a.arabic}</div>
-        <div style={r.translation}>{a.translation}</div>
+// ─── Quran Renderer ──────────────────────────────────────────────────────────
+function QuranContent({ content }) {
+  return (
+    <div style={r.wrap}>
+      <div style={r.arabicCard}>
+        <p style={r.arabic}>{content.arabic}</p>
+        {content.latin && <p style={r.latin}>{content.latin}</p>}
       </div>
-    ))}
-  </div>
-)
-
-// ── Renderer: Al-Hikam ──────────────────────────────────────────────────────
-const HikamContent = ({ content }) => (
-  <div style={r.hikamWrap}>
-    <div style={r.hikamNum}>Hikam ke-{content.number}</div>
-    <div style={r.hikamArabic}>{content.arabic}</div>
-    <div style={r.hikamDivider}>
-      <div style={r.dLine}/><div style={r.dDiamond}/><div style={r.dLine}/>
-    </div>
-    <div style={r.hikamTransLabel}>Terjemahan</div>
-    <p style={r.hikamTrans}>{content.translation}</p>
-    {content.explanation && (
-      <>
-        <div style={r.hikamDivider}>
-          <div style={r.dLine}/><div style={r.dDiamond}/><div style={r.dLine}/>
+      {content.terjemahan && (
+        <div style={r.section}>
+          <div style={r.sectionHead}>
+            <div style={{ ...r.dot, background:'#1C3D2E' }}/>
+            <span style={r.sectionLabel}>Terjemahan</span>
+          </div>
+          <p style={r.sectionText}>{content.terjemahan}</p>
         </div>
-        <div style={r.hikamTransLabel}>Penjelasan</div>
-        <p style={r.hikamExplain}>{content.explanation}</p>
-      </>
-    )}
-  </div>
-)
+      )}
+    </div>
+  )
+}
 
-// ── Main component ──────────────────────────────────────────────────────────
+// ─── Hikam Renderer ──────────────────────────────────────────────────────────
+function HikamContent({ content }) {
+  return (
+    <div style={r.wrap}>
+      <div style={r.hikamNumBadge}>Hikam ke-{content.number}</div>
+      <div style={r.arabicCardHikam}>
+        <p style={r.arabicHikam}>{content.arabic}</p>
+      </div>
+      {content.terjemahan && (
+        <div style={r.section}>
+          <div style={r.sectionHead}>
+            <div style={{ ...r.dot, background:'#5C3A1E' }}/>
+            <span style={r.sectionLabel}>Terjemahan</span>
+          </div>
+          <p style={r.sectionTextItalic}>{content.terjemahan}</p>
+        </div>
+      )}
+      {content.penjelasan && (
+        <div style={r.section}>
+          <div style={r.sectionHead}>
+            <div style={{ ...r.dot, background:'#C9A84C' }}/>
+            <span style={r.sectionLabel}>Penjelasan</span>
+          </div>
+          <p style={r.sectionText}>{content.penjelasan}</p>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── Main ────────────────────────────────────────────────────────────────────
 export default function MateriPage() {
   const { materiId } = useParams()
+  const navigate = useNavigate()
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [completing, setCompleting] = useState(false)
-  const navigate = useNavigate()
 
   useEffect(() => {
     setLoading(true)
@@ -57,116 +70,155 @@ export default function MateriPage() {
   }, [materiId])
 
   const handleComplete = async () => {
-    if (data?.isCompleted || completing) return
+    if (completing) return
     setCompleting(true)
     try {
-      await api.post(`/materi/${materiId}/complete`)
-      setData(prev => ({ ...prev, isCompleted: true }))
-    } catch(e) { console.error(e) }
+      const res = await api.post(`/materi/${materiId}/complete`)
+      setData(prev => ({ ...prev, isCompleted: res.data.isCompleted }))
+    } catch (e) { console.error(e) }
     finally { setCompleting(false) }
   }
 
-  if (loading) return <div style={s.center}><p style={s.loadText}>Memuat...</p></div>
+  const handleBookmark = async () => {
+    try {
+      const res = await api.post(`/materi/${materiId}/bookmark`)
+      setData(prev => ({ ...prev, isBookmarked: res.data.isBookmarked }))
+    } catch (e) { console.error(e) }
+  }
+
+  if (loading) return (
+    <div style={s.loadScreen}><div style={s.spinner} className="spin"/></div>
+  )
   if (!data) return null
 
-  const { materi, prev, next, isCompleted } = data
-  const { bab } = materi
-  const kitab = bab.kitab
-  const barColor = kitab.type === 'HIKAM' ? '#5C3A1E' : '#1C3D2E'
+  const { materi, isCompleted, isBookmarked, prev, next } = data
+  const kitab = materi.bab.kitab
+  const barColor = kitab.coverColor || '#1C3D2E'
   const content = materi.content
 
   return (
     <div style={s.root}>
       <style>{css}</style>
 
-      {/* ── Header ── */}
-      <div style={{ ...s.header, background: `linear-gradient(160deg, ${barColor}f0, ${barColor})` }}>
-        <div style={s.headerNav}>
-          <button onClick={() => navigate(`/kitab/${kitab.slug}/${bab.slug}`)} style={s.backBtn}>
-            ← {bab.title}
+      {/* Top bar */}
+      <div style={s.topBar}>
+        <button onClick={() => navigate(`/kitab/${kitab.slug}/${materi.bab.slug}`)} style={s.backBtn}>
+          ← {materi.bab.title}
+        </button>
+        <div style={s.topRight}>
+          <button onClick={handleBookmark} style={s.iconBtn} title="Bookmark">
+            {isBookmarked ? (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill={barColor} stroke={barColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+              </svg>
+            ) : (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+              </svg>
+            )}
           </button>
-          <span style={s.kitabLabel}>{kitab.title}</span>
         </div>
+      </div>
+
+      {/* Title section */}
+      <div style={{ ...s.titleSection, borderBottom: `3px solid ${barColor}20` }}>
+        <p style={{ ...s.kitabBreadcrumb, color: barColor }}>{kitab.title} · {materi.bab.title}</p>
         <h1 style={s.title}>{materi.title}</h1>
-        {isCompleted && <div style={s.completedBadge}>✓ Selesai dibaca</div>}
-      </div>
-
-      {/* ── Content ── */}
-      <div style={s.body}>
-        {content.type === 'quran' && <QuranContent content={content} />}
-        {content.type === 'hikam' && <HikamContent content={content} />}
-      </div>
-
-      {/* ── Actions ── */}
-      <div style={s.actions}>
-        {!isCompleted ? (
-          <button onClick={handleComplete} disabled={completing} style={s.completeBtn}>
-            {completing ? 'Menyimpan...' : '✓ Tandai Selesai'}
-          </button>
-        ) : (
-          <div style={s.completedBox}>✓ Sudah kamu baca</div>
+        {isCompleted && (
+          <div style={{ ...s.completedBadge, color: barColor, borderColor: barColor + '40', background: barColor + '10' }}>
+            ✓ Sudah dipelajari
+          </div>
         )}
+      </div>
 
-        {/* Prev / Next navigation */}
-        <div style={s.navBtns}>
-          {prev ? (
-            <button onClick={() => navigate(`/materi/${prev.id}`)} style={s.navBtn}>
-              ← Sebelumnya
-            </button>
-          ) : <div/>}
-          {next && (
-            <button onClick={() => navigate(`/materi/${next.id}`)} style={s.navBtnNext}>
-              Selanjutnya →
-            </button>
-          )}
+      {/* Content */}
+      <div style={s.contentArea}>
+        {content?.type === 'quran' && <QuranContent content={content}/>}
+        {content?.type === 'hikam' && <HikamContent content={content}/>}
+        {!content?.type && (
+          <div style={s.rawContent}>
+            <p>{JSON.stringify(content)}</p>
+          </div>
+        )}
+      </div>
+
+      {/* Bottom actions */}
+      <div style={s.bottomBar}>
+        {/* Nav prev/next */}
+        <div style={s.navRow}>
+          <button
+            onClick={() => prev && navigate(`/materi/${prev.id}`)}
+            disabled={!prev}
+            style={{ ...s.navBtn, opacity: prev ? 1 : 0.3, border: `1.5px solid ${barColor}30` }}>
+            ← Sebelumnya
+          </button>
+          <button
+            onClick={() => next && navigate(`/materi/${next.id}`)}
+            disabled={!next}
+            style={{ ...s.navBtnNext, opacity: next ? 1 : 0.3, background: next ? barColor : '#ccc' }}>
+            Selanjutnya →
+          </button>
         </div>
+
+        {/* Complete button */}
+        <button
+          onClick={handleComplete}
+          disabled={completing}
+          style={{
+            ...s.completeBtn,
+            background: isCompleted ? barColor + '15' : barColor,
+            color: isCompleted ? barColor : '#fff',
+            border: isCompleted ? `1.5px solid ${barColor}40` : 'none',
+          }}>
+          {completing ? 'Menyimpan...' : isCompleted ? '✓ Sudah Dipelajari' : 'Tandai Selesai'}
+        </button>
       </div>
     </div>
   )
 }
 
-// ── Renderer styles ─────────────────────────────────────────────────────────
+// ─── Styles ──────────────────────────────────────────────────────────────────
 const r = {
-  // Quran
-  quranWrap: { display:'flex', flexDirection:'column', gap:'0' },
-  surahLabel: { fontSize:'12px', fontWeight:'700', color:'#C9A84C', letterSpacing:'1px', textTransform:'uppercase', marginBottom:'20px' },
-  ayatBlock: { borderBottom:'1px solid rgba(201,168,76,0.12)', paddingBottom:'20px', marginBottom:'20px' },
-  ayatNum: { display:'inline-flex', width:'28px', height:'28px', borderRadius:'50%', border:'1.5px solid rgba(201,168,76,0.4)', alignItems:'center', justifyContent:'center', fontSize:'11px', fontWeight:'700', color:'#C9A84C', marginBottom:'12px' },
-  arabicText: { fontFamily:'serif', fontSize:'28px', lineHeight:1.9, color:'#1C3D2E', textAlign:'right', direction:'rtl', marginBottom:'12px' },
-  translation: { fontSize:'14px', color:'#5A5A5A', lineHeight:1.8 },
-  // Hikam
-  hikamWrap: {},
-  hikamNum: { fontSize:'11px', fontWeight:'700', color:'#C9A84C', letterSpacing:'1.5px', textTransform:'uppercase', marginBottom:'16px' },
-  hikamArabic: { fontFamily:'serif', fontSize:'26px', lineHeight:2, color:'#1C3D2E', textAlign:'right', direction:'rtl', marginBottom:'20px', padding:'20px', background:'rgba(201,168,76,0.06)', borderRadius:'12px', borderRight:'3px solid #C9A84C' },
-  hikamDivider: { display:'flex', alignItems:'center', gap:'8px', margin:'20px 0' },
-  dLine: { flex:1, height:'1px', background:'linear-gradient(90deg,transparent,rgba(201,168,76,0.3),transparent)' },
-  dDiamond: { width:'5px', height:'5px', background:'#C9A84C', transform:'rotate(45deg)', opacity:0.6 },
-  hikamTransLabel: { fontSize:'11px', fontWeight:'700', color:'#C9A84C', letterSpacing:'1.5px', textTransform:'uppercase', marginBottom:'10px' },
-  hikamTrans: { fontSize:'15px', color:'#3A3A3A', lineHeight:1.9, fontStyle:'italic' },
-  hikamExplain: { fontSize:'14px', color:'#5A5A5A', lineHeight:1.9 },
+  wrap: { display:'flex', flexDirection:'column', gap:'14px' },
+  arabicCard: { background:'#fff', borderRadius:'16px', padding:'24px 20px', border:'1px solid rgba(201,168,76,0.15)' },
+  arabic: { fontFamily:'serif', fontSize:'28px', lineHeight:2, color:'#1C3D2E', textAlign:'right', direction:'rtl', marginBottom:'14px' },
+  latin: { fontSize:'13px', color:'#8A7A65', lineHeight:1.8, fontStyle:'italic', textAlign:'center' },
+  arabicCardHikam: { background:'rgba(201,168,76,0.06)', borderRadius:'14px', padding:'20px', borderRight:'3px solid #C9A84C' },
+  arabicHikam: { fontFamily:'serif', fontSize:'24px', lineHeight:2, color:'#1C3D2E', textAlign:'right', direction:'rtl' },
+  hikamNumBadge: { fontSize:'11px', fontWeight:'700', color:'#C9A84C', letterSpacing:'1.5px', textTransform:'uppercase' },
+  section: { background:'#fff', borderRadius:'14px', padding:'16px 18px' },
+  sectionHead: { display:'flex', alignItems:'center', gap:'8px', marginBottom:'10px' },
+  dot: { width:'8px', height:'8px', borderRadius:'50%', flexShrink:0 },
+  sectionLabel: { fontSize:'11px', fontWeight:'700', color:'#A0906E', letterSpacing:'1px', textTransform:'uppercase' },
+  sectionText: { fontSize:'15px', color:'#3A3A3A', lineHeight:1.9 },
+  sectionTextItalic: { fontSize:'15px', color:'#3A3A3A', lineHeight:1.9, fontStyle:'italic' },
 }
 
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,600;0,700;1,400&family=Nunito:wght@400;500;600;700&display=swap');
-  *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
-  html,body { background:#F5EFE4; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html,body,#root { background:#F8F5EF; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .spin { animation:spin 0.8s linear infinite; }
 `
 
 const s = {
-  root: { minHeight:'100dvh', background:'#F5EFE4', fontFamily:"'Nunito',sans-serif", maxWidth:'480px', margin:'0 auto', paddingBottom:'40px' },
-  center: { display:'flex', justifyContent:'center', alignItems:'center', minHeight:'100dvh' },
-  loadText: { color:'#8A7A65', fontSize:'14px' },
-  header: { padding:'20px 20px 24px' },
-  headerNav: { display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'16px' },
-  backBtn: { fontSize:'13px', fontWeight:'700', color:'rgba(245,239,228,0.7)', background:'transparent', border:'none', cursor:'pointer', padding:'0', WebkitTapHighlightColor:'transparent' },
-  kitabLabel: { fontSize:'11px', color:'rgba(245,239,228,0.5)', letterSpacing:'1px', textTransform:'uppercase' },
-  title: { fontFamily:'Lora,serif', fontSize:'20px', fontWeight:'700', color:'#F5EFE4' },
-  completedBadge: { marginTop:'10px', display:'inline-block', fontSize:'11px', fontWeight:'700', color:'#C9A84C', border:'1px solid rgba(201,168,76,0.3)', borderRadius:'20px', padding:'4px 12px' },
-  body: { padding:'24px 20px' },
-  actions: { padding:'0 20px 24px' },
-  completeBtn: { width:'100%', padding:'15px', borderRadius:'12px', border:'none', background:'linear-gradient(135deg,#1C3D2E,#2D6A4F)', color:'#F5EFE4', fontWeight:'700', fontSize:'15px', cursor:'pointer', marginBottom:'16px', boxShadow:'0 6px 20px rgba(28,61,46,0.25)', WebkitTapHighlightColor:'transparent' },
-  completedBox: { width:'100%', padding:'14px', borderRadius:'12px', border:'1.5px solid rgba(201,168,76,0.3)', background:'rgba(201,168,76,0.08)', color:'#C9A84C', fontWeight:'700', fontSize:'14px', textAlign:'center', marginBottom:'16px' },
-  navBtns: { display:'flex', justifyContent:'space-between', gap:'10px' },
-  navBtn: { flex:1, padding:'12px', borderRadius:'10px', border:'1.5px solid #DDD5C5', background:'#fff', color:'#5A5A5A', fontWeight:'600', fontSize:'13px', cursor:'pointer', WebkitTapHighlightColor:'transparent' },
-  navBtnNext: { flex:1, padding:'12px', borderRadius:'10px', border:'none', background:'#1C3D2E', color:'#F5EFE4', fontWeight:'700', fontSize:'13px', cursor:'pointer', WebkitTapHighlightColor:'transparent' },
+  root: { minHeight:'100dvh', background:'#F8F5EF', fontFamily:"'Nunito',sans-serif", maxWidth:'480px', margin:'0 auto', display:'flex', flexDirection:'column' },
+  loadScreen: { minHeight:'100dvh', display:'flex', alignItems:'center', justifyContent:'center', background:'#F8F5EF' },
+  spinner: { width:'32px', height:'32px', border:'3px solid #E8E0D0', borderTop:'3px solid #1C3D2E', borderRadius:'50%' },
+  topBar: { display:'flex', justifyContent:'space-between', alignItems:'center', padding:'16px 20px', background:'#F8F5EF', position:'sticky', top:0, zIndex:10, borderBottom:'1px solid rgba(0,0,0,0.05)' },
+  backBtn: { background:'none', border:'none', color:'#6B6B6B', fontSize:'13px', fontWeight:'600', cursor:'pointer', padding:0, fontFamily:"'Nunito',sans-serif", WebkitTapHighlightColor:'transparent' },
+  topRight: { display:'flex', gap:'8px' },
+  iconBtn: { background:'none', border:'none', cursor:'pointer', padding:'4px', display:'flex', alignItems:'center', WebkitTapHighlightColor:'transparent' },
+  titleSection: { padding:'16px 20px 18px', background:'#fff', marginBottom:'2px' },
+  kitabBreadcrumb: { fontSize:'11px', fontWeight:'700', letterSpacing:'0.5px', marginBottom:'6px' },
+  title: { fontFamily:'Lora,serif', fontSize:'20px', fontWeight:'700', color:'#1C3D2E', lineHeight:1.3, marginBottom:'8px' },
+  completedBadge: { display:'inline-block', fontSize:'11px', fontWeight:'700', padding:'4px 12px', borderRadius:'20px', border:'1px solid' },
+  contentArea: { flex:1, padding:'16px 20px', display:'flex', flexDirection:'column', gap:'12px' },
+  rawContent: { background:'#fff', borderRadius:'14px', padding:'16px', fontSize:'14px', color:'#3A3A3A', lineHeight:1.8 },
+  bottomBar: { padding:'14px 20px 28px', background:'#fff', borderTop:'1px solid rgba(0,0,0,0.06)', position:'sticky', bottom:0, display:'flex', flexDirection:'column', gap:'10px' },
+  navRow: { display:'flex', gap:'8px' },
+  navBtn: { flex:1, padding:'11px', borderRadius:'10px', background:'#fff', color:'#5A5A5A', fontWeight:'600', fontSize:'13px', cursor:'pointer', fontFamily:"'Nunito',sans-serif", WebkitTapHighlightColor:'transparent' },
+  navBtnNext: { flex:1, padding:'11px', borderRadius:'10px', border:'none', color:'#fff', fontWeight:'700', fontSize:'13px', cursor:'pointer', fontFamily:"'Nunito',sans-serif", WebkitTapHighlightColor:'transparent' },
+  completeBtn: { width:'100%', padding:'15px', borderRadius:'12px', fontWeight:'700', fontSize:'15px', cursor:'pointer', fontFamily:"'Nunito',sans-serif", WebkitTapHighlightColor:'transparent', transition:'all 0.2s' },
 }

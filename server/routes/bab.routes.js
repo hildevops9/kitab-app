@@ -1,8 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { getBab } = require('../controllers/bab.controller')
+const { getMateriByBab } = require('../controllers/bab.controller')
 const { protect } = require('../middleware/auth.middleware')
-
-router.get('/:kitabSlug/:babSlug', protect, getBab)
-
+router.get('/:kitabSlug/:babSlug', protect, getMateriByBab)
 module.exports = router

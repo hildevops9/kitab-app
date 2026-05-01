@@ -1,9 +1,9 @@
 const express = require('express')
 const router = express.Router()
-const { getMateri, markComplete } = require('../controllers/materi.controller')
+const { getMateriById, toggleComplete, toggleBookmark, getBookmarks } = require('../controllers/materi.controller')
 const { protect } = require('../middleware/auth.middleware')
-
-router.get('/:id', protect, getMateri)
-router.post('/:id/complete', protect, markComplete)
-
+router.get('/bookmarks', protect, getBookmarks)
+router.get('/:materiId', protect, getMateriById)
+router.post('/:materiId/complete', protect, toggleComplete)
+router.post('/:materiId/bookmark', protect, toggleBookmark)
 module.exports = router
