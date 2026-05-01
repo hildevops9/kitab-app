@@ -267,7 +267,7 @@ const s = {
     boxShadow: '0 4px 30px rgba(28,61,46,0.06)',
   },
   navInner: {
-    width: '100%', maxWidth: '1100px', paddingInline: '16px', margin: '0 auto',
+    maxWidth: '1100px', margin: '0 auto',
     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
   },
   navBrand: { display: 'flex', alignItems: 'center', gap: '10px' },
@@ -323,7 +323,7 @@ const s = {
   heroGold: { color: '#C9A84C', fontStyle: 'italic' },
   heroDesc: {
     fontSize: 'clamp(15px, 2vw, 18px)', color: '#555',
-    lineHeight: 1.8, width: '100%', maxWidth: '560px', paddingInline: '16px', marginBottom: '48px',
+    lineHeight: 1.8, maxWidth: '560px', marginBottom: '48px',
     animation: 'fadeUp 0.8s 0.15s ease forwards', opacity: 0,
   },
   heroCta: {
@@ -370,7 +370,7 @@ const s = {
 
   // Features
   features: {
-    padding: 'clamp(60px, 8vw, 100px) 24px', width: '100%', paddingInline: '16px',
+    padding: 'clamp(60px, 8vw, 100px) 24px',
     maxWidth: '1100px', margin: '0 auto',
     textAlign: 'center',
   },
@@ -424,9 +424,9 @@ const s = {
     position: 'relative', overflow: 'hidden',
   },
   howInner: {
-    width: '100%', maxWidth: '1000px', margin: '0 auto',
-    display: 'flex', gap: '80px', paddingInline: '16px',
-    flexWrap: 'wrap', alignItems: 'center', 
+    maxWidth: '1000px', margin: '0 auto',
+    display: 'flex', gap: '80px',
+    flexWrap: 'wrap', alignItems: 'center',
   },
   howLeft: { flex: '1', minWidth: '240px' },
   howSteps: { flex: '1.2', minWidth: '280px', display: 'flex', flexDirection: 'column', gap: '32px' },
