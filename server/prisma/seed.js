@@ -522,7 +522,7 @@ async function main() {
       }
     },
    
-    // {
+    /// {
     //   id: 'h-026', babId: babNiat.id, num: 26,
     //   title: 'Hikam 26 — Tawadu dalam Niat',
     //   arabic: 'مَا اسْتُودِعَ فِي غَيْبِ الطَّوِيَّاتِ ظَهَرَ فِي شَهَادَةِ السَّمَوَاتِ',
