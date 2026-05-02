@@ -592,19 +592,24 @@ async function main() {
   ]
 
   for (const h of hikamList) {
+    const hikamContent = {
+      type: 'hikam',
+      number: h.num,
+      arabic: h.arabic,
+      terjemahan: h.terjemahan,
+      penjelasan: h.penjelasan,
+      ...(h.referensi ? { referensi: h.referensi } : {})
+    }
     await prisma.materi.upsert({
       where: { id: h.id },
-      update: {},
+      update: {
+        title: h.title,
+        orderNum: h.num,
+        content: hikamContent,
+      },
       create: {
         id: h.id, babId: h.babId, title: h.title, orderNum: h.num,
-        content: {
-          type: 'hikam',
-          number: h.num,
-          arabic: h.arabic,
-          terjemahan: h.terjemahan,
-          penjelasan: h.penjelasan,
-          ...(h.referensi ? { referensi: h.referensi } : {})
-        }
+        content: hikamContent,
       }
     })
   }

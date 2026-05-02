@@ -7,7 +7,6 @@ import UpdatePrompt from './components/UpdatePrompt'
 // Pages
 import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
-import RegisterPage from './pages/RegisterPage'
 import HomePage from './pages/HomePage'
 import KitabListPage from './pages/KitabListPage'
 import KitabPage from './pages/KitabPage'
@@ -26,7 +25,7 @@ export default function App() {
             {/* Public */}
             <Route path="/" element={<PublicRoute redirectTo="/home"><LandingPage /></PublicRoute>} />
             <Route path="/login" element={<PublicRoute redirectTo="/home"><LoginPage /></PublicRoute>} />
-            <Route path="/register" element={<PublicRoute redirectTo="/home"><RegisterPage /></PublicRoute>} />
+            <Route path="/register" element={<Navigate to="/login" replace />} />
 
             {/* Protected */}
             <Route path="/home" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
