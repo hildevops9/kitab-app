@@ -49,6 +49,27 @@ function HikamContent({ content }) {
           <p style={r.sectionText}>{content.penjelasan}</p>
         </div>
       )}
+      {content.referensi && (
+        <a
+          href={content.referensi.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={r.referensiLink}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <polyline points="10 9 9 9 8 9"/>
+          </svg>
+          {content.referensi.label}
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft:'auto', opacity:0.5 }}>
+            <line x1="7" y1="17" x2="17" y2="7"/>
+            <polyline points="7 7 17 7 17 17"/>
+          </svg>
+        </a>
+      )}
     </div>
   )
 }
@@ -192,6 +213,20 @@ const r = {
   sectionLabel: { fontSize:'11px', fontWeight:'700', color:'#A0906E', letterSpacing:'1px', textTransform:'uppercase' },
   sectionText: { fontSize:'15px', color:'#3A3A3A', lineHeight:1.9 },
   sectionTextItalic: { fontSize:'15px', color:'#3A3A3A', lineHeight:1.9, fontStyle:'italic' },
+  referensiLink: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    background: 'rgba(201,168,76,0.08)',
+    border: '1.5px solid rgba(201,168,76,0.35)',
+    borderRadius: '12px',
+    padding: '13px 16px',
+    fontSize: '14px',
+    fontWeight: '600',
+    color: '#7A5C1E',
+    textDecoration: 'none',
+    transition: 'background 0.2s',
+  },
 }
 
 const css = `
