@@ -195,7 +195,7 @@ export default function RegisterPage() {
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=Nunito:wght@400;500;600;700&display=swap');
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body, #root { background: #F7F4EF; }
+  html, body, #root { background: #FDFAF5; }
 
   .kitab-input { transition: border-color 0.2s, box-shadow 0.2s !important; }
   .kitab-input:focus {
@@ -210,7 +210,7 @@ const css = `
 
 const s = {
   root: {
-    minHeight: '100dvh', background: '#F7F4EF',
+    minHeight: '100dvh', background: '#FDFAF5',
     fontFamily: "'Nunito', sans-serif",
     maxWidth: '430px', margin: '0 auto',
     display: 'flex', flexDirection: 'column',
