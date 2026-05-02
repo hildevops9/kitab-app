@@ -176,7 +176,7 @@ const css = `
 
 const s = {
   root: {
-    minHeight: '100dvh', background: '#FDFAF5',
+    width:'100%', minHeight: '100dvh', background: '#FDFAF5',
     fontFamily: "'Nunito', sans-serif",
     maxWidth: '430px', margin: '0 auto',
     display: 'flex', flexDirection: 'column',
@@ -203,7 +203,7 @@ const s = {
     background: 'rgba(240,230,211,0.85)', backdropFilter: 'blur(4px)',
   },
   // Body
-  body: { padding: '20px 20px 40px', display: 'flex', flexDirection: 'column', gap: '0', background: '#F7F4EF', flex: 1 },
+  body: { padding: '20px 20px 40px', display: 'flex', flexDirection: 'column', gap: '0', background: '#FDFAF5', flex: 1 },
   form: { display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '16px' },
   fieldWrap: { display: 'flex', flexDirection: 'column', gap: '6px' },
   label: { fontSize: '13px', fontWeight: '700', color: '#1C3D2E' },
