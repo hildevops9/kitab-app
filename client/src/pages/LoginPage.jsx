@@ -161,7 +161,7 @@ export default function LoginPage() {
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=Nunito:wght@400;500;600;700&display=swap');
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body, #root { background: #FDFAF5; }
+  html, body, #root { background: #F7F4EF; }
 
   .kitab-input { transition: border-color 0.2s, box-shadow 0.2s !important; }
   .kitab-input:focus {
@@ -176,14 +176,15 @@ const css = `
 
 const s = {
   root: {
-    minHeight: '100dvh', background: '#FDFAF5',
+    minHeight: '100dvh', background: '#F7F4EF',
     fontFamily: "'Nunito', sans-serif",
     maxWidth: '430px', margin: '0 auto',
     display: 'flex', flexDirection: 'column',
+    alignItems: 'stretch',
   },
   // Hero image
-  heroWrap: { position: 'relative', width: '100%' },
-  heroImg: { width: '100%', display: 'block', objectFit: 'cover' },
+  heroWrap: { position: 'relative', width: '100%', overflow: 'hidden' },
+  heroImg: { width: '100%', display: 'block', objectFit: 'cover', objectPosition: 'center' },
   topNav: {
     position: 'absolute', top: 16, left: 0, right: 0,
     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
@@ -202,7 +203,7 @@ const s = {
     background: 'rgba(240,230,211,0.85)', backdropFilter: 'blur(4px)',
   },
   // Body
-  body: { padding: '20px 24px 40px', display: 'flex', flexDirection: 'column', gap: '0', background: '#FDFAF5', flex: 1 },
+  body: { padding: '20px 20px 40px', display: 'flex', flexDirection: 'column', gap: '0', background: '#F7F4EF', flex: 1 },
   form: { display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '16px' },
   fieldWrap: { display: 'flex', flexDirection: 'column', gap: '6px' },
   label: { fontSize: '13px', fontWeight: '700', color: '#1C3D2E' },
