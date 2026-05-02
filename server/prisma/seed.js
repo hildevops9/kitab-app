@@ -172,18 +172,19 @@ async function main() {
       terjemahan: 'Di antara tanda-tanda bergantung pada amal adalah berkurangnya harapan kepada Allah ketika terjadi kesalahan.',
       penjelasan: 'Syaikh Ibnu Atha\'illah mengajarkan bahwa orang yang benar-benar bertawakal tidak akan putus asa ketika berbuat salah. Keputusasaan menunjukkan bahwa seseorang lebih bergantung pada amalnya daripada kepada rahmat Allah. Seorang mukmin sejati selalu memperbaharui harapannya kepada Allah.',
       referensi: {
-        label: 'Syarah Hikam 1 — Pak Ali Abdul Khalik',
+        label: 'Klik untuk detail Syarah Hikam 1 — Pak Ali Abdul Khalik',
         url: 'https://drive.google.com/file/d/1imEJfpf-psQRBvaAU7cIR3KYfiKqLA6k/view?usp=sharing'
       }
     },
     {
       id: 'h-002', babId: babTawakkal.id, num: 2,
-      title: 'Hikam 2 — Keinginan Melepas Sebab',
-      arabic: 'إِرَادَتُكَ التَّجْرِيدَ مَعَ إِقَامَةِ اللهِ إِيَّاكَ فِي الْأَسْبَابِ مِنَ الشَّهْوَةِ الْخَفِيَّةِ',
+      title: 'Hikam 2 — Tajrid dan Kasab',
+      arabic:`إِرَ ادَ تُــكَ الـتَّجْرِ يْدَ مَـعَ إِقَامَـةِ اللَّهِ إِ يَّـاكَ فيِ اْلأَسْبَابِ مِنَ الشَّـهْـوَ ةِ الْخَفِـيـَّةِ.
+وَ إِرَادَ تُـكَ اْلأَسْبَابَ مَعَ إِقَامَةِ اللَّهِ إِ يَّـاكَ فيِ الـتَّجْرِ يْدِ اِنحِطَاطٌ مِنَ الْهِمَّةِ الْعَـلِـيـَّةِ`,
       terjemahan: 'Keinginanmu untuk melepaskan diri dari sebab-sebab duniawi, padahal Allah menempatkanmu di dalamnya, adalah syahwat tersembunyi.',
       penjelasan: 'Setiap orang memiliki kedudukan yang telah ditentukan Allah. Keinginan meninggalkan posisi itu tanpa izin Allah justru merupakan mengikuti hawa nafsu yang tersembunyi. Terimalah posisimu dan jalankan dengan ikhlas.',
       referensi: {
-        label: 'Syarah Hikam 2 — Pak Ali Abdul Khalik',
+        label: 'Klik untuk detail Syarah Hikam 2 — Pak Ali Abdul Khalik',
         url: 'https://drive.google.com/file/d/1imEJfpf-psQRBvaAU7cIR3KYfiKqLA6k/view?usp=sharing'
       }
     },
@@ -194,7 +195,7 @@ async function main() {
       terjemahan: 'Kehendak-kehendak yang kuat tidak dapat menembus tembok-tembok takdir.',
       penjelasan: 'Manusia boleh berusaha sekuat tenaga, namun pada akhirnya takdir Allah-lah yang menentukan. Bukan mengajak kepasifan, melainkan mengajarkan kerendahan hati. Berusahalah semaksimal mungkin, namun serahkan hasilnya kepada Allah SWT.',
       referensi: {
-        label: 'Syarah Hikam 3 — Pak Ali Abdul Khalik',
+        label: 'Klik untuk detail Syarah Hikam 3 — Pak Ali Abdul Khalik',
         url: 'https://drive.google.com/file/d/1imEJfpf-psQRBvaAU7cIR3KYfiKqLA6k/view?usp=sharing'
       }
     },
@@ -205,7 +206,7 @@ async function main() {
       terjemahan: 'Istirahatkanlah dirimu dari mengatur segala sesuatu. Apa yang telah diurus oleh selain dirimu (Allah) untukmu, janganlah kamu urus sendiri.',
       penjelasan: 'Allah SWT telah menjamin rezeki dan urusan setiap makhluk-Nya. Ketika hamba terlalu sibuk mengatur hidupnya sendiri, ia sesungguhnya tidak mempercayai jaminan Allah. Bertawakallah dengan sepenuh hati.',
       referensi: {
-        label: 'Syarah Hikam 4 — Pak Ali Abdul Khalik',
+        label: 'Klik untuk detail Syarah Hikam 4 — Pak Ali Abdul Khalik',
         url: 'https://drive.google.com/file/d/1YhMPlX_8-n_ffr4HtEWYKu41R6CuuNSF/view?usp=sharing'
       }
     },
@@ -216,7 +217,7 @@ async function main() {
       terjemahan: 'Janganlah kamu mengulurkan tanganmu untuk mengambil dari makhluk, kecuali jika kamu meyakini bahwa sesungguhnya yang memberi adalah Allah.',
       penjelasan: 'Ketika menerima pemberian dari sesama manusia, seorang arif tetap melihat bahwa hakikatnya Allah-lah yang memberi melalui perantara tersebut. Hatinya tidak terikat pada pemberi, tidak merasa terhutang budi kepada selain Allah.',
       referensi: {
-        label: 'Syarah Hikam 5 — Pak Ali Abdul Khalik',
+        label: 'Klik untuk detail Syarah Hikam 5 — Pak Ali Abdul Khalik',
         url: 'https://drive.google.com/file/d/1YhMPlX_8-n_ffr4HtEWYKu41R6CuuNSF/view?usp=sharing'
       }
     },
@@ -227,7 +228,7 @@ async function main() {
       terjemahan: 'Barangsiapa yang membanggakan keadaan spiritualnya, permohonan maafnya tidaklah lahir dari kehinaan diri yang sejati.',
       penjelasan: 'Orang yang menunjuk-nunjuk pencapaian spiritual dan pengalaman rohaninya kepada orang lain, berarti ia belum melepaskan diri dari keakuan. Kerendahan hati yang sejati adalah tidak merasakan bahwa dirinya memiliki sesuatu yang bisa dibanggakan.',
       referensi: {
-        label: 'Syarah Hikam 6 — Pak Ali Abdul Khalik',
+        label: 'Klik untuk detail Syarah Hikam 6 — Pak Ali Abdul Khalik',
         url: 'https://drive.google.com/file/d/1YhMPlX_8-n_ffr4HtEWYKu41R6CuuNSF/view?usp=sharing'
       }
     },
@@ -236,9 +237,11 @@ async function main() {
       title: 'Hikam 7 — Kerugian Orang yang Tidak Mengenal Allah',
       arabic: 'كَيْفَ يُشْرِقُ قَلْبٌ صُوَرُ الْأَكْوَانِ مُنْطَبِعَةٌ فِي مِرْآتِهِ',
       terjemahan: 'Bagaimana mungkin hati dapat bersinar sementara gambaran-gambaran dunia terukir dalam cermin nuraninya?',
-      penjelasan: 'Hati laksana cermin. Ketika cermin dipenuhi oleh bayang-bayang dunia — keinginan, kekhawatiran, keterikatan — cahaya Allah tidak dapat memantul dengan sempurna. Membersihkan hati dari selain Allah adalah syarat utama menerima cahaya ilahi.',
+      penjelasan: `1. Jangan meragukan janji Alloh karena sejatinya semuanya sudah diatur dengan kesempurnaan 
+      2. Bagi manusia yang menerima apapun keputusan Alloh bagi hidupnya akan memandang indah semuanya
+      3. Keyakinan tanpa ragu akan kebenaran ijabah akan membuat mata hati tak kan terluka dan tak kan membuat padam nurani`,
       referensi: {
-        label: 'Syarah Hikam 7 — Pak Ali Abdul Khalik',
+        label: 'Klik untuk detail Syarah Hikam 7 — Pak Ali Abdul Khalik',
         url: 'https://drive.google.com/file/d/1J3A5Kzzx_gOGn1_8jtMwff8PR7T0cvcX/view?usp=drive_link'
       }
     },
@@ -247,9 +250,10 @@ async function main() {
       title: 'Hikam 8 — Tanda Mengandalkan Amal',
       arabic: 'مَنْ عَرَفَ نَفْسَهُ أَشْغَلَهُ ذَلِكَ عَنْ ذَمِّ النَّاسِ وَمَنْ عَرَفَ رَبَّهُ أَشْغَلَهُ ذَلِكَ عَنِ الاِلْتِفَاتِ إِلَى نَفْسِهِ',
       terjemahan: 'Barangsiapa mengenal dirinya, kesibukan itu menghalanginya dari mencela orang lain. Barangsiapa mengenal Tuhannya, kesibukan itu menghalanginya dari memperhatikan dirinya sendiri.',
-      penjelasan: 'Ada dua tingkatan kesadaran: mengenal diri dan mengenal Allah. Orang yang telah benar-benar mengenal kekurangan dirinya sendiri tidak akan sempat mencela orang lain. Lebih tinggi lagi, orang yang sibuk dengan keagungan Allah tidak sempat memikirkan dirinya sendiri.',
+      penjelasan: `1.Alloh SWT membukakan pintu ma'rifat (mengenal keagunganNya) pada siapapun yang Dia kehendaki
+      2. Jika dalam nurani ada rasa untuk semakin dekat dengan Nya melalui Amaliyyah ibadah. Jangan diabaikan.. Rawatlah dan upayakan untuk menyambutnya dengan Mujahadah ( upaya maksimal mengamalkannya)`,
       referensi: {
-        label: 'Syarah Hikam 8 — Pak Ali Abdul Khalik',
+        label: 'Klik untuk detail Syarah Hikam 8 — Pak Ali Abdul Khalik',
         url: 'https://drive.google.com/file/d/1J3A5Kzzx_gOGn1_8jtMwff8PR7T0cvcX/view?usp=drive_link'
       }
     },
@@ -260,9 +264,12 @@ async function main() {
       title: 'Hikam 9 — Ilmu yang Bermanfaat',
       arabic: 'الْعِلْمُ النَّافِعُ هُوَ الَّذِي يَنْبَسِطُ فِي الصَّدْرِ شُعَاعُهُ وَيُكْشَفُ بِهِ عَنِ الْقَلْبِ قِنَاعُهُ',
       terjemahan: 'Ilmu yang bermanfaat adalah ilmu yang sinarnya memancar dalam dada dan dengannya tersingkap tabir-tabir dari hati.',
-      penjelasan: 'Bukan banyaknya hafalan yang menandai ilmu yang bermanfaat, melainkan cahaya yang dipancarkannya ke dalam hati. Ilmu yang sejati menyingkap tirai antara hamba dengan Tuhannya, melapangkan dada, dan menambah rasa takut serta cinta kepada Allah.',
+      penjelasan: ` 1. Ada wirid dan ada warid
+      2. Wirid adalah amal baik yang dibiasakan
+      3. Warid adalah pengaruh baik dari wirid
+      4. Alloh menghadirkan banyak amal sebagai wirid manusia karena kondisi manusia yang beragam dan Alloh menganugerahkan banyak warid dalam kehidupan manusia`,
       referensi: {
-        label: 'Syarah Hikam 9 — Pak Ali Abdul Khalik',
+        label: 'Klik untuk detail Syarah Hikam 9 — Pak Ali Abdul Khalik',
         url: 'https://drive.google.com/file/d/1J3A5Kzzx_gOGn1_8jtMwff8PR7T0cvcX/view?usp=drive_link'
       }
     },
@@ -271,9 +278,14 @@ async function main() {
       title: 'Hikam 10 — Ikhlas dalam Amal',
       arabic: 'الأَعْمَالُ صُوَرٌ قَائِمَةٌ وَأَرْوَاحُهَا وُجُودُ سِرِّ الإِخْلَاصِ فِيهَا',
       terjemahan: 'Amal-amal adalah jasad yang berdiri, sedangkan ruhnya adalah keberadaan rahasia ikhlas di dalamnya.',
-      penjelasan: 'Sebuah amal tanpa ikhlas ibarat jasad tanpa nyawa — tampak berdiri namun sesungguhnya mati. Ikhlas adalah rahasia tersembunyi yang hanya Allah yang tahu. Ia adalah ruh yang menghidupkan setiap amal perbuatan sehingga diterima di sisi-Nya.',
+      penjelasan:`Amal adalah bentuk lahir, ikhlas adalah ruhnya
+      1. Amal ibadah tidak cukup hanya benar secara lahiriah.
+      2. Amal akan bernilai di sisi Allah jika disertai niat yang ikhlas.
+      3. Ikhlas menjadi ruh yang menghidupkan setiap amal.
+      4. Tanpa ikhlas, amal bisa tampak besar tetapi kosong nilainya.
+      5. Pesan utama: perbaiki niat sebelum, saat, dan setelah beramal.`,
       referensi: {
-        label: 'Syarah Hikam 10 — Pak Ali Abdul Khalik',
+        label: 'Klik untuk detail Syarah Hikam 10 — Pak Ali Abdul Khalik',
         url: 'https://drive.google.com/file/d/1Tho_MJWU0wSPa0Ke4kAi5AYR7pfgYEn5/view?usp=drive_link'
       }
     },
@@ -282,9 +294,14 @@ async function main() {
       title: 'Hikam 11 — Rahasia Taufik',
       arabic: 'ادْفِنْ وُجُودَكَ فِي أَرْضِ الخُمُولِ فَمَا نَبَتَ مِمَّا لَمْ يُدْفَنْ لَا يَتِمُّ نِتَاجُهُ',
       terjemahan: 'Kuburkanlah keberadaanmu di tanah ketersembunyian, karena sesuatu yang tumbuh tanpa ditanam tidak akan sempurna buahnya.',
-      penjelasan: 'Seperti benih yang harus dikuburkan dalam tanah sebelum ia tumbuh dan berbuah, seorang murid harus menguburkan keakuannya dalam kerendahan hati. Ketenaran dan kemasyhuran sebelum matang justru merusak pertumbuhan spiritual.',
+      penjelasan: `Tanamlah dirimu dalam tempat yang tersembunyi
+      1. Seorang salik tidak perlu sibuk menampakkan diri kepada manusia.
+      2. Kemuliaan tidak lahir dari popularitas, tetapi dari kedekatan kepada Allah.
+      3. Amal yang tersembunyi lebih terjaga dari riya dan ujub.
+      4. Proses pertumbuhan ruhani sering kali justru kuat saat dijalani dalam diam.
+      5. Pesan utama: jadilah hamba yang tumbuh dalam ketulusan, bukan pencitraan.`,
       referensi: {
-        label: 'Syarah Hikam 11 — Pak Ali Abdul Khalik',
+        label: 'Klik untuk detail Syarah Hikam 11 — Pak Ali Abdul Khalik',
         url: 'https://drive.google.com/file/d/1Tho_MJWU0wSPa0Ke4kAi5AYR7pfgYEn5/view?usp=drive_link'
       }
     },
@@ -293,9 +310,14 @@ async function main() {
       title: 'Hikam 12 — Hakikat Tawadhu',
       arabic: 'لَا تَرْفَعَنَّكَ فِي عَيْنِكَ نِعْمَةُ الطَّاعَةِ وَلَا تَحُطَّنَّكَ عَنْ قَدْرِكَ وَرْطَةُ الْمَعْصِيَةِ',
       terjemahan: 'Janganlah nikmat ketaatan membuatmu tinggi dalam pandanganmu sendiri, dan janganlah lumpur kemaksiatan menjatuhkan harga dirimu.',
-      penjelasan: 'Seorang hamba tidak seharusnya merasa tinggi karena berhasil taat, sebab ketaatan itu sendiri adalah karunia dari Allah. Sebaliknya, kemaksiatan pun tidak boleh membuatnya berputus asa dari rahmat Allah. Sikap pertengahan inilah yang menandai keseimbangan jiwa seorang mukmin.',
+      penjelasan: `Tidak ada yang lebih bermanfaat bagi hati selain uzlah
+      1. Uzlah membantu ha􀆟 keluar dari keramaian yang melalaikan.
+      2. Dengan menyendiri untuk tafakur, ha􀆟 menjadi lebih tenang dan jernih.
+      3. Uzlah membuka ruang untuk muhasabah dan memperbaiki hubungan dengan Allah.
+      4. Pikiran menjadi lebih luas karena 􀆟dak terus dipenuhi gangguan dunia.
+      5. Pesan utama: ha􀆟 membutuhkan keheningan agar mampu menerima cahaya hikmah.`,
       referensi: {
-        label: 'Syarah Hikam 12 — Pak Ali Abdul Khalik',
+        label: 'Klik untuk detail Syarah Hikam 12 — Pak Ali Abdul Khalik',
         url: 'https://drive.google.com/file/d/1Tho_MJWU0wSPa0Ke4kAi5AYR7pfgYEn5/view?usp=drive_link'
       }
     },
@@ -304,9 +326,12 @@ async function main() {
       title: 'Hikam 13 — Kemiskinan Hakiki',
       arabic: 'لَيْسَ الْفَقِيرُ مَنْ لَيْسَ لَهُ شَيْءٌ، وَلَكِنِ الْفَقِيرُ مَنْ لَيْسَ لَهُ رَبٌّ',
       terjemahan: 'Orang yang fakir bukan orang yang tidak memiliki apa-apa, melainkan orang yang tidak memiliki Tuhan.',
-      penjelasan: 'Kemiskinan sejati bukanlah soal harta benda. Orang yang memiliki segalanya namun tidak memiliki hubungan dengan Allah adalah orang yang paling miskin. Sebaliknya, orang yang tidak punya apa-apa namun hatinya dipenuhi kehadiran Allah adalah orang yang paling kaya.',
+      penjelasan: `1. Hati sulit bercahaya jika masih dipenuhi bayangan dunia.
+      2. Perjalanan menuju Allah akan terhalang oleh ikatan syahwat.
+      3. Ibadah membutuhkan ha􀆟 yang bersih dari kelalaian.
+      4. Memahami rahasia Ilahi memerlukan taubat dan penyucian diri.`,
       referensi: {
-        label: 'Syarah Hikam 13 — Pak Ali Abdul Khalik',
+        label: 'Klik untuk detail Syarah Hikam 13 — Pak Ali Abdul Khalik',
         url: 'https://drive.google.com/file/d/19U48OUMx1yx7WEUenujm0bU7eH1gRI_n/view?usp=drive_link'
       }
     },
@@ -603,6 +628,7 @@ async function main() {
     await prisma.materi.upsert({
       where: { id: h.id },
       update: {
+        babId: h.babId,
         title: h.title,
         orderNum: h.num,
         content: hikamContent,
