@@ -123,13 +123,13 @@ async function main() {
   const babMakrifat = await prisma.bab.upsert({
     where: { kitabId_slug: { kitabId: alhikam.id, slug: 'makrifat-dan-ikhlas' } },
     update: {},
-    create: { kitabId: alhikam.id, slug: 'makrifat-dan-ikhlas', title: 'Ma\'rifat & Ikhlas', arabicTitle: 'الْمَعْرِفَة', orderNum: 2 }
+    create: { kitabId: alhikam.id, slug: 'makrifat-dan-ikhlas', title: 'Ma\'rifat & Ikhlas', arabicTitle:'الْمَعْرِفَة', orderNum: 2 }
   })
 
   const babZuhud = await prisma.bab.upsert({
     where: { kitabId_slug: { kitabId: alhikam.id, slug: 'zuhud-dan-dunia' } },
     update: {},
-    create: { kitabId: alhikam.id, slug: 'zuhud-dan-dunia', title: 'Zuhud & Dunia', arabicTitle: 'الزُّهْد', orderNum: 3 }
+    create: { kitabId: alhikam.id, slug: 'zuhud-dan-dunia', title: 'Zuhud & Dunia', arabicTitle:'الزُّهْد', orderNum: 3 }
   })
 
   const babNiat = await prisma.bab.upsert({
@@ -260,7 +260,7 @@ async function main() {
 
     // ── BAB 2: MA'RIFAT & IKHLAS ──
     {
-      id: 'h-009', babId: babMakrifat.id, num: 9,
+      id: 'h-009', babId: babTawakkal.id, num: 9,
       title: 'Hikam 9 — Amal, Ahwal dan Warid',
       arabic: 'تَـنَوَّعَتْ أَجْنَاسُ اْلأَعْمَالِ لِـتَـنَوُّعِ وَارِدَاتِ اْلأَحْوَالِ ',
       terjemahan: '"Beragamnya jenis amal-amal itu disebabkan oleh beragamnya warid-warid (yang turun) pada ahwal-ahwal (hamba-Nya)."',
@@ -387,7 +387,7 @@ async function main() {
       }
     },
     {
-      id: 'h-017', babId: babTawakkal.id, num: 17,
+      id: 'h-017', babId: babMakrifat.id, num: 17,
       title: 'Hikam 17 — Menginginkan Selain Kehendak Allah adalah Kebodohan',
       arabic: 'مَا تَرَكَ مِنَ الْجَهْلِ شَيْئًا مَنْ أَرَادَ أَنْ يَحْدُثَ فِي الْوَقْتِ غَيْرَ مَا أَظْهَرَهُ اللَّهُ فِيهِ',
       terjemahan: '"Sangatlah jahil orang yang menginginkan terjadinya sesuatu di luar waktu yang dikehendaki oleh Allah."',
@@ -402,7 +402,7 @@ async function main() {
       }
     },
     {
-      id: 'h-018', babId: babTawakkal.id, num: 18,
+      id: 'h-018', babId: babMakrifat.id, num: 18,
       title: 'Hikam 18 — Menunda Amal Saleh adalah Kebodohan Jiwa',
       arabic: 'إِحَالَتُكَ الْأَعْمَالَ عَلَى وُجُوْدِ الْفَرَاغِ مِنْ رُعُوْنَاتِ النَّفْسِ',
       terjemahan: '"Menunda beramal saleh guna menantikan kesempatan yang lebih luang, termasuk tanda kebodohan jiwa."',
@@ -417,7 +417,7 @@ async function main() {
       }
     },
     {
-      id: 'h-019', babId: babTawakkal.id, num: 19,
+      id: 'h-019', babId: babZuhud.id, num: 19,
       title: 'Hikam 19 — Tidak Boleh Memaksa Allah',
       arabic: 'لَا تَطْلُبْ مِنْهُ أَنْ يُخْرِجَكَ مِنْ حَالَةٍ لِيَسْتَعْمِلَكَ فِيمَا سِوَاهَا، فَلَوْ أَرَادَكَ لَاسْتَعْمَلَكَ مِنْ غَيْرِ إِخْرَاجٍ.',
       terjemahan: '"Jangan meminta kepada Allah supaya Dia mengeluarkanmu dari suatu keadaan untuk menggunakanmu pada keadaan yang lain. Karena seandainya Allah menghendaki penggunaanmu, tentulah Dia akan menggunakanmu tanpa harus mengeluarkanmu."',
@@ -432,7 +432,7 @@ async function main() {
       }
     },
     {
-      id: 'h-020', babId: babMakrifat.id, num: 20,
+      id: 'h-020', babId: babZuhud.id, num: 20,
       title: 'Hikam 20 — Himmah Salik Tidak Berhenti',
       arabic: 'مَا أَرَادَتْ هِمَّةُ سَالِكٍ أَنْ تَقِفَ عِنْدَ مَا كُشِفَ لَهَا إِلَّا وَنَادَتْهُ هَوَاتِفُ الْحَقِيقَةِ: الَّذِي تَطْلُبُهُ أَمَامَكَ! وَلَا تَبَرَّجَتْ ظَوَاهِرُ الْمُكَوَّنَاتِ إِلَّا وَنَادَتْهُ حَقَائِقُهَا: إِنَّا فِتْنَةٌ فَلَا تَكْفُرْ',
       terjemahan: '"Hasrat seorang salik tidak akan berhenti ketika tersingkap baginya tirai rohani, melainkan suara-suara hakikat akan berseru padanya: yang engkau cari masih di depanmu! Dan tidaklah keindahan alam semesta memperlihatkan dirinya, melainkan hakikatnya berseru: kami hanyalah ujian, maka janganlah engkau kufur."',
@@ -447,7 +447,7 @@ async function main() {
       }
     },
     {
-      id: 'h-021', babId: babTawakkal.id, num: 21,
+      id: 'h-021', babId: babZuhud.id, num: 21,
       title: 'Hikam 21 — Hakikat Meminta kepada Allah',
       arabic: 'طَلَبُكَ مِنْهُ اتِّهَامٌ لَهُ، وَطَلَبُكَ لِغَيْرِهِ لِقِلَّةِ الْحَيَاءِ مِنْهُ، وَطَلَبُكَ مِنْ غَيْرِهِ لِوُجُودِ بُعْدِكَ عَنْهُ',
       terjemahan: '"Permintaanmu kepada-Nya (seolah Dia tidak tahu) merupakan suatu tuduhan terhadap-Nya. Permintaanmu untuk selain-Nya menunjukkan kurangnya rasa malu kepada-Nya. Dan permintaanmu dari selain-Nya disebabkan jauhnya dirimu dari-Nya."',
@@ -462,7 +462,7 @@ async function main() {
       }
     },
     {
-      id: 'h-022', babId: babTawakkal.id, num: 22,
+      id: 'h-022', babId: babZuhud.id, num: 22,
       title: 'Hikam 22 — Setiap Nafas Ada Takdir Allah',
       arabic: 'مَا مِنْ نَفَسٍ تُبْدِيهِ إِلَّا وَلَهُ قَدَرٌ فِيكَ يُمْضِيهِ',
       terjemahan: '"Tiada suatu nafas pun yang berhembus darimu, melainkan di situ ada takdir Allah yang berlaku padamu."',
@@ -477,7 +477,7 @@ async function main() {
       }
     },
     {
-      id: 'h-023', babId: babHati.id, num: 23,
+      id: 'h-023', babId: babZuhud.id, num: 23,
       title: 'Hikam 23 — Jangan Tunggu Bebas dari Kesibukan Dunia',
       arabic: 'لَا تَتَرَقَّبْ فُرُوغَ الْأَغْيَارِ، فَإِنَّ ذَلِكَ يَقْطَعُكَ عَنْ وُجُودِ الْمُرَاقَبَةِ لَهُ فِيمَا هُوَ مُقِيمُكَ فِيهِ',
       terjemahan: '"Jangan menunggu hingga selesai semua gangguan makhluk, sebab yang demikian itu akan menghalangimu dari muraqabah kepada-Nya, padahal Dia menempatkanmu di sana."',
@@ -492,7 +492,7 @@ async function main() {
       }
     },
     {
-      id: 'h-024', babId: babSyukur.id, num: 24,
+      id: 'h-024', babId: babZuhud.id, num: 24,
       title: 'Hikam 24 — Jangan Heran dengan Kesulitan Dunia',
       arabic: 'لَا تَسْتَغْرِبْ وُقُوعَ الْأَكْدَارِ مَا دُمْتَ فِي هَذِهِ الدَّارِ، فَإِنَّهَا مَا أَبْرَزَتْ إِلَّا مَا هُوَ مُسْتَحِقُّ وَصْفِهَا وَوَاجِبُ نَعْتِهَا',
       terjemahan: '"Janganlah engkau merasa heran atas terjadinya berbagai kesulitan selama engkau berada di dunia ini, sebab memang begitulah yang patut terjadi dan yang menjadi karakter asli dunia."',
@@ -507,7 +507,7 @@ async function main() {
       }
     },
     {
-      id: 'h-025', babId: babTawakkal.id, num: 25,
+      id: 'h-025', babId: babZuhud.id, num: 25,
       title: 'Hikam 25 — Bergantung pada Allah vs Diri Sendiri',
       arabic: 'مَا تَوَقَّفَ مَطْلَبٌ أَنْتَ طَالِبُهُ بِرَبِّكَ، وَلَا تَيَسَّرَ مَطْلَبٌ أَنْتَ طَالِبُهُ بِنَفْسِكَ',
       terjemahan: '"Permintaan tidak akan terhambat selama engkau memohonnya melalui Allah. Namun, permintaan tidak akan mudah apabila engkau bergantung pada dirimu sendiri."',
