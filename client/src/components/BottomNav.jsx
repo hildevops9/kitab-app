@@ -4,7 +4,7 @@ const tabs = [
   { key: 'home',     label: 'Beranda',  path: '/home',     icon: HomeIcon },
   { key: 'kitab',    label: 'Kitab',    path: '/kitab',    icon: KitabIcon },
   { key: 'bookmark', label: 'Bookmark', path: '/bookmark', icon: BookmarkIcon },
-  { key: 'catatan',  label: 'Catatan',  path: '/catatan',  icon: CatatanIcon },
+  { key: 'ustadz',   label: 'Ustadz',   path: '/ustadz',   icon: UstadzIcon },
   { key: 'akun',     label: 'Akun',     path: '/akun',     icon: AkunIcon },
 ]
 
@@ -55,6 +55,14 @@ function AkunIcon({ active, color }) {
   )
 }
 
+function UstadzIcon({ active, color }) {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill={active ? color : 'none'} stroke={active ? color : '#9CA3AF'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+    </svg>
+  )
+}
+
 export default function BottomNav({ active }) {
   const navigate = useNavigate()
   const location = useLocation()
@@ -83,7 +91,8 @@ export default function BottomNav({ active }) {
 
 const s = {
   nav: {
-    position: 'fixed', bottom: 0, left: 0, right: 0, width: '100%',
+    position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)',
+    width: '100%', maxWidth: '480px',
     background: '#fff', borderTop: '1px solid #F0EBE0',
     display: 'flex', alignItems: 'stretch',
     paddingBottom: 'env(safe-area-inset-bottom)',

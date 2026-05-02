@@ -14,6 +14,7 @@ import BabPage from './pages/BabPage'
 import MateriPage from './pages/MateriPage'
 import BookmarkPage from './pages/BookmarkPage'
 import { CatatanPage } from './pages/CatatanPage'
+import HaloUstadzPage from './pages/HaloUstadzPage'
 import AkunPage from './pages/AkunPage'
 
 export default function App() {
@@ -35,6 +36,7 @@ export default function App() {
             <Route path="/materi/:materiId" element={<ProtectedRoute><MateriPage /></ProtectedRoute>} />
             <Route path="/bookmark" element={<ProtectedRoute><BookmarkPage /></ProtectedRoute>} />
             <Route path="/catatan" element={<ProtectedRoute><CatatanPage /></ProtectedRoute>} />
+            <Route path="/ustadz" element={<ProtectedRoute><HaloUstadzPage /></ProtectedRoute>} />
             <Route path="/akun" element={<ProtectedRoute><AkunPage /></ProtectedRoute>} />
 
             {/* Fallback */}
