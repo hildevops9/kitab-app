@@ -19,11 +19,12 @@ export function CatatanPage() {
 
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=Nunito:wght@400;500;600;700&display=swap');
+  * { box-sizing:border-box; margin:0; padding:0; }
   html,body,#root { background:#F8F5EF; }
 `
 
 const s = {
-  root: { minHeight:'100dvh', background:'#F8F5EF', fontFamily:"'Nunito',sans-serif", paddingBottom:'80px' },
+  root: { width: '100%', minHeight:'100dvh', background:'#F8F5EF', fontFamily:"'Nunito',sans-serif", paddingBottom:'80px' },
   header: { background:'#fff', padding:'24px 20px 16px', borderBottom:'1px solid #F0EBE0' },
   title: { fontFamily:'Lora,serif', fontSize:'24px', fontWeight:'700', color:'#1C3D2E' },
   body: { padding:'16px' },

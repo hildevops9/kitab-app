@@ -160,6 +160,7 @@ export default function LoginPage() {
 
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=Nunito:wght@400;500;600;700&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html, body, #root { background: #F7F4EF; }
 
   .kitab-input { transition: border-color 0.2s, box-shadow 0.2s !important; }
@@ -175,7 +176,7 @@ const css = `
 
 const s = {
   root: {
-    minHeight: '100dvh', background: '#F7F4EF',
+    width: '100%', minHeight: '100dvh', background: '#F7F4EF',
     fontFamily: "'Nunito', sans-serif",
     display: 'flex', flexDirection: 'column',
   },

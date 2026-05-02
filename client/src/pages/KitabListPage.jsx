@@ -12,11 +12,11 @@ const TYPE_CONFIG = {
 }
 
 const FILTERS = [
-  { key: 'SEMUA', label: 'Semua' },
-  { key: 'QURAN', label: 'Al-Quran' },
-  { key: 'FIQIH', label: 'Fiqih' },
+  { key: 'SEMUA',  label: 'Semua' },
+  { key: 'QURAN',  label: 'Al-Quran' },
+  { key: 'FIQIH',  label: 'Fiqih' },
   { key: 'HADITS', label: 'Hadits' },
-  { key: 'HIKAM', label: 'Hikam' },
+  { key: 'HIKAM',  label: 'Hikam' },
 ]
 
 export default function KitabListPage() {
@@ -27,7 +27,6 @@ export default function KitabListPage() {
   const [search, setSearch] = useState('')
 
   useEffect(() => {
-    setLoading(true)
     api.get('/kitab').then(r => setKitabs(r.data.kitabs)).catch(console.error).finally(() => setLoading(false))
   }, [])
 
@@ -37,6 +36,11 @@ export default function KitabListPage() {
     return matchFilter && matchSearch
   })
 
+  const handleKitabClick = (kitab) => {
+    if (kitab.totalMateri === 0) return // coming soon, tidak bisa diklik
+    navigate(`/kitab/${kitab.slug}`)
+  }
+
   return (
     <div style={s.root} className="page-root">
       <style>{css}</style>
@@ -44,7 +48,6 @@ export default function KitabListPage() {
       {/* Header */}
       <div style={s.header}>
         <h1 style={s.title}>Kitab</h1>
-        {/* Search */}
         <div style={s.searchWrap}>
           <span style={s.searchIcon}>🔍</span>
           <input
@@ -55,7 +58,6 @@ export default function KitabListPage() {
             className="search-input"
           />
         </div>
-        {/* Filter tabs */}
         <div style={s.filterRow}>
           {FILTERS.map(f => (
             <button key={f.key} onClick={() => setFilter(f.key)}
@@ -77,26 +79,39 @@ export default function KitabListPage() {
           </div>
         ) : filtered.map(kitab => {
           const cfg = TYPE_CONFIG[kitab.type] || TYPE_CONFIG.GENERAL
+          const isComingSoon = kitab.totalMateri === 0
+
           return (
-            <div key={kitab.id} style={s.kitabCard} onClick={() => navigate(`/kitab/${kitab.slug}`)} className="card-press">
+            <div key={kitab.id}
+              style={{ ...s.kitabCard, ...(isComingSoon ? s.kitabCardDimmed : {}) }}
+              onClick={() => handleKitabClick(kitab)}
+              className={isComingSoon ? '' : 'card-press'}>
+
               {/* Cover */}
-              <div style={{ ...s.cover, background: kitab.coverColor || '#1C3D2E' }}>
+              <div style={{ ...s.cover, background: kitab.coverColor || '#1C3D2E', opacity: isComingSoon ? 0.6 : 1 }}>
                 <span style={s.coverAr}>{kitab.arabicTitle}</span>
               </div>
+
               {/* Info */}
               <div style={s.info}>
                 <div style={s.topRow}>
                   <span style={{ ...s.badge, background: cfg.bg, color: cfg.color }}>{cfg.label}</span>
-                  <button style={s.moreBtn}>⋮</button>
+                  {isComingSoon && (
+                    <span style={s.comingSoonBadge}>🕐 Coming Soon</span>
+                  )}
                 </div>
                 <h3 style={s.kitabTitle}>{kitab.title}</h3>
                 <p style={s.kitabAuthor}>{kitab.author}</p>
-                {kitab.lastRead ? (
+
+                {isComingSoon ? (
+                  <p style={s.comingSoonText}>Konten sedang disiapkan. Nantikan segera!</p>
+                ) : kitab.lastRead ? (
                   <p style={s.lastRead}>Terakhir dibaca: {kitab.lastRead}</p>
                 ) : (
-                  <p style={s.lastRead}>Belum dibaca</p>
+                  <p style={s.lastRead}>Belum dibaca · {kitab.totalBab} bab tersedia</p>
                 )}
-                {kitab.completedCount > 0 && (
+
+                {!isComingSoon && kitab.completedCount > 0 && (
                   <div style={s.progressWrap}>
                     <div style={s.progressBar}>
                       <div style={{ ...s.progressFill, width: `${kitab.progressPct}%`, background: kitab.coverColor || '#1C3D2E' }}/>
@@ -117,18 +132,19 @@ export default function KitabListPage() {
 
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=Nunito:wght@400;500;600;700&display=swap');
+  * { box-sizing:border-box; margin:0; padding:0; }
   html,body,#root { background:#F8F5EF; }
-  .card-press:active { transform: scale(0.98) !important; }
-  .search-input:focus { outline:none; border-color: #1C3D2E !important; }
+  .card-press:active { transform:scale(0.98) !important; }
+  .search-input:focus { outline:none; }
   @keyframes pulse { 0%,100%{opacity:0.5} 50%{opacity:1} }
-  .skeleton { animation: pulse 1.5s ease-in-out infinite; }
+  .skeleton { animation:pulse 1.5s ease-in-out infinite; }
 `
 
 const s = {
-  root: { minHeight:'100dvh', background:'#F8F5EF', fontFamily:"'Nunito',sans-serif", paddingBottom:'80px' },
+  root: { minHeight:'100dvh', width:'100%', background:'#F8F5EF', fontFamily:"'Nunito',sans-serif", paddingBottom:'80px' },
   header: { background:'#fff', padding:'20px 16px 0', borderBottom:'1px solid #F0EBE0' },
   title: { fontFamily:'Lora,serif', fontSize:'24px', fontWeight:'700', color:'#1C3D2E', marginBottom:'14px' },
-  searchWrap: { display:'flex', alignItems:'center', gap:'8px', background:'#F8F5EF', borderRadius:'12px', padding:'10px 14px', marginBottom:'14px', border:'1.5px solid transparent' },
+  searchWrap: { display:'flex', alignItems:'center', gap:'8px', background:'#F8F5EF', borderRadius:'12px', padding:'10px 14px', marginBottom:'14px' },
   searchIcon: { fontSize:'16px', flexShrink:0 },
   searchInput: { flex:1, background:'none', border:'none', fontSize:'14px', color:'#1A1A1A', fontFamily:"'Nunito',sans-serif" },
   filterRow: { display:'flex', gap:'6px', overflowX:'auto', paddingBottom:'12px' },
@@ -136,15 +152,17 @@ const s = {
   filterBtnActive: { background:'#1C3D2E', borderColor:'#1C3D2E', color:'#fff' },
   body: { padding:'12px 16px', display:'flex', flexDirection:'column', gap:'10px' },
   kitabCard: { background:'#fff', borderRadius:'16px', display:'flex', gap:'14px', padding:'14px', cursor:'pointer', boxShadow:'0 2px 8px rgba(0,0,0,0.05)', transition:'transform 0.15s', alignItems:'flex-start' },
+  kitabCardDimmed: { cursor:'default', opacity:0.85 },
   cover: { width:'72px', height:'96px', borderRadius:'10px', flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 4px 12px rgba(0,0,0,0.2)' },
   coverAr: { fontFamily:'serif', fontSize:'13px', color:'rgba(255,255,255,0.55)', textAlign:'center', padding:'4px' },
   info: { flex:1, minWidth:0 },
-  topRow: { display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'6px' },
+  topRow: { display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'6px', flexWrap:'wrap', gap:'4px' },
   badge: { fontSize:'10px', fontWeight:'700', padding:'2px 8px', borderRadius:'20px' },
-  moreBtn: { background:'none', border:'none', fontSize:'16px', cursor:'pointer', color:'#A0906E', padding:'0 4px' },
+  comingSoonBadge: { fontSize:'10px', fontWeight:'700', padding:'2px 8px', borderRadius:'20px', background:'#FFF3E0', color:'#E65100' },
   kitabTitle: { fontFamily:'Lora,serif', fontSize:'15px', fontWeight:'700', color:'#1C3D2E', marginBottom:'2px' },
   kitabAuthor: { fontSize:'11px', color:'#A0906E', fontStyle:'italic', marginBottom:'4px' },
   lastRead: { fontSize:'11px', color:'#8A7A65', marginBottom:'6px' },
+  comingSoonText: { fontSize:'11px', color:'#A0906E', fontStyle:'italic', marginBottom:'6px', lineHeight:1.5 },
   progressWrap: { display:'flex', alignItems:'center', gap:'8px' },
   progressBar: { flex:1, height:'3px', background:'#EDE7D9', borderRadius:'4px', overflow:'hidden' },
   progressFill: { height:'100%', borderRadius:'4px' },

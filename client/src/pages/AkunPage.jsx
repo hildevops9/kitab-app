@@ -59,12 +59,13 @@ export default function AkunPage() {
 
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=Nunito:wght@400;500;600;700&display=swap');
+  * { box-sizing:border-box; margin:0; padding:0; }
   html,body,#root { background:#F8F5EF; }
   .menu-item:active { background:#F0EBE0 !important; }
 `
 
 const s = {
-  root: { minHeight:'100dvh', background:'#F8F5EF', fontFamily:"'Nunito',sans-serif", paddingBottom:'80px' },
+  root: { width: '100%', minHeight:'100dvh', background:'#F8F5EF', fontFamily:"'Nunito',sans-serif", paddingBottom:'80px' },
   header: { background:'linear-gradient(160deg,#0F2318,#1C3D2E)', padding:'32px 20px 28px', textAlign:'center' },
   avatarWrap: { display:'flex', justifyContent:'center', marginBottom:'12px' },
   avatarImg: { width:'80px', height:'80px', borderRadius:'50%', objectFit:'cover', border:'3px solid rgba(201,168,76,0.4)' },

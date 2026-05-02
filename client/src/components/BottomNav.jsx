@@ -61,92 +61,42 @@ export default function BottomNav({ active }) {
   const current = active || tabs.find(t => location.pathname.startsWith(t.path))?.key || 'home'
 
   return (
-    <>
-      {/* Spacer — supaya konten tidak ketutupan navbar */}
-      <div style={s.spacer} />
-
-      <nav style={s.nav}>
-        {tabs.map(tab => {
-          const isActive = tab.key === current
-          const color = '#1C3D2E'
-          const Icon = tab.icon
-          return (
-            <button key={tab.key} onClick={() => navigate(tab.path)} style={s.tab}>
-              <div style={{ ...s.iconWrap, ...(isActive ? s.iconWrapActive : {}) }}>
-                <Icon active={isActive} color={color} />
-              </div>
-              <span style={{ ...s.label, ...(isActive ? { color, fontWeight: '700' } : {}) }}>
-                {tab.label}
-              </span>
-            </button>
-          )
-        })}
-      </nav>
-    </>
+    <nav style={s.nav}>
+      {tabs.map(tab => {
+        const isActive = tab.key === current
+        const color = '#1C3D2E'
+        const Icon = tab.icon
+        return (
+          <button key={tab.key} onClick={() => navigate(tab.path)} style={s.tab}>
+            <div style={{ ...s.iconWrap, ...(isActive ? s.iconWrapActive : {}) }}>
+              <Icon active={isActive} color={color} />
+            </div>
+            <span style={{ ...s.label, ...(isActive ? { color, fontWeight: '700' } : {}) }}>
+              {tab.label}
+            </span>
+          </button>
+        )
+      })}
+    </nav>
   )
 }
 
 const s = {
-  /*
-   * FIX: Tidak pakai left:50% + transform trick lagi.
-   * Pakai left:0 right:0 — bekerja di semua HP (iPhone, Samsung, Xiaomi)
-   * dan di desktop ikut lebar .page-root karena position:fixed
-   * mengacu ke viewport, bukan parent.
-   *
-   * Untuk desktop centering: kita pakai pendekatan wrapper
-   * yang sama dengan .page-root di App.css
-   */
   nav: {
-    position: 'fixed',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    /* Di desktop: ikuti lebar page-root dengan cara yang sama */
-    maxWidth: '768px',       // sama dengan breakpoint App.css
-    margin: '0 auto',        // center di desktop
-    background: '#fff',
-    borderTop: '1px solid #F0EBE0',
-    display: 'flex',
-    alignItems: 'stretch',
-    /* Safe area iPhone X+ dan Android gesture nav */
+    position: 'fixed', bottom: 0, left: 0, right: 0,
+    width: '100%', background: '#fff', borderTop: '1px solid #F0EBE0',
+    display: 'flex', alignItems: 'stretch',
     paddingBottom: 'env(safe-area-inset-bottom, 0px)',
     zIndex: 100,
     boxShadow: '0 -4px 20px rgba(0,0,0,0.06)',
   },
-  /* Spacer mengkompensasi tinggi navbar + safe area */
-  spacer: {
-    height: 'calc(64px + env(safe-area-inset-bottom, 0px))',
-    flexShrink: 0,
-  },
   tab: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: '3px',
-    padding: '8px 4px 6px',
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
+    flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
+    gap: '3px', padding: '8px 4px 6px',
+    background: 'none', border: 'none', cursor: 'pointer',
     WebkitTapHighlightColor: 'transparent',
-    minWidth: 0,              // cegah overflow di HP sempit
   },
-  iconWrap: {
-    width: '36px',
-    height: '28px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: '8px',
-  },
-  iconWrapActive: {
-    background: 'rgba(28,61,46,0.08)',
-  },
-  label: {
-    fontSize: '10px',
-    color: '#9CA3AF',
-    fontFamily: "'Nunito', sans-serif",
-    fontWeight: '600',
-    whiteSpace: 'nowrap',
-  },
+  iconWrap: { width: '36px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '8px' },
+  iconWrapActive: { background: 'rgba(28,61,46,0.08)' },
+  label: { fontSize: '10px', color: '#9CA3AF', fontFamily: "'Nunito', sans-serif", fontWeight: '600' },
 }
