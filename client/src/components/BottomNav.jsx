@@ -83,10 +83,10 @@ export default function BottomNav({ active }) {
 
 const s = {
   nav: {
-    position: 'fixed', bottom: 0, left: 0, right: 0,
-    width: '100%', background: '#fff', borderTop: '1px solid #F0EBE0',
+    position: 'fixed', bottom: 0, left: 0, right: 0, width: '100%',
+    background: '#fff', borderTop: '1px solid #F0EBE0',
     display: 'flex', alignItems: 'stretch',
-    paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+    paddingBottom: 'env(safe-area-inset-bottom)',
     zIndex: 100,
     boxShadow: '0 -4px 20px rgba(0,0,0,0.06)',
   },

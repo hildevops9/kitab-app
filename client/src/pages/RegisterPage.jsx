@@ -210,7 +210,7 @@ const css = `
 
 const s = {
   root: {
-    width: '100%', minHeight: '100dvh', background: '#F7F4EF',
+    minHeight: '100dvh', background: '#F7F4EF',
     fontFamily: "'Nunito', sans-serif",
     display: 'flex', flexDirection: 'column',
   },

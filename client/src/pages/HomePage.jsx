@@ -218,7 +218,7 @@ const css = `
 `
 
 const s = {
-  root: { minHeight:'100dvh', width:'100%', background:'#F8F5EF', fontFamily:"'Nunito',sans-serif", paddingBottom:'80px' },
+  root: { width: '100%', minHeight:'100dvh', background:'#F8F5EF', fontFamily:"'Nunito',sans-serif", paddingBottom:'80px' },
   // Header
   header: { background:'linear-gradient(160deg,#0F2318,#1C3D2E)', padding:'20px 20px 24px' },
   headerTop: { display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'20px' },

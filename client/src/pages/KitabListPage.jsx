@@ -141,7 +141,7 @@ const css = `
 `
 
 const s = {
-  root: { minHeight:'100dvh', width:'100%', background:'#F8F5EF', fontFamily:"'Nunito',sans-serif", paddingBottom:'80px' },
+  root: { width: '100%', minHeight:'100dvh', background:'#F8F5EF', fontFamily:"'Nunito',sans-serif", paddingBottom:'80px' },
   header: { background:'#fff', padding:'20px 16px 0', borderBottom:'1px solid #F0EBE0' },
   title: { fontFamily:'Lora,serif', fontSize:'24px', fontWeight:'700', color:'#1C3D2E', marginBottom:'14px' },
   searchWrap: { display:'flex', alignItems:'center', gap:'8px', background:'#F8F5EF', borderRadius:'12px', padding:'10px 14px', marginBottom:'14px' },
