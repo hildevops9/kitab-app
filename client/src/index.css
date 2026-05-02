@@ -6,6 +6,9 @@
 }
 
 html {
+  /* Kunci: font-size responsif berdasarkan lebar layar */
+  /* Minimum 14px, maksimum 18px, scaling linear */
+  font-size: clamp(14px, 4vw, 18px);
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   height: 100%;
@@ -21,6 +24,8 @@ body {
   background: #F8F5EF;
   font-family: -apple-system, BlinkMacSystemFont, 'Nunito', sans-serif;
   -webkit-font-smoothing: antialiased;
+  /* Penting: font-size body ikut html */
+  font-size: 1rem;
 }
 
 #root {

@@ -5,12 +5,13 @@
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "display_override": ["standalone", "minimal-ui"],
+  "display_override": ["standalone", "minimal-ui", "browser"],
   "orientation": "portrait-primary",
-  "background_color": "#F8F5EF",
+  "background_color": "#FDFAF5",
   "theme_color": "#1C3D2E",
   "lang": "id",
   "dir": "ltr",
+  "prefer_related_applications": false,
   "icons": [
     { "src": "/icons/icon-72.png",  "sizes": "72x72",   "type": "image/png" },
     { "src": "/icons/icon-96.png",  "sizes": "96x96",   "type": "image/png" },
@@ -23,8 +24,7 @@
   ],
   "shortcuts": [
     {
-      "name": "Buka Kitab",
-      "short_name": "Kitab",
+      "name": "Buka Aplikasi",
       "url": "/",
       "icons": [{ "src": "/icons/icon-96.png", "sizes": "96x96" }]
     }
