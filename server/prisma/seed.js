@@ -363,81 +363,165 @@ async function main() {
         url: 'https://drive.google.com/file/d/19U48OUMx1yx7WEUenujm0bU7eH1gRI_n/view?usp=drive_link'
       }
     },
-    
-    // {
-    //   id: 'h-016', babId: babMakrifat.id, num: 16,
-    //   title: 'Hikam 16 — Cahaya Hati',
-    //   arabic: 'نُورٌ أَوْدَعَهُ فِي قُلُوبِكُمْ ثُمَّ أَمَدَّكُمْ بِنُورِ الْوَحْيِ وَالتَّنْزِيلِ',
-    //   terjemahan: 'Allah menitipkan cahaya dalam hatimu, kemudian Dia menambahkannya dengan cahaya wahyu dan Al-Quran.',
-    //   penjelasan: 'Manusia dilahirkan dengan fitrah — cahaya primordial yang Allah titipkan dalam hati. Wahyu dan Al-Quran hadir bukan untuk menciptakan cahaya baru, melainkan untuk memperkuat dan mengarahkan cahaya fitrah yang telah ada. Keduanya saling melengkapi untuk menerangi jalan menuju Allah.'
-    // },
-
-    // // ── BAB 3: ZUHUD & DUNIA ──
-    // {
-    //   id: 'h-017', babId: babZuhud.id, num: 17,
-    //   title: 'Hikam 17 — Hakikat Dunia',
-    //   arabic: 'الدُّنْيَا كُلُّهَا جَهْلٌ وَظُلْمَةٌ إِلَّا مَوَاضِعَ الْعِلْمِ وَكُلُّ الْعِلْمِ حُجَّةٌ إِلَّا مَا عَمِلَ بِهِ',
-    //   terjemahan: 'Dunia seluruhnya adalah kebodohan dan kegelapan kecuali di tempat-tempat ilmu, dan seluruh ilmu adalah hujjah (yang memberatkan) kecuali ilmu yang diamalkan.',
-    //   penjelasan: 'Dunia tanpa ilmu adalah kegelapan. Namun ilmu pun tidak cukup jika tidak diamalkan — ia justru menjadi hujjah yang memberatkan pemiliknya di hari kiamat. Maka ilmu yang sejati adalah ilmu yang mendorong pemiliknya untuk beramal dan mendekatkan diri kepada Allah.'
-    // },
-    // {
-    //   id: 'h-018', babId: babZuhud.id, num: 18,
-    //   title: 'Hikam 18 — Zuhud Sejati',
-    //   arabic: 'الزَّاهِدُ مَنْ أَعْرَضَ عَنِ الدُّنْيَا بِقَلْبِهِ وَإِنْ كَانَتْ تَمُرُّ بِيَدِهِ',
-    //   terjemahan: 'Orang yang zuhud adalah orang yang berpaling dari dunia dengan hatinya, meskipun dunia itu melewati tangannya.',
-    //   penjelasan: 'Zuhud sejati bukan berarti tidak memiliki harta atau tidak bekerja. Zuhud adalah kondisi hati yang tidak terikat oleh dunia. Harta boleh ada di tangan, namun tidak boleh merasuk ke dalam hati. Seperti perahu yang ada di atas air namun air tidak boleh masuk ke dalamnya.'
-    // },
-    // {
-    //   id: 'h-019', babId: babZuhud.id, num: 19,
-    //   title: 'Hikam 19 — Bahaya Cinta Dunia',
-    //   arabic: 'حُبُّكَ لِلدُّنْيَا أَصْلُ كُلِّ خَطِيئَةٍ وَالدُّنْيَا دَارُ مَنْ لَا دَارَ لَهُ',
-    //   terjemahan: 'Cintamu kepada dunia adalah akar dari setiap dosa. Dunia adalah rumah bagi orang yang tidak punya rumah (akhirat).',
-    //   penjelasan: 'Semua dosa pada akhirnya bisa ditelusuri kepada kecintaan yang berlebihan pada dunia — cinta pada harta, kedudukan, dan kenikmatan sementara. Dunia ini hanyalah persinggahan sementara. Orang yang cerdas mempersiapkan rumah abadi di akhirat, bukan membangun istana di persinggahan.'
-    // },
-    // {
-    //   id: 'h-020', babId: babZuhud.id, num: 20,
-    //   title: 'Hikam 20 — Kebebasan dari Dunia',
-    //   arabic: 'أَخْرِجْ مِنْ قَلْبِكَ الدُّنْيَا وَأَدْخِلْ فِيهِ ذِكْرَ اللهِ يَمْلَأْهُ',
-    //   terjemahan: 'Keluarkan dunia dari hatimu dan masukkan dzikir kepada Allah, niscaya Allah akan memenuhinya.',
-    //   penjelasan: 'Hati manusia laksana sebuah wadah yang tidak dapat berisi dua hal bertentangan secara bersamaan. Ketika dunia dikeluarkan dari hati, ruang kosong itu akan diisi oleh dzikrullah. Dan ketika hati dipenuhi dzikir kepada Allah, itulah kebahagiaan yang sesungguhnya.'
-    // },
-    // {
-    //   id: 'h-021', babId: babZuhud.id, num: 21,
-    //   title: 'Hikam 21 — Tipuan Amal Banyak',
-    //   arabic: 'لَا تَسْتَوْحِشْ مِنْ وَحْشَةِ الطُّرُقِ إِذَا أَنَارَ لَكَ الْحَقُّ مَصَابِيحَهَا',
-    //   terjemahan: 'Janganlah kamu merasa takut dengan kesunyian jalan-jalan itu, apabila Allah telah menerangi untukmu lentera-lenteranya.',
-    //   penjelasan: 'Jalan menuju Allah terkadang terasa sepi dan asing, berbeda dari jalan yang dilalui kebanyakan orang. Namun jika Allah telah menerangi jalan itu dengan nur-Nya, kesunyian tersebut justru menjadi ketenangan. Seorang salik tidak takut berjalan sendiri selama ia berjalan bersama Allah.'
-    // },
-
-    // // ── BAB 4: NIAT & KEHENDAK ──
-    // {
-    //   id: 'h-022', babId: babNiat.id, num: 22,
-    //   title: 'Hikam 22 — Kehendak Allah dan Kehendak Hamba',
-    //   arabic: 'لَا تَطْلُبْ مِنْهُ أَنْ يُخْرِجَكَ مِنْ حَالَةٍ لِيَسْتَعْمِلَكَ فِيمَا سِوَاهَا فَلَوْ أَرَادَكَ لَاسْتَعْمَلَكَ مِنْ غَيْرِ إِخْرَاجٍ',
-    //   terjemahan: 'Janganlah meminta Allah mengeluarkanmu dari satu keadaan untuk menggunakanmu pada keadaan lain. Karena jika Allah menghendakimu, Dia akan menggunakanmu tanpa perlu mengeluarkanmu.',
-    //   penjelasan: 'Terkadang kita berdoa meminta perubahan kondisi karena kita merasa kondisi yang ada menghalangi amal kita. Padahal Allah Maha Kuasa menggunakan kita dalam kondisi apapun. Tugas kita adalah menerima kondisi yang ada dan memberikan yang terbaik di dalamnya.'
-    // },
-    // {
-    //   id: 'h-023', babId: babNiat.id, num: 23,
-    //   title: 'Hikam 23 — Kecukupan dalam Ilmu Allah',
-    //   arabic: 'كَفَاكَ مِنَ الطَّلَبِ عِلْمُهُ بِكَ كَفَاكَ مِنَ الدُّعَاءِ عِلْمُهُ بِحَالِكَ',
-    //   terjemahan: 'Cukuplah bagimu sebagai permohonan bahwa Allah mengetahuimu. Cukuplah bagimu sebagai doa bahwa Allah mengetahui keadaanmu.',
-    //   penjelasan: 'Allah mengetahui keadaan hamba-Nya jauh sebelum hamba itu memohon. Ini bukan ajaran untuk tidak berdoa, melainkan untuk membersihkan niat dalam berdoa. Doa bukan untuk menginformasikan Allah, melainkan sebagai ungkapan penghambaan dan kebutuhan kita kepada-Nya.'
-    // },
-    // {
-    //   id: 'h-024', babId: babNiat.id, num: 24,
-    //   title: 'Hikam 24 — Keberkahan Niat',
-    //   arabic: 'رُبَّ عُمُرٍ اتَّسَعَتْ آمَادُهُ وَقَلَّتْ أَمْدَادُهُ وَرُبَّ عُمُرٍ قَلِيلَةٌ آمَادُهُ كَثِيرَةٌ أَمْدَادُهُ',
-    //   terjemahan: 'Betapa banyak umur yang panjang waktunya namun sedikit keberkahannya, dan betapa banyak umur yang pendek waktunya namun berlimpah keberkahannya.',
-    //   penjelasan: 'Panjang pendeknya umur bukan tolok ukur nilai seseorang. Umur yang berkah adalah umur yang diisi dengan amal saleh, ilmu yang bermanfaat, dan kedekatan kepada Allah. Seseorang bisa hidup lama namun tidak menghasilkan apa-apa, sementara yang lain hidup singkat namun meninggalkan warisan keimanan yang abadi.'
-    // },
-    // {
-    //   id: 'h-025', babId: babNiat.id, num: 25,
-    //   title: 'Hikam 25 — Bahaya Mengagumi Diri',
-    //   arabic: 'خَوْفُكَ مِنَ الذَّنْبِ حِينَ وُجُودِهِ أَكْثَرُ نَفْعًا مِنْ خَوْفِكَ مِنَ الذَّنْبِ حِينَ عَدَمِهِ',
-    //   terjemahan: 'Rasa takutmu terhadap dosa ketika dosa itu ada lebih bermanfaat daripada rasa takutmu terhadap dosa ketika dosa itu belum ada.',
-    //   penjelasan: 'Rasa takut yang mendorong taubat nyata lebih bernilai daripada rasa takut yang bersifat abstrak. Ketika seseorang benar-benar jatuh dalam dosa, rasa takut yang muncul akan mendorongnya kepada taubat yang sungguh-sungguh, yang justru dapat mengangkat derajatnya lebih tinggi dari sebelumnya.'
-    // },
+    {
+      id: 'h-016', babId: babMakrifat.id, num: 16,
+      title: 'Hikam 16 — Allah Tidak Bisa Terhijab',
+      arabic: `كَيْفَ يَتَصَوَّرُ أَنْ يَحْجُبَهُ شَيْءٌ وَهُوَ الَّذِيْ أَظْهَرَ كُلَّ شَيْءٍ.
+كَيْفَ يَتَصَوَّرُ أَنْ يَحْجُبَهُ شَيْءٌ وَهُوَ الَّذِيْ ظَهَرَ بِكُلِّ شَيْءٍ.
+كَيْفَ يَتَصَوَّرُ أَنْ يَحْجُبَهُ شَيْءٌ وَهُوَ الَّذِيْ ظَهَرَ فِيْ كُلِّ شَيْءٍ.
+كَيْفَ يَتَصَوَّرُ أَنْ يَحْجُبَهُ شَيْءٌ وَهُوَ الَّذِيْ ظَهَرَ لِكُلِّ شَيْءٍ.
+كَيْفَ يَتَصَوَّرُ أَنْ يَحْجُبَهُ شَيْءٌ وَهُوَ الَّذِيْ الظَاهِرُ قَبْلَ وُجُوْدِ كُلِّ شَيْءٍ. كَيْفَ يَتَصَوَّرُ أَنْ يَحْجُبَهُ شَيْءٌ وَهُوَ الَّذِيْ أظْهَِرُ مِنْ كُلِّ شَيْءٍ.
+كَيْفَ يَتَصَوَّرُ أَنْ يَحْجُبَهُ شَيْءٌ وَهُوَ الْوَاحِدُ الَّذِيْ لَيْسَ مَعَهُ شَيْءٌ.
+كَيْفَ يَتَصَوَّرُ أَنْ يَحْجُبَهُ شَيْءٌ وَهُوَ أَقْرَبُ إِلَيْكَ مِنْ كُلِّ شَيْءٍ.
+كَيْفَ يَتَصَوَّرُ أَنْ يَحْجُبَهُ شَيْءٌ وَلَوْلَاهُ مَا كَانَ وُجُوْدُ كُلِّ شَيْءٍ.`,
+      terjemahan: `• Bagaimana bisa dibayangkan kalau sesuatu dapat mengalingi-Nya, sementara Dialah Yang Menampakkan segala sesuatu? Bagaimana bisa dibayangkan kalau sesuatu sanggup mengaling-Nya, bila Dialah Yang Tampak pada segala sesuatu?Bagaimana bisa dibayangkan kalau sesuatu mampu mengalingi-Nya, sedangkan Dialah Yang Tampak dalam segala sesuatu?Bagaimana bisa dibayangkan kalau sesuatu kuasa mengalingi-Nya, padahal Dialah Yang Tampak untuk segala sesuatu? Bagaimana bisa dibayangkan kalau sesuatu dapat mengalingi-Nya, sementara Dialah Yang Ada sebelum ada segala sesuatu ? Bagaimana bisa dibayangkan kalau sesuatu sanggup mengalingi-Nya, bila Dia lebih jelas ketimbang segala sesuatu? Bagaimana bisa dibayangkan kalau sesuatu dapat mengalingi-Nya, sedangkan Dia Esa, yang tiada disamping-Nya sesuatu apa pun? Bagaimana bisa dibayangkan kalau sesuatu kuasa mengalingi-Nya, padahal Dia lebih dekat kepadamu daripada segala sesuatu? Bagaimana bisa dibayangkan kalau sesuatu dapat mengalingi-Nya, sementara seandainya Dia tak ada, niscaya tak akan ada segala sesuatu?Betapa ajaib, bagaimana bisa tampak dalam ketiadaan? Atau, bagaimana sesuatu yang baru bisa bersanding dengan Yang Mahadahulu`,
+      penjelasan: `Hikam ini adalah rentetan pertanyaan retoris yang membuktikan mustahilnya Allah terhijab:
+      1. Allah-lah yang menampakkan segala sesuatu — bagaimana yang menampakkan justru tersembunyi?
+      2. Allah-lah yang tampak pada segala sesuatu — bagaimana bisa ada yang menghalangi-Nya?
+      3. Allah ada sebelum segala sesuatu — bagaimana yang ada belakangan menghalangi yang lebih dahulu?
+      4. Allah lebih nyata dari segala sesuatu — bagaimana yang kurang nyata menghalangi yang lebih nyata?
+      5. Hijab sejatinya bukan pada Allah, melainkan pada mata hati kita yang belum bersih.`,
+      referensi: {
+        label: 'Klik untuk detail Syarah Hikam 16 — Pak Ali Abdul Khalik',
+        url: 'https://drive.google.com/file/d/19U48OUMx1yx7WEUenujm0bU7eH1gRI_n/view?usp=drive_link'
+      }
+    },
+    {
+      id: 'h-017', babId: babTawakkal.id, num: 17,
+      title: 'Hikam 17 — Menginginkan Selain Kehendak Allah adalah Kebodohan',
+      arabic: 'مَا تَرَكَ مِنَ الْجَهْلِ شَيْئًا مَنْ أَرَادَ أَنْ يَحْدُثَ فِي الْوَقْتِ غَيْرَ مَا أَظْهَرَهُ اللَّهُ فِيهِ',
+      terjemahan: '"Sangatlah jahil orang yang menginginkan terjadinya sesuatu di luar waktu yang dikehendaki oleh Allah."',
+      penjelasan: `1. Setiap waktu memiliki takdir dan ketetapan Allah yang paling sempurna.
+      2. Menginginkan kondisi berbeda dari yang Allah tampakkan adalah bentuk kebodohan spiritual.
+      3. Seorang mukmin menerima setiap keadaan sebagai pilihan terbaik dari Allah.
+      4. Ketidakpuasan terhadap ketetapan Allah menunjukkan lemahnya keyakinan pada hikmah-Nya.
+      5. Pesan utama: ridha dengan waktu dan kondisi yang Allah berikan adalah puncak tawakkal.`,
+      referensi: {
+        label: 'Klik untuk detail Syarah Hikam 17 — Pak Ali Abdul Khalik',
+        url: 'https://drive.google.com/file/d/19U48OUMx1yx7WEUenujm0bU7eH1gRI_n/view?usp=drive_link'
+      }
+    },
+    {
+      id: 'h-018', babId: babTawakkal.id, num: 18,
+      title: 'Hikam 18 — Menunda Amal Saleh adalah Kebodohan Jiwa',
+      arabic: 'إِحَالَتُكَ الْأَعْمَالَ عَلَى وُجُوْدِ الْفَرَاغِ مِنْ رُعُوْنَاتِ النَّفْسِ',
+      terjemahan: '"Menunda beramal saleh guna menantikan kesempatan yang lebih luang, termasuk tanda kebodohan jiwa."',
+      penjelasan: `1. Nafsu selalu mencari alasan untuk menunda amal kebaikan.
+      2. Menunggu waktu luang sempurna sebelum beramal adalah jebakan setan yang halus.
+      3. Waktu luang yang dinanti sering kali tidak pernah benar-benar tiba.
+      4. Setiap saat adalah kesempatan beramal — sempitnya waktu bukan penghalang.
+      5. Pesan utama: mulailah beramal sekarang dengan apa yang ada, jangan tunda menunggu kondisi ideal.`,
+      referensi: {
+        label: 'Klik untuk detail Syarah Hikam 18 — Pak Ali Abdul Khalik',
+        url: 'https://drive.google.com/file/d/19U48OUMx1yx7WEUenujm0bU7eH1gRI_n/view?usp=drive_link'
+      }
+    },
+    {
+      id: 'h-019', babId: babTawakkal.id, num: 19,
+      title: 'Hikam 19 — Tidak Boleh Memaksa Allah',
+      arabic: 'لَا تَطْلُبْ مِنْهُ أَنْ يُخْرِجَكَ مِنْ حَالَةٍ لِيَسْتَعْمِلَكَ فِيمَا سِوَاهَا، فَلَوْ أَرَادَكَ لَاسْتَعْمَلَكَ مِنْ غَيْرِ إِخْرَاجٍ.',
+      terjemahan: '"Jangan meminta kepada Allah supaya Dia mengeluarkanmu dari suatu keadaan untuk menggunakanmu pada keadaan yang lain. Karena seandainya Allah menghendaki penggunaanmu, tentulah Dia akan menggunakanmu tanpa harus mengeluarkanmu."',
+      penjelasan: `1. Allah Maha Kuasa menggunakan hamba-Nya dalam kondisi apapun tanpa perlu mengubah keadaan.
+      2. Meminta dipindahkan dari keadaan sebelum saatnya menunjukkan ketidakpercayaan pada pengaturan Allah.
+      3. Kondisi kita saat ini adalah medan amal yang telah Allah pilihkan.
+      4. Kewajiban kita adalah optimal di mana kita berada, bukan memilih di mana kita ingin berada.
+      5. Pesan utama: terima posisimu sekarang dan tunaikan tugasmu di sana dengan sepenuh hati.`,
+      referensi: {
+        label: 'Klik untuk detail Syarah Hikam 19 — Pak Ali Abdul Khalik',
+        url: 'https://drive.google.com/file/d/19U48OUMx1yx7WEUenujm0bU7eH1gRI_n/view?usp=drive_link'
+      }
+    },
+    {
+      id: 'h-020', babId: babMakrifat.id, num: 20,
+      title: 'Hikam 20 — Himmah Salik Tidak Berhenti',
+      arabic: 'مَا أَرَادَتْ هِمَّةُ سَالِكٍ أَنْ تَقِفَ عِنْدَ مَا كُشِفَ لَهَا إِلَّا وَنَادَتْهُ هَوَاتِفُ الْحَقِيقَةِ: الَّذِي تَطْلُبُهُ أَمَامَكَ! وَلَا تَبَرَّجَتْ ظَوَاهِرُ الْمُكَوَّنَاتِ إِلَّا وَنَادَتْهُ حَقَائِقُهَا: إِنَّا فِتْنَةٌ فَلَا تَكْفُرْ',
+      terjemahan: '"Hasrat seorang salik tidak akan berhenti ketika tersingkap baginya tirai rohani, melainkan suara-suara hakikat akan berseru padanya: yang engkau cari masih di depanmu! Dan tidaklah keindahan alam semesta memperlihatkan dirinya, melainkan hakikatnya berseru: kami hanyalah ujian, maka janganlah engkau kufur."',
+      penjelasan: `1. Seorang salik sejati tidak puas berhenti pada pencapaian spiritual manapun.
+      2. Setiap kali tersingkap suatu maqam, suara batin menyeru: tujuanmu masih lebih jauh di depan.
+      3. Keindahan alam dan makhluk adalah ujian — jangan terpesona dan berhenti di sana.
+      4. Alam menyeru: kami hanya perantara, jangan jadikan kami tujuan akhir.
+      5. Pesan utama: perjalanan menuju Allah tidak memiliki titik akhir selama di dunia ini.`,
+      referensi: {
+        label: 'Klik untuk detail Syarah Hikam 20 — Pak Ali Abdul Khalik',
+        url: 'https://drive.google.com/file/d/19U48OUMx1yx7WEUenujm0bU7eH1gRI_n/view?usp=drive_link'
+      }
+    },
+    {
+      id: 'h-021', babId: babTawakkal.id, num: 21,
+      title: 'Hikam 21 — Hakikat Meminta kepada Allah',
+      arabic: 'طَلَبُكَ مِنْهُ اتِّهَامٌ لَهُ، وَطَلَبُكَ لِغَيْرِهِ لِقِلَّةِ الْحَيَاءِ مِنْهُ، وَطَلَبُكَ مِنْ غَيْرِهِ لِوُجُودِ بُعْدِكَ عَنْهُ',
+      terjemahan: '"Permintaanmu kepada-Nya (seolah Dia tidak tahu) merupakan suatu tuduhan terhadap-Nya. Permintaanmu untuk selain-Nya menunjukkan kurangnya rasa malu kepada-Nya. Dan permintaanmu dari selain-Nya disebabkan jauhnya dirimu dari-Nya."',
+      penjelasan: `1. Meminta kepada Allah bukan karena Dia tidak tahu, melainkan sebagai pengakuan kebutuhan dan penghambaan.
+      2. Meminta agar sesuatu berlaku pada selain Allah seolah menjadikan makhluk sebagai tujuan.
+      3. Meminta dari selain Allah adalah tanda hati yang masih jauh dari-Nya.
+      4. Doa yang sempurna adalah doa yang lahir dari kesadaran total bahwa hanya Allah yang memberi.
+      5. Pesan utama: sempurnakan adab dalam berdoa — kenali kepada siapa dan mengapa engkau meminta.`,
+      referensi: {
+        label: 'Klik untuk detail Syarah Hikam 21 — Pak Ali Abdul Khalik',
+        url: 'https://drive.google.com/file/d/19U48OUMx1yx7WEUenujm0bU7eH1gRI_n/view?usp=drive_link'
+      }
+    },
+    {
+      id: 'h-022', babId: babTawakkal.id, num: 22,
+      title: 'Hikam 22 — Setiap Nafas Ada Takdir Allah',
+      arabic: 'مَا مِنْ نَفَسٍ تُبْدِيهِ إِلَّا وَلَهُ قَدَرٌ فِيكَ يُمْضِيهِ',
+      terjemahan: '"Tiada suatu nafas pun yang berhembus darimu, melainkan di situ ada takdir Allah yang berlaku padamu."',
+      penjelasan: `1. Setiap hembusan nafas adalah momen takdir Allah yang sedang berjalan.
+      2. Tidak ada satupun detik kehidupan yang luput dari pengaturan-Nya.
+      3. Kesadaran ini mendorong manusia untuk hadir sepenuhnya bersama Allah di setiap saat.
+      4. Muraqabah dimulai dari menyadari bahwa setiap nafas diketahui dan diatur oleh-Nya.
+      5. Pesan utama: hidup dengan penuh kesadaran — setiap nafas adalah amanah dan takdir dari-Nya.`,
+      referensi: {
+        label: 'Klik untuk detail Syarah Hikam 22 — Pak Ali Abdul Khalik',
+        url: 'https://drive.google.com/file/d/19U48OUMx1yx7WEUenujm0bU7eH1gRI_n/view?usp=drive_link'
+      }
+    },
+    {
+      id: 'h-023', babId: babHati.id, num: 23,
+      title: 'Hikam 23 — Jangan Tunggu Bebas dari Kesibukan Dunia',
+      arabic: 'لَا تَتَرَقَّبْ فُرُوغَ الْأَغْيَارِ، فَإِنَّ ذَلِكَ يَقْطَعُكَ عَنْ وُجُودِ الْمُرَاقَبَةِ لَهُ فِيمَا هُوَ مُقِيمُكَ فِيهِ',
+      terjemahan: '"Jangan menunggu hingga selesai semua gangguan makhluk, sebab yang demikian itu akan menghalangimu dari muraqabah kepada-Nya, padahal Dia menempatkanmu di sana."',
+      penjelasan: `1. Menunggu bebas dari kesibukan dunia sebelum bermuraqabah adalah sikap yang keliru.
+      2. Allah menempatkan kita di tengah kesibukan itu justru sebagai arena muraqabah.
+      3. Muraqabah bukan hanya untuk saat sunyi — ia harus hadir di setiap kondisi.
+      4. Menunda kesadaran bersama Allah karena menunggu kondisi ideal adalah tipu daya nafsu.
+      5. Pesan utama: hadirkan hati bersama Allah justru di tengah-tengah kesibukan, bukan sesudahnya.`,
+      referensi: {
+        label: 'Klik untuk detail Syarah Hikam 23 — Pak Ali Abdul Khalik',
+        url: 'https://drive.google.com/file/d/19U48OUMx1yx7WEUenujm0bU7eH1gRI_n/view?usp=drive_link'
+      }
+    },
+    {
+      id: 'h-024', babId: babSyukur.id, num: 24,
+      title: 'Hikam 24 — Jangan Heran dengan Kesulitan Dunia',
+      arabic: 'لَا تَسْتَغْرِبْ وُقُوعَ الْأَكْدَارِ مَا دُمْتَ فِي هَذِهِ الدَّارِ، فَإِنَّهَا مَا أَبْرَزَتْ إِلَّا مَا هُوَ مُسْتَحِقُّ وَصْفِهَا وَوَاجِبُ نَعْتِهَا',
+      terjemahan: '"Janganlah engkau merasa heran atas terjadinya berbagai kesulitan selama engkau berada di dunia ini, sebab memang begitulah yang patut terjadi dan yang menjadi karakter asli dunia."',
+      penjelasan: `1. Dunia memang dirancang mengandung kesulitan, kepedihan, dan kekecewaan.
+      2. Terkejut dengan kesulitan dunia seperti terkejut karena laut itu asin.
+      3. Mengeluh atas kesulitan dunia berarti belum memahami hakikat dunia itu sendiri.
+      4. Menerima watak dunia dengan lapang dada adalah bagian dari iman dan syukur.
+      5. Pesan utama: kenali dunia sebagaimana adanya agar hati tidak mudah goyah oleh ujiannya.`,
+      referensi: {
+        label: 'Klik untuk detail Syarah Hikam 24 — Pak Ali Abdul Khalik',
+        url: 'https://drive.google.com/file/d/19U48OUMx1yx7WEUenujm0bU7eH1gRI_n/view?usp=drive_link'
+      }
+    },
+    {
+      id: 'h-025', babId: babTawakkal.id, num: 25,
+      title: 'Hikam 25 — Bergantung pada Allah vs Diri Sendiri',
+      arabic: 'مَا تَوَقَّفَ مَطْلَبٌ أَنْتَ طَالِبُهُ بِرَبِّكَ، وَلَا تَيَسَّرَ مَطْلَبٌ أَنْتَ طَالِبُهُ بِنَفْسِكَ',
+      terjemahan: '"Permintaan tidak akan terhambat selama engkau memohonnya melalui Allah. Namun, permintaan tidak akan mudah apabila engkau bergantung pada dirimu sendiri."',
+      penjelasan: `1. Kunci terkabulnya hajat adalah menyandarkan diri sepenuhnya kepada Allah, bukan pada ikhtiar semata.
+      2. Ikhtiar tetap wajib, namun hati tidak boleh bergantung pada ikhtiar itu.
+      3. Orang yang bergantung pada dirinya sendiri akan menemukan jalan terasa berat dan tertutup.
+      4. Orang yang bertawakkal kepada Allah akan menemukan kemudahan dari arah yang tidak disangka.
+      5. Pesan utama: perbedaan antara berhasil dan gagal sering terletak pada kepada siapa hati bergantung.`,
+      referensi: {
+        label: 'Klik untuk detail Syarah Hikam 25 — Pak Ali Abdul Khalik',
+        url: 'https://drive.google.com/file/d/19U48OUMx1yx7WEUenujm0bU7eH1gRI_n/view?usp=drive_link'
+      }
+    },
+   
     // {
     //   id: 'h-026', babId: babNiat.id, num: 26,
     //   title: 'Hikam 26 — Tawadu dalam Niat',
