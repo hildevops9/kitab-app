@@ -21,12 +21,22 @@ function hitungStreak(kitabs) {
 export default function HomePage() {
   const { user } = useAuth()
   const navigate = useNavigate()
-  const [kitabs, setKitabs] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [kitabs, setKitabs] = useState(() => {
+    try {
+      const cached = sessionStorage.getItem('kitab_list')
+      return cached ? JSON.parse(cached) : []
+    } catch { return [] }
+  })
+  const [loading, setLoading] = useState(() => {
+    return !sessionStorage.getItem('kitab_list')
+  })
 
   useEffect(() => {
     api.get('/kitab')
-      .then(r => setKitabs(r.data.kitabs))
+      .then(r => {
+        setKitabs(r.data.kitabs)
+        sessionStorage.setItem('kitab_list', JSON.stringify(r.data.kitabs))
+      })
       .catch(console.error)
       .finally(() => setLoading(false))
   }, [])

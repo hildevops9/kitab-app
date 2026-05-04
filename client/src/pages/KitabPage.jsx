@@ -6,12 +6,22 @@ import BottomNav from '../components/BottomNav'
 export default function KitabPage() {
   const { kitabSlug } = useParams()
   const navigate = useNavigate()
-  const [data, setData] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [data, setData] = useState(() => {
+    try {
+      const cached = sessionStorage.getItem(`kitab_${kitabSlug}`)
+      return cached ? JSON.parse(cached) : null
+    } catch { return null }
+  })
+  const [loading, setLoading] = useState(() => {
+    return !sessionStorage.getItem(`kitab_${kitabSlug}`)
+  })
 
   useEffect(() => {
     api.get(`/kitab/${kitabSlug}`)
-      .then(res => setData(res.data))
+      .then(res => {
+        setData(res.data)
+        sessionStorage.setItem(`kitab_${kitabSlug}`, JSON.stringify(res.data))
+      })
       .catch(() => navigate('/kitab'))
       .finally(() => setLoading(false))
   }, [kitabSlug])
