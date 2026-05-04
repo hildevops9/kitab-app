@@ -8,7 +8,8 @@ const babRoutes = require('./routes/bab.routes')
 const materiRoutes = require('./routes/materi.routes')
 const questionRoutes = require('./routes/question.routes')
 const progressRoutes = require('./routes/progress.routes')
-const keepAlive      = require('./utils/keepAlive')
+const keepAlive = require('./utils/keepAlive')
+const prisma    = require('./utils/prisma')
 
 const app = express()
 const PORT = process.env.PORT || 3000
@@ -31,18 +32,25 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Server berjalan.' })
 })
 
+app.get('/api/warmup', async (req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`
+    res.json({ status: 'warm', ts: Date.now() })
+  } catch {
+    res.json({ status: 'warm-failed', ts: Date.now() })
+  }
+})
+
 app.use((err, req, res, next) => {
   console.error(err.stack)
   res.status(err.status || 500).json({ message: err.message || 'Terjadi kesalahan.' })
 })
-// Kalau jalan di lokal (bukan di Vercel), app.listen bakal dieksekusi
+
 if (process.env.NODE_ENV !== 'production') {
   app.listen(PORT, () => {
     console.log(`Server berjalan di http://localhost:${PORT}`)
-     // Aktifkan keep-alive hanya di production
-  if (process.env.NODE_ENV === 'production') keepAlive()
+    if (process.env.NODE_ENV === 'production') keepAlive()
   })
 }
 
-// Wajib buat Vercel Serverless
 module.exports = app
