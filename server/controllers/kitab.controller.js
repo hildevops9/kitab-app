@@ -1,126 +1,117 @@
 const prisma = require('../utils/prisma')
-const { withCache, invalidate, invalidatePrefix } = require('../utils/cache')
 
-// Cache keys
-const CACHE_KITABS       = 'kitabs:published'
-const CACHE_KITABS_ALL   = 'kitabs:all'
-const cacheKitabId = (id) => `kitab:${id}`
-
-// GET /api/kitab — list semua kitab yang published
-const getKitabs = async (req, res) => {
+const getAllKitab = async (req, res) => {
   try {
-    const kitabs = await withCache(CACHE_KITABS, () =>
-      prisma.kitab.findMany({
-        where: { isPublished: true },
-        select: {
-          id: true, slug: true, title: true, arabicTitle: true,
-          author: true, description: true, coverColor: true,
-          coverUrl: true, type: true, isPublished: true, createdAt: true,
-          _count: { select: { babs: true } },
-        },
-        orderBy: { createdAt: 'asc' },
-      }), 300) // cache 5 menit
+    const { type } = req.query
+    const where = { isPublished: true }
+    if (type && type !== 'SEMUA') where.type = type
 
-    // HTTP cache header — browser & CDN cache 60 detik
-    res.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=300')
-    res.json({ kitabs })
-  } catch (err) {
-    res.status(500).json({ message: err.message })
-  }
-}
-
-// GET /api/kitab/all — semua kitab (admin)
-const getAllKitabs = async (req, res) => {
-  try {
-    const kitabs = await withCache(CACHE_KITABS_ALL, () =>
-      prisma.kitab.findMany({
-        select: {
-          id: true, slug: true, title: true, arabicTitle: true,
-          author: true, description: true, coverColor: true,
-          coverUrl: true, type: true, isPublished: true, createdAt: true,
-          _count: { select: { babs: true } },
-        },
-        orderBy: { createdAt: 'asc' },
-      }), 300)
-
-    res.set('Cache-Control', 'private, max-age=30')
-    res.json({ kitabs })
-  } catch (err) {
-    res.status(500).json({ message: err.message })
-  }
-}
-
-// GET /api/kitab/:slug
-const getKitabById = async (req, res) => {
-  try {
-    const { id } = req.params // bisa slug atau id
-    const cacheKey = cacheKitabId(id)
-
-    const kitab = await withCache(cacheKey, () =>
-      prisma.kitab.findFirst({
-        where: {
-          OR: [{ id }, { slug: id }],
-        },
-        include: {
-          babs: {
-            orderBy: { orderNum: 'asc' },
-            include: { _count: { select: { materis: true } } },
-          },
-        },
-      }), 300)
-
-    if (!kitab) return res.status(404).json({ message: 'Kitab tidak ditemukan.' })
-
-    res.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=300')
-    res.json(kitab)
-  } catch (err) {
-    res.status(500).json({ message: err.message })
-  }
-}
-
-// POST /api/kitab (admin)
-const createKitab = async (req, res) => {
-  try {
-    const { title, author, description, coverUrl, coverColor, arabicTitle, slug, type } = req.body
-    if (!title || !author) return res.status(400).json({ message: 'Title dan author wajib diisi.' })
-
-    const kitab = await prisma.kitab.create({
-      data: { title, author, description, coverUrl, coverColor, arabicTitle, slug, type },
+    const kitabs = await prisma.kitab.findMany({
+      where,
+      include: {
+        _count: { select: { babs: true } },
+        babs: { include: { _count: { select: { materis: true } } } }
+      },
+      orderBy: { createdAt: 'asc' }
     })
 
-    // Invalidate cache setelah ada data baru
-    invalidate(CACHE_KITABS, CACHE_KITABS_ALL)
-    res.status(201).json(kitab)
+    // Hitung progress user per kitab
+    const userId = req.user?.id
+    const result = await Promise.all(kitabs.map(async (k) => {
+      const totalMateri = k.babs.reduce((s, b) => s + b._count.materis, 0)
+      let completedCount = 0
+      let lastRead = null
+
+      if (userId) {
+        const materiIds = []
+        for (const bab of k.babs) {
+          const materis = await prisma.materi.findMany({ where: { babId: bab.id }, select: { id: true } })
+          materiIds.push(...materis.map(m => m.id))
+        }
+        completedCount = await prisma.progress.count({
+          where: { userId, materiId: { in: materiIds }, isCompleted: true }
+        })
+        // Last read
+        const lastProgress = await prisma.progress.findFirst({
+          where: { userId, materiId: { in: materiIds }, isCompleted: true },
+          orderBy: { completedAt: 'desc' },
+          include: { materi: { include: { bab: true } } }
+        })
+        if (lastProgress) {
+          lastRead = `${lastProgress.materi.bab.title} : ${lastProgress.materi.title}`
+        }
+      }
+
+      return {
+        id: k.id, slug: k.slug, title: k.title,
+        arabicTitle: k.arabicTitle, author: k.author,
+        description: k.description, coverColor: k.coverColor,
+        type: k.type, totalBab: k._count.babs,
+        totalMateri, completedCount, lastRead,
+        progressPct: totalMateri > 0 ? Math.round((completedCount / totalMateri) * 100) : 0,
+      }
+    }))
+
+    res.json({ kitabs: result })
   } catch (err) {
-    res.status(500).json({ message: err.message })
+    console.error(err)
+    res.status(500).json({ message: 'Terjadi kesalahan server.' })
   }
 }
 
-// PATCH /api/kitab/:id (admin)
-const updateKitab = async (req, res) => {
+const getKitabBySlug = async (req, res) => {
   try {
-    const { title, author, description, coverUrl, coverColor, arabicTitle, isPublished } = req.body
-    const kitab = await prisma.kitab.update({
-      where: { id: req.params.id },
-      data: { title, author, description, coverUrl, coverColor, arabicTitle, isPublished },
+    const { slug } = req.params
+    const userId = req.user?.id
+
+    const kitab = await prisma.kitab.findUnique({
+      where: { slug },
+      include: {
+        babs: {
+          include: { _count: { select: { materis: true } } },
+          orderBy: { orderNum: 'asc' }
+        }
+      }
     })
 
-    invalidate(CACHE_KITABS, CACHE_KITABS_ALL, cacheKitabId(req.params.id))
-    res.json(kitab)
+    if (!kitab || !kitab.isPublished)
+      return res.status(404).json({ message: 'Kitab tidak ditemukan.' })
+
+    // Progress per bab
+    let completedTotal = 0
+    const babsWithProgress = await Promise.all(kitab.babs.map(async (bab) => {
+      const materis = await prisma.materi.findMany({ where: { babId: bab.id }, select: { id: true } })
+      const materiIds = materis.map(m => m.id)
+      let completedBab = 0
+      if (userId && materiIds.length > 0) {
+        completedBab = await prisma.progress.count({
+          where: { userId, materiId: { in: materiIds }, isCompleted: true }
+        })
+      }
+      completedTotal += completedBab
+      return {
+        id: bab.id, slug: bab.slug, title: bab.title,
+        arabicTitle: bab.arabicTitle, orderNum: bab.orderNum,
+        totalMateri: bab._count.materis, completedCount: completedBab,
+      }
+    }))
+
+    const totalMateri = babsWithProgress.reduce((s, b) => s + b.totalMateri, 0)
+
+    res.json({
+      kitab: {
+        id: kitab.id, slug: kitab.slug, title: kitab.title,
+        arabicTitle: kitab.arabicTitle, author: kitab.author,
+        description: kitab.description, coverColor: kitab.coverColor, type: kitab.type,
+        totalMateri, completedCount: completedTotal,
+        progressPct: totalMateri > 0 ? Math.round((completedTotal / totalMateri) * 100) : 0,
+      },
+      babs: babsWithProgress,
+    })
   } catch (err) {
-    res.status(500).json({ message: err.message })
+    console.error(err)
+    res.status(500).json({ message: 'Terjadi kesalahan server.' })
   }
 }
 
-// DELETE /api/kitab/:id (admin)
-const deleteKitab = async (req, res) => {
-  try {
-    await prisma.kitab.delete({ where: { id: req.params.id } })
-    invalidate(CACHE_KITABS, CACHE_KITABS_ALL, cacheKitabId(req.params.id))
-    res.json({ message: 'Kitab berhasil dihapus.' })
-  } catch (err) {
-    res.status(500).json({ message: err.message })
-  }
-}
-
-module.exports = { getKitabs, getAllKitabs, getKitabById, createKitab, updateKitab, deleteKitab }
+module.exports = { getAllKitab, getKitabBySlug }
