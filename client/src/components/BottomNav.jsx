@@ -4,7 +4,7 @@ const tabs = [
   { key: 'home',     label: 'Beranda',  path: '/home',     icon: HomeIcon },
   { key: 'kitab',    label: 'Kitab',    path: '/kitab',    icon: KitabIcon },
   { key: 'bookmark', label: 'Bookmark', path: '/bookmark', icon: BookmarkIcon },
-  { key: 'ustadz',   label: 'Ustadz',   path: '/ustadz',   icon: UstadzIcon },
+  { key: 'ustadz',   label: 'Halo Ustadz',   path: '/ustadz',   icon: UstadzIcon },
   { key: 'akun',     label: 'Akun',     path: '/akun',     icon: AkunIcon },
 ]
 
