@@ -3,33 +3,44 @@ import { useParams, useNavigate } from 'react-router-dom'
 import api from '../lib/api'
 import BottomNav from '../components/BottomNav'
 
+const CACHE_TTL = 5 * 60 * 1000
+
+function getCache(key) {
+  try {
+    const raw = localStorage.getItem(key)
+    if (!raw) return null
+    const { data, ts } = JSON.parse(raw)
+    if (Date.now() - ts > CACHE_TTL) return null
+    return data
+  } catch { return null }
+}
+
+function setCache(key, data) {
+  try {
+    localStorage.setItem(key, JSON.stringify({ data, ts: Date.now() }))
+  } catch {}
+}
+
 export default function KitabPage() {
   const { kitabSlug } = useParams()
   const navigate = useNavigate()
-  const [data, setData] = useState(() => {
-    try {
-      const cached = sessionStorage.getItem(`kitab_${kitabSlug}`)
-      return cached ? JSON.parse(cached) : null
-    } catch { return null }
-  })
-  const [loading, setLoading] = useState(() => {
-    return !sessionStorage.getItem(`kitab_${kitabSlug}`)
-  })
+  const cacheKey = `kitab_detail_${kitabSlug}`
+
+  const [data, setData] = useState(() => getCache(cacheKey))
+  const [loading, setLoading] = useState(() => !getCache(cacheKey))
 
   useEffect(() => {
     api.get(`/kitab/${kitabSlug}`)
       .then(res => {
         setData(res.data)
-        sessionStorage.setItem(`kitab_${kitabSlug}`, JSON.stringify(res.data))
+        setCache(cacheKey, res.data)
       })
       .catch(() => navigate('/kitab'))
       .finally(() => setLoading(false))
   }, [kitabSlug])
 
-  if (loading) return (
-    <div style={s.loadScreen}>
-      <div style={s.spinner} className="spin"/>
-    </div>
+  if (loading && !data) return (
+    <div style={s.loadScreen}><div style={s.spinner} className="spin"/></div>
   )
 
   if (!data) return null
@@ -42,7 +53,6 @@ export default function KitabPage() {
     <div style={s.root} className="page-root">
       <style>{css}</style>
 
-      {/* Header */}
       <div style={{ ...s.header, background: `linear-gradient(160deg, ${barColor}F0, ${barColor})` }}>
         <button onClick={() => navigate('/kitab')} style={s.backBtn}>← Kembali</button>
         <div style={s.headerContent}>
@@ -50,8 +60,6 @@ export default function KitabPage() {
           <h1 style={s.title}>{kitab.title}</h1>
           <p style={s.author}>{kitab.author}</p>
         </div>
-
-        {/* Progress */}
         {kitab.totalMateri > 0 && (
           <div style={s.progressCard}>
             <div style={s.progressTop}>
@@ -63,13 +71,11 @@ export default function KitabPage() {
             </div>
           </div>
         )}
-
         <div style={s.ornRow}>
           <div style={s.ornLine}/><div style={s.diamond}/><div style={s.ornLine}/>
         </div>
       </div>
 
-      {/* Bab list */}
       <div style={s.body}>
         <div style={s.sectionLabel}>
           {isQuran ? 'DAFTAR SURAH' : 'DAFTAR BAB'} — {babs.length} {isQuran ? 'Surah' : 'Bab'}
@@ -89,9 +95,7 @@ export default function KitabPage() {
                 </h3>
                 <p style={s.babMeta}>
                   {bab.totalMateri} {isQuran ? 'Ayat' : 'Materi'}
-                  {bab.completedCount > 0 && (
-                    <span style={s.babProgress}> · {bab.completedCount} selesai</span>
-                  )}
+                  {bab.completedCount > 0 && <span style={s.babProgress}> · {bab.completedCount} selesai</span>}
                 </p>
               </div>
               {bab.completedCount === bab.totalMateri && bab.totalMateri > 0 && (
@@ -118,7 +122,7 @@ const css = `
 `
 
 const s = {
-  root: { width: '100%', minHeight:'100dvh', background:'#F8F5EF', fontFamily:"'Nunito',sans-serif", paddingBottom:'80px' },
+  root: { width:'100%', minHeight:'100dvh', background:'#F8F5EF', fontFamily:"'Nunito',sans-serif", paddingBottom:'80px' },
   loadScreen: { minHeight:'100dvh', display:'flex', alignItems:'center', justifyContent:'center', background:'#F8F5EF' },
   spinner: { width:'32px', height:'32px', border:'3px solid #E8E0D0', borderTop:'3px solid #1C3D2E', borderRadius:'50%' },
   header: { padding:'20px 20px 0', color:'#F5EFE4' },

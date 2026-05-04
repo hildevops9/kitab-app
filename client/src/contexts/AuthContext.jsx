@@ -5,37 +5,38 @@ const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
-    // Baca cache dulu — render langsung tanpa loading
     try {
-      const cached = sessionStorage.getItem('kitab_user')
+      const cached = localStorage.getItem('kitab_user')
       return cached ? JSON.parse(cached) : null
     } catch { return null }
   })
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Verifikasi sesi ke server di background
     api.get('/auth/me')
       .then((res) => {
         setUser(res.data.user)
-        sessionStorage.setItem('kitab_user', JSON.stringify(res.data.user))
+        localStorage.setItem('kitab_user', JSON.stringify(res.data.user))
       })
       .catch(() => {
         setUser(null)
-        sessionStorage.removeItem('kitab_user')
+        localStorage.removeItem('kitab_user')
       })
       .finally(() => setLoading(false))
   }, [])
 
   const login = (userData) => {
     setUser(userData)
-    sessionStorage.setItem('kitab_user', JSON.stringify(userData))
+    localStorage.setItem('kitab_user', JSON.stringify(userData))
   }
+
   const logout = async () => {
     await api.post('/auth/logout')
     setUser(null)
-    sessionStorage.removeItem('kitab_user')
-    sessionStorage.removeItem('kitab_list')
+    // Bersihkan semua cache saat logout
+    Object.keys(localStorage)
+      .filter(k => k.startsWith('kitab_'))
+      .forEach(k => localStorage.removeItem(k))
   }
 
   return (
@@ -43,6 +44,6 @@ export function AuthProvider({ children }) {
       {children}
     </AuthContext.Provider>
   )
-} 
- 
+}
+
 export const useAuth = () => useContext(AuthContext)
