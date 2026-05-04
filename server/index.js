@@ -8,7 +8,7 @@ const babRoutes = require('./routes/bab.routes')
 const materiRoutes = require('./routes/materi.routes')
 const questionRoutes = require('./routes/question.routes')
 const progressRoutes = require('./routes/progress.routes')
-
+const keepAlive      = require('./utils/keepAlive')
 const app = express()
 const PORT = process.env.PORT || 3000
 
@@ -38,6 +38,8 @@ app.use((err, req, res, next) => {
 if (process.env.NODE_ENV !== 'production') {
   app.listen(PORT, () => {
     console.log(`Server berjalan di http://localhost:${PORT}`)
+     // Aktifkan keep-alive hanya di production
+  if (process.env.NODE_ENV === 'production') keepAlive()
   })
 }
 

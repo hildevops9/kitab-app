@@ -70,10 +70,10 @@ export default function HaloUstadzPage() {
           </div>
           <h2 style={{ ...s.cardTitle, color: '#1C3D2E' }}>Tanya Langsung ke Ustadz</h2>
           <p style={s.cardDesc}>
-            Kirim pertanyaanmu langsung ke ustadz kami melalui formulir. Akan dijawab dalam waktu 1×24 jam.
+            Kirim pertanyaanmu langsung ke ustadz Ali Abdul Khalik melalui formulir. Akan dijawab dalam pengajian berikutnya atau bisa via call.
           </p>
           <div style={s.featureList}>
-            {['Dijawab ustadz berpengalaman', 'Respon 1×24 jam', 'Gratis'].map(f => (
+            {['Dijawab ustadz berpengalaman', 'Gratis'].map(f => (
               <div key={f} style={s.featureItem}>
                 <span style={{ ...s.featureDot, color: '#2D6A4F' }}>✓</span>
                 <span style={{ ...s.featureText, color: '#3A3A3A' }}>{f}</span>
