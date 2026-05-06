@@ -14,26 +14,113 @@ function getCache(key) {
     return data
   } catch { return null }
 }
-
 function setCache(key, data) {
-  try {
-    localStorage.setItem(key, JSON.stringify({ data, ts: Date.now() }))
-  } catch {}
+  try { localStorage.setItem(key, JSON.stringify({ data, ts: Date.now() })) } catch {}
 }
 
+// ── View: daftar bab (untuk QURAN) ──────────────────────────────────────────
+function BabListView({ kitabSlug, kitab, babs, barColor, isQuran, navigate }) {
+  return (
+    <div style={s.body}>
+      <div style={s.sectionLabel}>
+        {isQuran ? 'DAFTAR SURAH' : 'DAFTAR BAB'} — {babs.length} {isQuran ? 'Surah' : 'Bab'}
+      </div>
+      <div style={s.list}>
+        {babs.map((bab, idx) => (
+          <div key={bab.id} style={s.card}
+            onClick={() => navigate(`/kitab/${kitabSlug}/${bab.slug}`)}
+            className="row-card">
+            <div style={{ ...s.numBox, background: barColor + '18', color: barColor }}>
+              {String(idx + 1).padStart(2, '0')}
+            </div>
+            <div style={s.cardInfo}>
+              <h3 style={s.cardTitle}>
+                {bab.title}
+                {bab.arabicTitle && <span style={s.cardAr}> · {bab.arabicTitle}</span>}
+              </h3>
+              <p style={s.cardMeta}>
+                {bab.totalMateri} {isQuran ? 'Ayat' : 'Materi'}
+                {bab.completedCount > 0 && (
+                  <span style={s.doneText}> · {bab.completedCount} selesai</span>
+                )}
+              </p>
+            </div>
+            {bab.completedCount === bab.totalMateri && bab.totalMateri > 0 && (
+              <span style={s.checkDone}>✓</span>
+            )}
+            <span style={{ ...s.arrow, color: barColor }}>›</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// ── View: daftar materi langsung (untuk HIKAM & kitab tanpa bab) ─────────────
+function MateriListView({ materis, barColor, navigate }) {
+  return (
+    <div style={s.body}>
+      <div style={s.sectionLabel}>
+        DAFTAR MATERI — {materis.length} ITEM
+      </div>
+      <div style={s.list}>
+        {materis.map((m, idx) => (
+          <div key={m.id} style={s.card}
+            onClick={() => navigate(`/materi/${m.id}`)}
+            className="row-card">
+            <div style={{
+              ...s.numBox,
+              background: m.isCompleted ? barColor : barColor + '18',
+              color: m.isCompleted ? '#fff' : barColor,
+              border: m.isCompleted ? 'none' : `1.5px solid ${barColor}40`,
+            }}>
+              {m.isCompleted ? '✓' : String(idx + 1).padStart(2, '0')}
+            </div>
+            <div style={s.cardInfo}>
+              <h3 style={s.cardTitle}>{m.title}</h3>
+              {m.content?.arabic && (
+                <p style={s.arabicPreview} dir="rtl">
+                  {m.content.arabic.slice(0, 60)}{m.content.arabic.length > 60 ? '...' : ''}
+                </p>
+              )}
+            </div>
+            <span style={{ ...s.arrow, color: barColor }}>›</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// ── Main ─────────────────────────────────────────────────────────────────────
 export default function KitabPage() {
   const { kitabSlug } = useParams()
   const navigate = useNavigate()
-  const cacheKey = `kitab_detail_${kitabSlug}`
 
-  const [data, setData] = useState(() => getCache(cacheKey))
-  const [loading, setLoading] = useState(() => !getCache(cacheKey))
+  // Tentukan apakah pakai flat materi atau bab — cek dari cache dulu
+  const cacheKey = `kitab_detail_${kitabSlug}`
+  const cached = getCache(cacheKey)
+  const isHikamMode = cached?.kitab?.type === 'HIKAM' || cached?.materis !== undefined
+
+  const [data, setData] = useState(() => cached)
+  const [loading, setLoading] = useState(() => !cached)
 
   useEffect(() => {
+    // Fetch dulu info kitab untuk tau type-nya
     api.get(`/kitab/${kitabSlug}`)
-      .then(res => {
-        setData(res.data)
-        setCache(cacheKey, res.data)
+      .then(async (res) => {
+        const kitabType = res.data.kitab?.type
+
+        // HIKAM → fetch flat materi
+        if (kitabType !== 'QURAN' && kitabType !== undefined) {
+          const materiRes = await api.get(`/kitab/${kitabSlug}/materis`)
+          setData(materiRes.data)
+          setCache(cacheKey, materiRes.data)
+        } else {
+          // QURAN / GENERAL → pakai response bab biasa
+          setData(res.data)
+          setCache(cacheKey, res.data)
+        }
       })
       .catch(() => navigate('/kitab'))
       .finally(() => setLoading(false))
@@ -42,17 +129,18 @@ export default function KitabPage() {
   if (loading && !data) return (
     <div style={s.loadScreen}><div style={s.spinner} className="spin"/></div>
   )
-
   if (!data) return null
 
-  const { kitab, babs } = data
+  const kitab = data.kitab
   const barColor = kitab.coverColor || '#1C3D2E'
   const isQuran = kitab.type === 'QURAN'
+  const showMaterisDirectly = !!data.materis // flat materi mode
 
   return (
     <div style={s.root} className="page-root">
       <style>{css}</style>
 
+      {/* Header */}
       <div style={{ ...s.header, background: `linear-gradient(160deg, ${barColor}F0, ${barColor})` }}>
         <button onClick={() => navigate('/kitab')} style={s.backBtn}>← Kembali</button>
         <div style={s.headerContent}>
@@ -76,36 +164,23 @@ export default function KitabPage() {
         </div>
       </div>
 
-      <div style={s.body}>
-        <div style={s.sectionLabel}>
-          {isQuran ? 'DAFTAR SURAH' : 'DAFTAR BAB'} — {babs.length} {isQuran ? 'Surah' : 'Bab'}
-        </div>
-        <div style={s.babList}>
-          {babs.map((bab, idx) => (
-            <div key={bab.id} style={s.babCard}
-              onClick={() => navigate(`/kitab/${kitabSlug}/${bab.slug}`)}
-              className="bab-card">
-              <div style={{ ...s.babNum, background: barColor + '18', color: barColor }}>
-                {String(idx + 1).padStart(2, '0')}
-              </div>
-              <div style={s.babInfo}>
-                <h3 style={s.babTitle}>
-                  {bab.title}
-                  {bab.arabicTitle && <span style={s.babAr}> · {bab.arabicTitle}</span>}
-                </h3>
-                <p style={s.babMeta}>
-                  {bab.totalMateri} {isQuran ? 'Ayat' : 'Materi'}
-                  {bab.completedCount > 0 && <span style={s.babProgress}> · {bab.completedCount} selesai</span>}
-                </p>
-              </div>
-              {bab.completedCount === bab.totalMateri && bab.totalMateri > 0 && (
-                <span style={s.checkDone}>✓</span>
-              )}
-              <span style={{ ...s.babArrow, color: barColor }}>›</span>
-            </div>
-          ))}
-        </div>
-      </div>
+      {/* Body — conditional render */}
+      {showMaterisDirectly ? (
+        <MateriListView
+          materis={data.materis}
+          barColor={barColor}
+          navigate={navigate}
+        />
+      ) : (
+        <BabListView
+          kitabSlug={kitabSlug}
+          kitab={kitab}
+          babs={data.babs || []}
+          barColor={barColor}
+          isQuran={isQuran}
+          navigate={navigate}
+        />
+      )}
 
       <BottomNav active="kitab"/>
     </div>
@@ -116,7 +191,7 @@ const css = `
   @import url('https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=Nunito:wght@400;500;600;700&display=swap');
   * { box-sizing:border-box; margin:0; padding:0; }
   html,body,#root { background:#F8F5EF; }
-  .bab-card:active { background:#F0EBE0 !important; transform:scale(0.98) !important; }
+  .row-card:active { background:#F0EBE0 !important; transform:scale(0.98) !important; }
   @keyframes spin { to { transform:rotate(360deg); } }
   .spin { animation: spin 0.8s linear infinite; }
 `
@@ -142,14 +217,15 @@ const s = {
   diamond: { width:'6px', height:'6px', background:'#C9A84C', transform:'rotate(45deg)', flexShrink:0 },
   body: { padding:'20px 16px' },
   sectionLabel: { fontSize:'10px', fontWeight:'700', color:'#A0906E', letterSpacing:'1.5px', marginBottom:'12px' },
-  babList: { display:'flex', flexDirection:'column', gap:'8px' },
-  babCard: { background:'#fff', borderRadius:'14px', padding:'14px 16px', display:'flex', alignItems:'center', gap:'14px', cursor:'pointer', boxShadow:'0 2px 6px rgba(0,0,0,0.05)', transition:'background 0.15s, transform 0.15s', border:'1px solid rgba(0,0,0,0.03)' },
-  babNum: { width:'36px', height:'36px', borderRadius:'10px', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'13px', fontWeight:'700', flexShrink:0 },
-  babInfo: { flex:1 },
-  babTitle: { fontSize:'14px', fontWeight:'700', color:'#1C3D2E', marginBottom:'2px' },
-  babAr: { fontFamily:'serif', fontWeight:'400', color:'#8A7A65', fontSize:'13px' },
-  babMeta: { fontSize:'12px', color:'#A0906E' },
-  babProgress: { color:'#2D6A4F', fontWeight:'600' },
+  list: { display:'flex', flexDirection:'column', gap:'8px' },
+  card: { background:'#fff', borderRadius:'14px', padding:'14px 16px', display:'flex', alignItems:'center', gap:'14px', cursor:'pointer', boxShadow:'0 2px 6px rgba(0,0,0,0.05)', transition:'background 0.15s, transform 0.15s', border:'1px solid rgba(0,0,0,0.03)' },
+  numBox: { width:'36px', height:'36px', borderRadius:'10px', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'12px', fontWeight:'700', flexShrink:0, transition:'all 0.2s' },
+  cardInfo: { flex:1, minWidth:0 },
+  cardTitle: { fontSize:'14px', fontWeight:'700', color:'#1C3D2E', marginBottom:'2px' },
+  cardAr: { fontFamily:'serif', fontWeight:'400', color:'#8A7A65', fontSize:'13px' },
+  cardMeta: { fontSize:'12px', color:'#A0906E' },
+  arabicPreview: { fontFamily:'serif', fontSize:'13px', color:'#A0906E', lineHeight:1.6, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' },
+  doneText: { color:'#2D6A4F', fontWeight:'600' },
   checkDone: { fontSize:'13px', fontWeight:'700', color:'#2D6A4F', background:'#E8F0EC', width:'24px', height:'24px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 },
-  babArrow: { fontSize:'22px', fontWeight:'300', flexShrink:0, opacity:0.4 },
+  arrow: { fontSize:'22px', fontWeight:'300', flexShrink:0, opacity:0.4 },
 }

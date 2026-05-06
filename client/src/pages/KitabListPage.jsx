@@ -1,175 +1,202 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import api from '../lib/api'
-import BottomNav from '../components/BottomNav'
+const prisma = require('../utils/prisma')
+const { withCache, invalidate } = require('../utils/cache')
 
-const TYPE_CONFIG = {
-  QURAN:   { label: 'Al-Quran',    bg: '#E8F0EC', color: '#1C3D2E' },
-  HIKAM:   { label: 'Kitab Hikam', bg: '#F5ECD9', color: '#5C3A1E' },
-  FIQIH:   { label: 'Fiqih',       bg: '#EAE8F5', color: '#3D2E6B' },
-  HADITS:  { label: 'Hadits',      bg: '#E8EFF5', color: '#1E3A5C' },
-  GENERAL: { label: 'Kitab',       bg: '#F0F0F0', color: '#333' },
-}
-
-const FILTERS = [
-  { key: 'SEMUA',  label: 'Semua' },
-  { key: 'QURAN',  label: 'Al-Quran' },
-  { key: 'FIQIH',  label: 'Fiqih' },
-  { key: 'HADITS', label: 'Hadits' },
-  { key: 'HIKAM',  label: 'Hikam' },
-]
-
-const CACHE_KEY = 'kitab_list'
-const CACHE_TTL = 5 * 60 * 1000
-
-function getCache() {
+const getAllKitab = async (req, res) => {
   try {
-    const raw = localStorage.getItem(CACHE_KEY)
-    if (!raw) return null
-    const { data, ts } = JSON.parse(raw)
-    if (Date.now() - ts > CACHE_TTL) return null
-    return data
-  } catch { return null }
-}
-function setCache(data) {
-  try { localStorage.setItem(CACHE_KEY, JSON.stringify({ data, ts: Date.now() })) } catch {}
-}
+    const { type } = req.query
+    const userId = req.user?.id
+    const cacheKey = `kitabs:${type || 'SEMUA'}:${userId || 'guest'}`
 
-export default function KitabListPage() {
-  const navigate = useNavigate()
-  const [kitabs, setKitabs] = useState(() => getCache() || [])
-  const [loading, setLoading] = useState(() => !getCache())
-  const [filter, setFilter] = useState('SEMUA')
-  const [search, setSearch] = useState('')
+    const result = await withCache(cacheKey, async () => {
+      const where = { isPublished: true }
+      if (type && type !== 'SEMUA') where.type = type
 
-  useEffect(() => {
-    api.get('/kitab')
-      .then(r => { setKitabs(r.data.kitabs); setCache(r.data.kitabs) })
-      .catch(console.error)
-      .finally(() => setLoading(false))
-  }, [])
+      const kitabs = await prisma.kitab.findMany({
+        where,
+        include: {
+          _count: { select: { babs: true } },
+          babs: {
+            include: {
+              materis: { select: { id: true } }
+            }
+          }
+        },
+        orderBy: { createdAt: 'asc' }
+      })
 
-  const filtered = kitabs.filter(k => {
-    const matchFilter = filter === 'SEMUA' || k.type === filter
-    const matchSearch = !search || k.title.toLowerCase().includes(search.toLowerCase()) || k.author.toLowerCase().includes(search.toLowerCase())
-    return matchFilter && matchSearch
-  })
+      // Kumpulkan SEMUA materiId sekaligus — 1 query, bukan N query
+      const allMateriIds = kitabs.flatMap(k => k.babs.flatMap(b => b.materis.map(m => m.id)))
 
-  const handleKitabClick = (kitab) => {
-    if (kitab.totalMateri === 0) return
-    navigate(`/kitab/${kitab.slug}`)
+      // Fetch progress semua materi sekaligus — 1 query
+      let progressMap = new Map()
+      let lastProgressMap = new Map()
+      if (userId && allMateriIds.length > 0) {
+        const allProgress = await prisma.progress.findMany({
+          where: { userId, materiId: { in: allMateriIds }, isCompleted: true },
+          select: { materiId: true, completedAt: true },
+          orderBy: { completedAt: 'desc' }
+        })
+        allProgress.forEach(p => {
+          progressMap.set(p.materiId, true)
+        })
+
+        // Last read per kitab
+        const allProgressWithMateri = await prisma.progress.findMany({
+          where: { userId, materiId: { in: allMateriIds }, isCompleted: true },
+          orderBy: { completedAt: 'desc' },
+          include: { materi: { select: { title: true, bab: { select: { title: true } } } } }
+        })
+        // Group by kitab
+        kitabs.forEach(k => {
+          const kitabMateriIds = new Set(k.babs.flatMap(b => b.materis.map(m => m.id)))
+          const last = allProgressWithMateri.find(p => kitabMateriIds.has(p.materiId))
+          if (last) {
+            lastProgressMap.set(k.id, `${last.materi.bab.title} : ${last.materi.title}`)
+          }
+        })
+      }
+
+      return kitabs.map(k => {
+        const kitabMateriIds = k.babs.flatMap(b => b.materis.map(m => m.id))
+        const totalMateri = kitabMateriIds.length
+        const completedCount = kitabMateriIds.filter(id => progressMap.has(id)).length
+        const lastRead = lastProgressMap.get(k.id) || null
+
+        return {
+          id: k.id, slug: k.slug, title: k.title,
+          arabicTitle: k.arabicTitle, author: k.author,
+          description: k.description, coverColor: k.coverColor,
+          type: k.type, totalBab: k._count.babs,
+          totalMateri, completedCount, lastRead,
+          progressPct: totalMateri > 0 ? Math.round((completedCount / totalMateri) * 100) : 0,
+        }
+      })
+    }, 120)
+
+    res.json({ kitabs: result })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Terjadi kesalahan server.' })
   }
-
-  return (
-    <div style={s.root} className="page-root">
-      <style>{css}</style>
-
-      <div style={s.header}>
-        <h1 style={s.title}>Kitab</h1>
-        <div style={s.searchWrap}>
-          <span style={s.searchIcon}>🔍</span>
-          <input style={s.searchInput} placeholder="Cari kitab, penulis, atau topik..."
-            value={search} onChange={e => setSearch(e.target.value)} className="search-input"/>
-        </div>
-        <div style={s.filterRow}>
-          {FILTERS.map(f => (
-            <button key={f.key} onClick={() => setFilter(f.key)}
-              style={{ ...s.filterBtn, ...(filter === f.key ? s.filterBtnActive : {}) }}>
-              {f.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div style={s.body}>
-        {loading && kitabs.length === 0 ? (
-          [1,2,3].map(i => <div key={i} style={s.skeleton} className="skeleton"/>)
-        ) : filtered.length === 0 ? (
-          <div style={s.empty}>
-            <div style={{ fontSize:'40px', marginBottom:'12px' }}>📭</div>
-            <p style={{ color:'#8A7A65', fontSize:'14px' }}>Tidak ada kitab ditemukan</p>
-          </div>
-        ) : filtered.map(kitab => {
-          const cfg = TYPE_CONFIG[kitab.type] || TYPE_CONFIG.GENERAL
-          const isComingSoon = kitab.totalMateri === 0
-          return (
-            <div key={kitab.id}
-              style={{ ...s.kitabCard, ...(isComingSoon ? s.kitabCardDimmed : {}) }}
-              onClick={() => handleKitabClick(kitab)}
-              className={isComingSoon ? '' : 'card-press'}>
-              <div style={{ ...s.cover, background: kitab.coverColor || '#1C3D2E', opacity: isComingSoon ? 0.6 : 1 }}>
-                <span style={s.coverAr}>{kitab.arabicTitle}</span>
-              </div>
-              <div style={s.info}>
-                <div style={s.topRow}>
-                  <span style={{ ...s.badge, background: cfg.bg, color: cfg.color }}>{cfg.label}</span>
-                  {isComingSoon && <span style={s.comingSoonBadge}>🕐 Coming Soon</span>}
-                </div>
-                <h3 style={s.kitabTitle}>{kitab.title}</h3>
-                <p style={s.kitabAuthor}>{kitab.author}</p>
-                {isComingSoon ? (
-                  <p style={s.comingSoonText}>Konten sedang disiapkan. Nantikan segera!</p>
-                ) : kitab.lastRead ? (
-                  <p style={s.lastRead}>Terakhir dibaca: {kitab.lastRead}</p>
-                ) : (
-                  <p style={s.lastRead}>Belum dibaca · {kitab.totalBab} bab tersedia</p>
-                )}
-                {!isComingSoon && kitab.completedCount > 0 && (
-                  <div style={s.progressWrap}>
-                    <div style={s.progressBar}>
-                      <div style={{ ...s.progressFill, width: `${kitab.progressPct}%`, background: kitab.coverColor || '#1C3D2E' }}/>
-                    </div>
-                    <span style={s.progressPct}>{kitab.progressPct}%</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          )
-        })}
-      </div>
-
-      <BottomNav active="kitab"/>
-    </div>
-  )
 }
 
-const css = `
-  @import url('https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=Nunito:wght@400;500;600;700&display=swap');
-  * { box-sizing:border-box; margin:0; padding:0; }
-  html,body,#root { background:#F8F5EF; }
-  .card-press:active { transform:scale(0.98) !important; }
-  .search-input:focus { outline:none; }
-  @keyframes pulse { 0%,100%{opacity:0.5} 50%{opacity:1} }
-  .skeleton { animation:pulse 1.5s ease-in-out infinite; }
-`
+const getKitabBySlug = async (req, res) => {
+  try {
+    const { slug } = req.params
+    const userId = req.user?.id
+    const cacheKey = `kitab:${slug}:${userId || 'guest'}`
 
-const s = {
-  root: { width:'100%', minHeight:'100dvh', background:'#F8F5EF', fontFamily:"'Nunito',sans-serif", paddingBottom:'80px' },
-  header: { background:'#fff', padding:'20px 16px 0', borderBottom:'1px solid #F0EBE0' },
-  title: { fontFamily:'Lora,serif', fontSize:'24px', fontWeight:'700', color:'#1C3D2E', marginBottom:'14px' },
-  searchWrap: { display:'flex', alignItems:'center', gap:'8px', background:'#F8F5EF', borderRadius:'12px', padding:'10px 14px', marginBottom:'14px' },
-  searchIcon: { fontSize:'16px', flexShrink:0 },
-  searchInput: { flex:1, background:'none', border:'none', fontSize:'14px', color:'#1A1A1A', fontFamily:"'Nunito',sans-serif" },
-  filterRow: { display:'flex', gap:'6px', overflowX:'auto', paddingBottom:'12px' },
-  filterBtn: { flexShrink:0, padding:'7px 16px', borderRadius:'20px', border:'1.5px solid #E5DDD0', background:'#fff', fontSize:'13px', fontWeight:'600', color:'#6B6B6B', cursor:'pointer', fontFamily:"'Nunito',sans-serif", WebkitTapHighlightColor:'transparent' },
-  filterBtnActive: { background:'#1C3D2E', borderColor:'#1C3D2E', color:'#fff' },
-  body: { padding:'12px 16px', display:'flex', flexDirection:'column', gap:'10px' },
-  kitabCard: { background:'#fff', borderRadius:'16px', display:'flex', gap:'14px', padding:'14px', cursor:'pointer', boxShadow:'0 2px 8px rgba(0,0,0,0.05)', transition:'transform 0.15s', alignItems:'flex-start' },
-  kitabCardDimmed: { cursor:'default', opacity:0.85 },
-  cover: { width:'72px', height:'96px', borderRadius:'10px', flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 4px 12px rgba(0,0,0,0.2)' },
-  coverAr: { fontFamily:'serif', fontSize:'13px', color:'rgba(255,255,255,0.55)', textAlign:'center', padding:'4px' },
-  info: { flex:1, minWidth:0 },
-  topRow: { display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'6px', flexWrap:'wrap', gap:'4px' },
-  badge: { fontSize:'10px', fontWeight:'700', padding:'2px 8px', borderRadius:'20px' },
-  comingSoonBadge: { fontSize:'10px', fontWeight:'700', padding:'2px 8px', borderRadius:'20px', background:'#FFF3E0', color:'#E65100' },
-  kitabTitle: { fontFamily:'Lora,serif', fontSize:'15px', fontWeight:'700', color:'#1C3D2E', marginBottom:'2px' },
-  kitabAuthor: { fontSize:'11px', color:'#A0906E', fontStyle:'italic', marginBottom:'4px' },
-  lastRead: { fontSize:'11px', color:'#8A7A65', marginBottom:'6px' },
-  comingSoonText: { fontSize:'11px', color:'#A0906E', fontStyle:'italic', marginBottom:'6px', lineHeight:1.5 },
-  progressWrap: { display:'flex', alignItems:'center', gap:'8px' },
-  progressBar: { flex:1, height:'3px', background:'#EDE7D9', borderRadius:'4px', overflow:'hidden' },
-  progressFill: { height:'100%', borderRadius:'4px' },
-  progressPct: { fontSize:'11px', fontWeight:'700', color:'#8A7A65', flexShrink:0 },
-  skeleton: { height:'100px', borderRadius:'16px', background:'#E8DFD0' },
-  empty: { textAlign:'center', padding:'60px 20px' },
+    const data = await withCache(cacheKey, async () => {
+      const kitab = await prisma.kitab.findUnique({
+        where: { slug },
+        include: {
+          babs: {
+            include: { materis: { select: { id: true } } },
+            orderBy: { orderNum: 'asc' }
+          }
+        }
+      })
+
+      if (!kitab || !kitab.isPublished) return null
+
+      // Semua materiId kitab ini — 1 query
+      const allMateriIds = kitab.babs.flatMap(b => b.materis.map(m => m.id))
+
+      let progressSet = new Set()
+      if (userId && allMateriIds.length > 0) {
+        const allProgress = await prisma.progress.findMany({
+          where: { userId, materiId: { in: allMateriIds }, isCompleted: true },
+          select: { materiId: true }
+        })
+        progressSet = new Set(allProgress.map(p => p.materiId))
+      }
+
+      let completedTotal = 0
+      const babsWithProgress = kitab.babs.map(bab => {
+        const babMateriIds = bab.materis.map(m => m.id)
+        const completedBab = babMateriIds.filter(id => progressSet.has(id)).length
+        completedTotal += completedBab
+        return {
+          id: bab.id, slug: bab.slug, title: bab.title,
+          arabicTitle: bab.arabicTitle, orderNum: bab.orderNum,
+          totalMateri: babMateriIds.length, completedCount: completedBab,
+        }
+      })
+
+      const totalMateri = allMateriIds.length
+      return {
+        kitab: {
+          id: kitab.id, slug: kitab.slug, title: kitab.title,
+          arabicTitle: kitab.arabicTitle, author: kitab.author,
+          description: kitab.description, coverColor: kitab.coverColor, type: kitab.type,
+          totalMateri, completedCount: completedTotal,
+          progressPct: totalMateri > 0 ? Math.round((completedTotal / totalMateri) * 100) : 0,
+        },
+        babs: babsWithProgress,
+      }
+    }, 120)
+
+    if (!data) return res.status(404).json({ message: 'Kitab tidak ditemukan.' })
+    res.json(data)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Terjadi kesalahan server.' })
+  }
 }
+
+
+const getKitabMateris = async (req, res) => {
+  try {
+    const { slug } = req.params
+    const userId = req.user?.id
+
+    const kitab = await prisma.kitab.findUnique({
+      where: { slug },
+      include: {
+        babs: {
+          orderBy: { orderNum: 'asc' },
+          include: {
+            materis: {
+              orderBy: { orderNum: 'asc' },
+              select: { id: true, title: true, orderNum: true, content: true }
+            }
+          }
+        }
+      }
+    })
+
+    if (!kitab || !kitab.isPublished)
+      return res.status(404).json({ message: 'Kitab tidak ditemukan.' })
+
+    // Flatten semua materi dari semua bab
+    const allMateris = kitab.babs.flatMap(b => b.materis)
+    const allMateriIds = allMateris.map(m => m.id)
+
+    let progressSet = new Set()
+    if (userId && allMateriIds.length > 0) {
+      const progress = await prisma.progress.findMany({
+        where: { userId, materiId: { in: allMateriIds }, isCompleted: true },
+        select: { materiId: true }
+      })
+      progressSet = new Set(progress.map(p => p.materiId))
+    }
+
+    const completedCount = allMateriIds.filter(id => progressSet.has(id)).length
+
+    res.json({
+      kitab: {
+        id: kitab.id, slug: kitab.slug, title: kitab.title,
+        arabicTitle: kitab.arabicTitle, author: kitab.author,
+        coverColor: kitab.coverColor, type: kitab.type,
+        totalMateri: allMateriIds.length, completedCount,
+        progressPct: allMateriIds.length > 0 ? Math.round((completedCount / allMateriIds.length) * 100) : 0,
+      },
+      materis: allMateris.map(m => ({ ...m, isCompleted: progressSet.has(m.id) }))
+    })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Terjadi kesalahan server.' })
+  }
+}
+
+module.exports = { getAllKitab, getKitabBySlug, getKitabMateris }
