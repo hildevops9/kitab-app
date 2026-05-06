@@ -15,34 +15,52 @@ const getAllKitab = async (req, res) => {
         where,
         include: {
           _count: { select: { babs: true } },
-          babs: { include: { _count: { select: { materis: true } } } }
+          babs: {
+            include: {
+              materis: { select: { id: true } }
+            }
+          }
         },
         orderBy: { createdAt: 'asc' }
       })
 
-      return await Promise.all(kitabs.map(async (k) => {
-        const totalMateri = k.babs.reduce((s, b) => s + b._count.materis, 0)
-        let completedCount = 0
-        let lastRead = null
+      // Kumpulkan SEMUA materiId sekaligus — 1 query, bukan N query
+      const allMateriIds = kitabs.flatMap(k => k.babs.flatMap(b => b.materis.map(m => m.id)))
 
-        if (userId) {
-          const materiIds = []
-          for (const bab of k.babs) {
-            const materis = await prisma.materi.findMany({ where: { babId: bab.id }, select: { id: true } })
-            materiIds.push(...materis.map(m => m.id))
+      // Fetch progress semua materi sekaligus — 1 query
+      let progressMap = new Map()
+      let lastProgressMap = new Map()
+      if (userId && allMateriIds.length > 0) {
+        const allProgress = await prisma.progress.findMany({
+          where: { userId, materiId: { in: allMateriIds }, isCompleted: true },
+          select: { materiId: true, completedAt: true },
+          orderBy: { completedAt: 'desc' }
+        })
+        allProgress.forEach(p => {
+          progressMap.set(p.materiId, true)
+        })
+
+        // Last read per kitab
+        const allProgressWithMateri = await prisma.progress.findMany({
+          where: { userId, materiId: { in: allMateriIds }, isCompleted: true },
+          orderBy: { completedAt: 'desc' },
+          include: { materi: { select: { title: true, bab: { select: { title: true } } } } }
+        })
+        // Group by kitab
+        kitabs.forEach(k => {
+          const kitabMateriIds = new Set(k.babs.flatMap(b => b.materis.map(m => m.id)))
+          const last = allProgressWithMateri.find(p => kitabMateriIds.has(p.materiId))
+          if (last) {
+            lastProgressMap.set(k.id, `${last.materi.bab.title} : ${last.materi.title}`)
           }
-          completedCount = await prisma.progress.count({
-            where: { userId, materiId: { in: materiIds }, isCompleted: true }
-          })
-          const lastProgress = await prisma.progress.findFirst({
-            where: { userId, materiId: { in: materiIds }, isCompleted: true },
-            orderBy: { completedAt: 'desc' },
-            include: { materi: { include: { bab: true } } }
-          })
-          if (lastProgress) {
-            lastRead = `${lastProgress.materi.bab.title} : ${lastProgress.materi.title}`
-          }
-        }
+        })
+      }
+
+      return kitabs.map(k => {
+        const kitabMateriIds = k.babs.flatMap(b => b.materis.map(m => m.id))
+        const totalMateri = kitabMateriIds.length
+        const completedCount = kitabMateriIds.filter(id => progressMap.has(id)).length
+        const lastRead = lastProgressMap.get(k.id) || null
 
         return {
           id: k.id, slug: k.slug, title: k.title,
@@ -52,8 +70,8 @@ const getAllKitab = async (req, res) => {
           totalMateri, completedCount, lastRead,
           progressPct: totalMateri > 0 ? Math.round((completedCount / totalMateri) * 100) : 0,
         }
-      }))
-    }, 120) // cache 2 menit
+      })
+    }, 120)
 
     res.json({ kitabs: result })
   } catch (err) {
@@ -73,7 +91,7 @@ const getKitabBySlug = async (req, res) => {
         where: { slug },
         include: {
           babs: {
-            include: { _count: { select: { materis: true } } },
+            include: { materis: { select: { id: true } } },
             orderBy: { orderNum: 'asc' }
           }
         }
@@ -81,26 +99,31 @@ const getKitabBySlug = async (req, res) => {
 
       if (!kitab || !kitab.isPublished) return null
 
+      // Semua materiId kitab ini — 1 query
+      const allMateriIds = kitab.babs.flatMap(b => b.materis.map(m => m.id))
+
+      let progressSet = new Set()
+      if (userId && allMateriIds.length > 0) {
+        const allProgress = await prisma.progress.findMany({
+          where: { userId, materiId: { in: allMateriIds }, isCompleted: true },
+          select: { materiId: true }
+        })
+        progressSet = new Set(allProgress.map(p => p.materiId))
+      }
+
       let completedTotal = 0
-      const babsWithProgress = await Promise.all(kitab.babs.map(async (bab) => {
-        const materis = await prisma.materi.findMany({ where: { babId: bab.id }, select: { id: true } })
-        const materiIds = materis.map(m => m.id)
-        let completedBab = 0
-        if (userId && materiIds.length > 0) {
-          completedBab = await prisma.progress.count({
-            where: { userId, materiId: { in: materiIds }, isCompleted: true }
-          })
-        }
+      const babsWithProgress = kitab.babs.map(bab => {
+        const babMateriIds = bab.materis.map(m => m.id)
+        const completedBab = babMateriIds.filter(id => progressSet.has(id)).length
         completedTotal += completedBab
         return {
           id: bab.id, slug: bab.slug, title: bab.title,
           arabicTitle: bab.arabicTitle, orderNum: bab.orderNum,
-          totalMateri: bab._count.materis, completedCount: completedBab,
+          totalMateri: babMateriIds.length, completedCount: completedBab,
         }
-      }))
+      })
 
-      const totalMateri = babsWithProgress.reduce((s, b) => s + b.totalMateri, 0)
-
+      const totalMateri = allMateriIds.length
       return {
         kitab: {
           id: kitab.id, slug: kitab.slug, title: kitab.title,

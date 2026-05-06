@@ -19,15 +19,34 @@ const FILTERS = [
   { key: 'HIKAM',  label: 'Hikam' },
 ]
 
+const CACHE_KEY = 'kitab_list'
+const CACHE_TTL = 5 * 60 * 1000
+
+function getCache() {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY)
+    if (!raw) return null
+    const { data, ts } = JSON.parse(raw)
+    if (Date.now() - ts > CACHE_TTL) return null
+    return data
+  } catch { return null }
+}
+function setCache(data) {
+  try { localStorage.setItem(CACHE_KEY, JSON.stringify({ data, ts: Date.now() })) } catch {}
+}
+
 export default function KitabListPage() {
   const navigate = useNavigate()
-  const [kitabs, setKitabs] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [kitabs, setKitabs] = useState(() => getCache() || [])
+  const [loading, setLoading] = useState(() => !getCache())
   const [filter, setFilter] = useState('SEMUA')
   const [search, setSearch] = useState('')
 
   useEffect(() => {
-    api.get('/kitab').then(r => setKitabs(r.data.kitabs)).catch(console.error).finally(() => setLoading(false))
+    api.get('/kitab')
+      .then(r => { setKitabs(r.data.kitabs); setCache(r.data.kitabs) })
+      .catch(console.error)
+      .finally(() => setLoading(false))
   }, [])
 
   const filtered = kitabs.filter(k => {
@@ -37,7 +56,7 @@ export default function KitabListPage() {
   })
 
   const handleKitabClick = (kitab) => {
-    if (kitab.totalMateri === 0) return // coming soon, tidak bisa diklik
+    if (kitab.totalMateri === 0) return
     navigate(`/kitab/${kitab.slug}`)
   }
 
@@ -45,18 +64,12 @@ export default function KitabListPage() {
     <div style={s.root} className="page-root">
       <style>{css}</style>
 
-      {/* Header */}
       <div style={s.header}>
         <h1 style={s.title}>Kitab</h1>
         <div style={s.searchWrap}>
           <span style={s.searchIcon}>🔍</span>
-          <input
-            style={s.searchInput}
-            placeholder="Cari kitab, penulis, atau topik..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="search-input"
-          />
+          <input style={s.searchInput} placeholder="Cari kitab, penulis, atau topik..."
+            value={search} onChange={e => setSearch(e.target.value)} className="search-input"/>
         </div>
         <div style={s.filterRow}>
           {FILTERS.map(f => (
@@ -68,9 +81,8 @@ export default function KitabListPage() {
         </div>
       </div>
 
-      {/* List */}
       <div style={s.body}>
-        {loading ? (
+        {loading && kitabs.length === 0 ? (
           [1,2,3].map(i => <div key={i} style={s.skeleton} className="skeleton"/>)
         ) : filtered.length === 0 ? (
           <div style={s.empty}>
@@ -80,29 +92,21 @@ export default function KitabListPage() {
         ) : filtered.map(kitab => {
           const cfg = TYPE_CONFIG[kitab.type] || TYPE_CONFIG.GENERAL
           const isComingSoon = kitab.totalMateri === 0
-
           return (
             <div key={kitab.id}
               style={{ ...s.kitabCard, ...(isComingSoon ? s.kitabCardDimmed : {}) }}
               onClick={() => handleKitabClick(kitab)}
               className={isComingSoon ? '' : 'card-press'}>
-
-              {/* Cover */}
               <div style={{ ...s.cover, background: kitab.coverColor || '#1C3D2E', opacity: isComingSoon ? 0.6 : 1 }}>
                 <span style={s.coverAr}>{kitab.arabicTitle}</span>
               </div>
-
-              {/* Info */}
               <div style={s.info}>
                 <div style={s.topRow}>
                   <span style={{ ...s.badge, background: cfg.bg, color: cfg.color }}>{cfg.label}</span>
-                  {isComingSoon && (
-                    <span style={s.comingSoonBadge}>🕐 Coming Soon</span>
-                  )}
+                  {isComingSoon && <span style={s.comingSoonBadge}>🕐 Coming Soon</span>}
                 </div>
                 <h3 style={s.kitabTitle}>{kitab.title}</h3>
                 <p style={s.kitabAuthor}>{kitab.author}</p>
-
                 {isComingSoon ? (
                   <p style={s.comingSoonText}>Konten sedang disiapkan. Nantikan segera!</p>
                 ) : kitab.lastRead ? (
@@ -110,7 +114,6 @@ export default function KitabListPage() {
                 ) : (
                   <p style={s.lastRead}>Belum dibaca · {kitab.totalBab} bab tersedia</p>
                 )}
-
                 {!isComingSoon && kitab.completedCount > 0 && (
                   <div style={s.progressWrap}>
                     <div style={s.progressBar}>
@@ -141,7 +144,7 @@ const css = `
 `
 
 const s = {
-  root: { width: '100%', minHeight:'100dvh', background:'#F8F5EF', fontFamily:"'Nunito',sans-serif", paddingBottom:'80px' },
+  root: { width:'100%', minHeight:'100dvh', background:'#F8F5EF', fontFamily:"'Nunito',sans-serif", paddingBottom:'80px' },
   header: { background:'#fff', padding:'20px 16px 0', borderBottom:'1px solid #F0EBE0' },
   title: { fontFamily:'Lora,serif', fontSize:'24px', fontWeight:'700', color:'#1C3D2E', marginBottom:'14px' },
   searchWrap: { display:'flex', alignItems:'center', gap:'8px', background:'#F8F5EF', borderRadius:'12px', padding:'10px 14px', marginBottom:'14px' },

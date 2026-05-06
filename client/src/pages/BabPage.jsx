@@ -3,23 +3,39 @@ import { useParams, useNavigate } from 'react-router-dom'
 import api from '../lib/api'
 import BottomNav from '../components/BottomNav'
 
+const CACHE_TTL = 3 * 60 * 1000
+
+function getCache(key) {
+  try {
+    const raw = localStorage.getItem(key)
+    if (!raw) return null
+    const { data, ts } = JSON.parse(raw)
+    if (Date.now() - ts > CACHE_TTL) return null
+    return data
+  } catch { return null }
+}
+function setCache(key, data) {
+  try { localStorage.setItem(key, JSON.stringify({ data, ts: Date.now() })) } catch {}
+}
+
 export default function BabPage() {
   const { kitabSlug, babSlug } = useParams()
   const navigate = useNavigate()
-  const [data, setData] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const cacheKey = `bab_${kitabSlug}_${babSlug}`
+
+  const [data, setData] = useState(() => getCache(cacheKey))
+  const [loading, setLoading] = useState(() => !getCache(cacheKey))
 
   useEffect(() => {
     api.get(`/bab/${kitabSlug}/${babSlug}`)
-      .then(res => setData(res.data))
+      .then(res => { setData(res.data); setCache(cacheKey, res.data) })
       .catch(() => navigate(`/kitab/${kitabSlug}`))
       .finally(() => setLoading(false))
   }, [kitabSlug, babSlug])
 
-  if (loading) return (
+  if (loading && !data) return (
     <div style={s.loadScreen}><div style={s.spinner} className="spin"/></div>
   )
-
   if (!data) return null
 
   const { kitab, bab, materis, completedCount } = data
@@ -31,7 +47,6 @@ export default function BabPage() {
     <div style={s.root} className="page-root">
       <style>{css}</style>
 
-      {/* Header */}
       <div style={{ ...s.header, background: `linear-gradient(160deg,${barColor}F0,${barColor})` }}>
         <button onClick={() => navigate(`/kitab/${kitabSlug}`)} style={s.backBtn}>
           ← {kitab.title}
@@ -39,21 +54,17 @@ export default function BabPage() {
         {bab.arabicTitle && <div style={s.arabicTitle}>{bab.arabicTitle}</div>}
         <h1 style={s.title}>{bab.title}</h1>
         <p style={s.meta}>{materis.length} {isQuran ? 'Ayat' : 'Materi'}</p>
-
-        {/* Progress */}
         <div style={s.progressRow}>
           <div style={s.progressBar}>
             <div style={{ ...s.progressFill, width: `${pct}%` }}/>
           </div>
           <span style={s.progressText}>{completedCount}/{materis.length}</span>
         </div>
-
         <div style={s.ornRow}>
           <div style={s.ornLine}/><div style={s.diamond}/><div style={s.ornLine}/>
         </div>
       </div>
 
-      {/* Materi list */}
       <div style={s.body}>
         <div style={s.sectionLabel}>
           {isQuran ? 'AYAT' : 'MATERI'} — {materis.length} ITEM
@@ -100,7 +111,7 @@ const css = `
 `
 
 const s = {
-  root: { width: '100%', minHeight:'100dvh', background:'#F8F5EF', fontFamily:"'Nunito',sans-serif", paddingBottom:'80px' },
+  root: { width:'100%', minHeight:'100dvh', background:'#F8F5EF', fontFamily:"'Nunito',sans-serif", paddingBottom:'80px' },
   loadScreen: { minHeight:'100dvh', display:'flex', alignItems:'center', justifyContent:'center', background:'#F8F5EF' },
   spinner: { width:'32px', height:'32px', border:'3px solid #E8E0D0', borderTop:'3px solid #1C3D2E', borderRadius:'50%' },
   header: { padding:'20px 20px 0', color:'#F5EFE4' },
