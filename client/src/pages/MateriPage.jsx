@@ -163,8 +163,11 @@ export default function MateriPage() {
       <style>{css}</style>
 
       <div style={s.topBar}>
-        <button onClick={() => navigate(`/kitab/${kitab.slug}/${materi.bab.slug}`)} style={s.backBtn}>
-          ← {materi.bab.title}
+        <button onClick={() => kitab.type === 'HIKAM'
+          ? navigate(`/kitab/${kitab.slug}`)
+          : navigate(`/kitab/${kitab.slug}/${materi.bab.slug}`)
+        } style={s.backBtn}>
+          ← {kitab.type === 'HIKAM' ? kitab.title : materi.bab.title}
         </button>
         <div style={s.topRight}>
           <button onClick={handleBookmark} style={s.iconBtn}>
@@ -182,7 +185,9 @@ export default function MateriPage() {
       </div>
 
       <div style={{ ...s.titleSection, borderBottom: `3px solid ${barColor}20` }}>
-        <p style={{ ...s.kitabBreadcrumb, color: barColor }}>{kitab.title} · {materi.bab.title}</p>
+        <p style={{ ...s.kitabBreadcrumb, color: barColor }}>
+          {kitab.title}{kitab.type !== 'HIKAM' && ` · ${materi.bab.title}`}
+        </p>
         <h1 style={s.title}>{materi.title}</h1>
         {isCompleted && (
           <div style={{ ...s.completedBadge, color: barColor, borderColor: barColor + '40', background: barColor + '10' }}>
