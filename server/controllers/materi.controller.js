@@ -19,14 +19,16 @@ const getMateriById = async (req, res) => {
 
     if (!materi) return res.status(404).json({ message: 'Materi tidak ditemukan.' })
 
-    let isCompleted = false, isBookmarked = false
+    let isCompleted = false, isBookmarked = false, note = null
     if (userId) {
-      const [prog, bm] = await Promise.all([
+      const [prog, bm, nt] = await Promise.all([
         prisma.progress.findUnique({ where: { userId_materiId: { userId, materiId } } }),
         prisma.bookmark.findUnique({ where: { userId_materiId: { userId, materiId } } }),
+        prisma.note.findUnique({ where: { userId_materiId: { userId, materiId } }, select: { content: true } }),
       ])
       isCompleted = prog?.isCompleted ?? false
       isBookmarked = !!bm
+      note = nt?.content ?? null
     }
 
     const all = materi.bab.materis
@@ -38,7 +40,7 @@ const getMateriById = async (req, res) => {
       materi: { id: materi.id, title: materi.title, content: materi.content, orderNum: materi.orderNum,
         bab: { id: materi.bab.id, slug: materi.bab.slug, title: materi.bab.title, kitab: materi.bab.kitab }
       },
-      isCompleted, isBookmarked, prev, next,
+      isCompleted, isBookmarked, note, prev, next,
     })
   } catch (err) {
     console.error(err)
@@ -107,4 +109,35 @@ const getBookmarks = async (req, res) => {
   }
 }
 
-module.exports = { getMateriById, toggleComplete, toggleBookmark, getBookmarks }
+const saveNote = async (req, res) => {
+  try {
+    const { materiId } = req.params
+    const userId = req.user.id
+    const { content } = req.body
+
+    if (content === null || content === undefined)
+      return res.status(400).json({ message: 'Content diperlukan.' })
+
+    // Max 1000 karakter
+    if (content.length > 1000)
+      return res.status(400).json({ message: 'Catatan maksimal 1000 karakter.' })
+
+    // Hapus catatan jika content kosong
+    if (content.trim() === '') {
+      await prisma.note.deleteMany({ where: { userId, materiId } })
+      return res.json({ content: null })
+    }
+
+    const note = await prisma.note.upsert({
+      where: { userId_materiId: { userId, materiId } },
+      update: { content },
+      create: { userId, materiId, content },
+    })
+    res.json({ content: note.content })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Terjadi kesalahan server.' })
+  }
+}
+
+module.exports = { getMateriById, toggleComplete, toggleBookmark, getBookmarks, saveNote }

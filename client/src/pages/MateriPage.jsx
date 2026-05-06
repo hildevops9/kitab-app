@@ -95,12 +95,16 @@ export default function MateriPage() {
   const [data, setData] = useState(() => getCache(`materi_${materiId}`))
   const [loading, setLoading] = useState(() => !getCache(`materi_${materiId}`))
   const [completing, setCompleting] = useState(false)
+  const [note, setNote] = useState('')
+  const [noteSaving, setNoteSaving] = useState(false)
+  const [noteSaved, setNoteSaved] = useState(false)
+  const noteTimerRef = useRef(null)
   const prefetchedRef = useRef(new Set())
 
   useEffect(() => {
     setLoading(!getCache(`materi_${materiId}`))
     fetchMateri(materiId)
-      .then(d => setData(d))
+      .then(d => { setData(d); setNote(d.note ?? '') })
       .catch(() => navigate(-1))
       .finally(() => setLoading(false))
   }, [materiId])
@@ -117,14 +121,30 @@ export default function MateriPage() {
     })
   }, [data])
 
+  const handleNoteChange = (val) => {
+    if (val.length > 1000) return
+    setNote(val)
+    setNoteSaved(false)
+    clearTimeout(noteTimerRef.current)
+    noteTimerRef.current = setTimeout(async () => {
+      setNoteSaving(true)
+      try {
+        await api.post(`/materi/${materiId}/note`, { content: val })
+        // Update cache
+        const cached = getCache(`materi_${materiId}`)
+        if (cached) setCache(`materi_${materiId}`, { ...cached, note: val })
+        setNoteSaved(true)
+      } catch (e) { console.error(e) }
+      finally { setNoteSaving(false) }
+    }, 800) // auto-save 800ms setelah berhenti ketik
+  }
+
   const handleComplete = async () => {
     if (completing) return
     setCompleting(true)
     try {
       const res = await api.post(`/materi/${materiId}/complete`)
-      const updated = { ...data, isCompleted: res.data.isCompleted }
-      setData(updated)
-      setCache(`materi_${materiId}`, updated) // sync cache agar tidak stale saat balik
+      setData(prev => ({ ...prev, isCompleted: res.data.isCompleted }))
       // Invalidate cache bab agar progress terupdate
       const babKey = `bab_${data?.materi?.bab?.kitab?.slug}_${data?.materi?.bab?.slug}`
       sessionStorage.removeItem(babKey)
@@ -204,6 +224,23 @@ export default function MateriPage() {
         {!content?.type && (
           <div style={s.rawContent}><p>{JSON.stringify(content)}</p></div>
         )}
+
+        {/* Catatan pribadi */}
+        <div style={s.noteCard}>
+          <div style={s.noteHeader}>
+            <span style={s.noteLabel}>📝 Catatan Pribadi</span>
+            <span style={s.noteStatus}>
+              {noteSaving ? 'Menyimpan...' : noteSaved ? '✓ Tersimpan' : `${note.length}/1000`}
+            </span>
+          </div>
+          <textarea
+            style={s.noteTextarea}
+            placeholder="Tulis catatanmu di sini..."
+            value={note}
+            onChange={e => handleNoteChange(e.target.value)}
+            rows={4}
+          />
+        </div>
       </div>
 
       <div style={s.bottomBar}>
@@ -270,6 +307,11 @@ const s = {
   completedBadge: { display:'inline-block', fontSize:'11px', fontWeight:'700', padding:'4px 12px', borderRadius:'20px', border:'1px solid' },
   contentArea: { flex:1, padding:'16px 20px', display:'flex', flexDirection:'column', gap:'12px' },
   rawContent: { background:'#fff', borderRadius:'14px', padding:'16px', fontSize:'14px', color:'#3A3A3A', lineHeight:1.8 },
+  noteCard: { background:'#fff', borderRadius:'14px', padding:'16px 18px', border:'1px solid rgba(201,168,76,0.2)' },
+  noteHeader: { display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'10px' },
+  noteLabel: { fontSize:'12px', fontWeight:'700', color:'#5C3A1E', letterSpacing:'0.3px' },
+  noteStatus: { fontSize:'11px', color:'#A0906E', fontWeight:'600' },
+  noteTextarea: { width:'100%', border:'none', outline:'none', resize:'none', fontSize:'14px', color:'#3A3A3A', lineHeight:1.8, fontFamily:"'Nunito',sans-serif", background:'transparent', padding:0 },
   bottomBar: { padding:'14px 20px 28px', background:'#fff', borderTop:'1px solid rgba(0,0,0,0.06)', position:'sticky', bottom:0, display:'flex', flexDirection:'column', gap:'10px' },
   navRow: { display:'flex', gap:'8px' },
   navBtn: { flex:1, padding:'11px', borderRadius:'10px', background:'#fff', color:'#5A5A5A', fontWeight:'600', fontSize:'13px', cursor:'pointer', fontFamily:"'Nunito',sans-serif", WebkitTapHighlightColor:'transparent' },
