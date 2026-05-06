@@ -89,6 +89,78 @@ function HikamContent({ content }) {
   )
 }
 
+function NoteSection({ note, onSave, onDelete, noteSaving, barColor }) {
+  const [mode, setMode] = useState(note ? 'view' : 'empty') // 'empty' | 'edit' | 'view'
+  const [draft, setDraft] = useState(note || '')
+
+  // Sync kalau note berubah dari luar (navigasi antar materi)
+  useEffect(() => {
+    setDraft(note || '')
+    setMode(note ? 'view' : 'empty')
+  }, [note])
+
+  const handleSave = async () => {
+    if (!draft.trim()) return
+    await onSave(draft)
+    setMode('view')
+  }
+
+  const handleDelete = async () => {
+    await onDelete()
+    setDraft('')
+    setMode('empty')
+  }
+
+  return (
+    <div style={n.card}>
+      <div style={n.header}>
+        <span style={n.label}>📝 Catatan Pribadi</span>
+        {mode === 'view' && (
+          <div style={{ display:'flex', gap:'8px' }}>
+            <button onClick={() => { setDraft(note); setMode('edit') }} style={{ ...n.actionBtn, color: barColor, border: `1px solid ${barColor}30` }}>
+              ✏️ Edit
+            </button>
+            <button onClick={handleDelete} style={{ ...n.actionBtn, color:'#C0392B', border:'1px solid #C0392B30' }}>
+              🗑️ Hapus
+            </button>
+          </div>
+        )}
+      </div>
+
+      {mode === 'view' && (
+        <p style={n.noteText}>{note}</p>
+      )}
+
+      {(mode === 'edit' || mode === 'empty') && (
+        <>
+          <textarea
+            style={n.textarea}
+            placeholder="Tulis catatanmu di sini..."
+            value={draft}
+            onChange={e => e.target.value.length <= 1000 && setDraft(e.target.value)}
+            rows={4}
+            autoFocus={mode === 'edit'}
+          />
+          <div style={n.footer}>
+            <span style={n.counter}>{draft.length}/1000</span>
+            <div style={{ display:'flex', gap:'8px' }}>
+              {mode === 'edit' && (
+                <button onClick={() => setMode('view')} style={n.cancelBtn}>Batal</button>
+              )}
+              <button
+                onClick={handleSave}
+                disabled={noteSaving || !draft.trim()}
+                style={{ ...n.saveBtn, background: barColor, opacity: (!draft.trim() || noteSaving) ? 0.5 : 1 }}>
+                {noteSaving ? 'Menyimpan...' : 'Simpan'}
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
 export default function MateriPage() {
   const { materiId } = useParams()
   const navigate = useNavigate()
@@ -97,8 +169,6 @@ export default function MateriPage() {
   const [completing, setCompleting] = useState(false)
   const [note, setNote] = useState('')
   const [noteSaving, setNoteSaving] = useState(false)
-  const [noteSaved, setNoteSaved] = useState(false)
-  const noteTimerRef = useRef(null)
   const prefetchedRef = useRef(new Set())
 
   useEffect(() => {
@@ -121,22 +191,15 @@ export default function MateriPage() {
     })
   }, [data])
 
-  const handleNoteChange = (val) => {
-    if (val.length > 1000) return
-    setNote(val)
-    setNoteSaved(false)
-    clearTimeout(noteTimerRef.current)
-    noteTimerRef.current = setTimeout(async () => {
-      setNoteSaving(true)
-      try {
-        await api.post(`/materi/${materiId}/note`, { content: val })
-        // Update cache
-        const cached = getCache(`materi_${materiId}`)
-        if (cached) setCache(`materi_${materiId}`, { ...cached, note: val })
-        setNoteSaved(true)
-      } catch (e) { console.error(e) }
-      finally { setNoteSaving(false) }
-    }, 800) // auto-save 800ms setelah berhenti ketik
+  const saveNote = async (val) => {
+    setNoteSaving(true)
+    try {
+      await api.post(`/materi/${materiId}/note`, { content: val })
+      setNote(val)
+      const cached = getCache(`materi_${materiId}`)
+      if (cached) setCache(`materi_${materiId}`, { ...cached, note: val })
+    } catch (e) { console.error(e) }
+    finally { setNoteSaving(false) }
   }
 
   const handleComplete = async () => {
@@ -144,8 +207,9 @@ export default function MateriPage() {
     setCompleting(true)
     try {
       const res = await api.post(`/materi/${materiId}/complete`)
-      setData(prev => ({ ...prev, isCompleted: res.data.isCompleted }))
-      // Invalidate cache bab agar progress terupdate
+      const updated = { ...data, isCompleted: res.data.isCompleted }
+      setData(updated)
+      setCache(`materi_${materiId}`, updated)
       const babKey = `bab_${data?.materi?.bab?.kitab?.slug}_${data?.materi?.bab?.slug}`
       sessionStorage.removeItem(babKey)
     } catch (e) { console.error(e) }
@@ -225,22 +289,22 @@ export default function MateriPage() {
           <div style={s.rawContent}><p>{JSON.stringify(content)}</p></div>
         )}
 
-        {/* Catatan pribadi */}
-        <div style={s.noteCard}>
-          <div style={s.noteHeader}>
-            <span style={s.noteLabel}>📝 Catatan Pribadi</span>
-            <span style={s.noteStatus}>
-              {noteSaving ? 'Menyimpan...' : noteSaved ? '✓ Tersimpan' : `${note.length}/1000`}
-            </span>
-          </div>
-          <textarea
-            style={s.noteTextarea}
-            placeholder="Tulis catatanmu di sini..."
-            value={note}
-            onChange={e => handleNoteChange(e.target.value)}
-            rows={4}
-          />
-        </div>
+        {/* Catatan Pribadi */}
+        <NoteSection
+          note={note}
+          onSave={saveNote}
+          onDelete={async () => {
+            try {
+              await api.post(`/materi/${materiId}/note`, { content: '' })
+              const cached = getCache(`materi_${materiId}`)
+              if (cached) setCache(`materi_${materiId}`, { ...cached, note: null })
+              setNote('')
+              setNoteSaved(false)
+            } catch (e) { console.error(e) }
+          }}
+          noteSaving={noteSaving}
+          barColor={barColor}
+        />
       </div>
 
       <div style={s.bottomBar}>
@@ -266,6 +330,19 @@ export default function MateriPage() {
       </div>
     </div>
   )
+}
+
+const n = {
+  card: { background:'#fff', borderRadius:'14px', padding:'16px 18px', border:'1px solid rgba(201,168,76,0.25)' },
+  header: { display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'10px' },
+  label: { fontSize:'12px', fontWeight:'700', color:'#5C3A1E' },
+  noteText: { fontSize:'14px', color:'#3A3A3A', lineHeight:1.8, whiteSpace:'pre-wrap' },
+  textarea: { width:'100%', border:'1px solid #E5DDD0', borderRadius:'10px', padding:'10px 12px', fontSize:'14px', color:'#3A3A3A', lineHeight:1.8, fontFamily:"'Nunito',sans-serif", resize:'none', outline:'none', background:'#FDFAF5' },
+  footer: { display:'flex', justifyContent:'space-between', alignItems:'center', marginTop:'10px' },
+  counter: { fontSize:'11px', color:'#A0906E' },
+  saveBtn: { padding:'8px 20px', borderRadius:'8px', border:'none', color:'#fff', fontWeight:'700', fontSize:'13px', cursor:'pointer', fontFamily:"'Nunito',sans-serif" },
+  cancelBtn: { padding:'8px 16px', borderRadius:'8px', border:'1px solid #E5DDD0', background:'#fff', color:'#6B6B6B', fontWeight:'600', fontSize:'13px', cursor:'pointer', fontFamily:"'Nunito',sans-serif" },
+  actionBtn: { padding:'5px 12px', borderRadius:'8px', background:'#fff', fontWeight:'600', fontSize:'12px', cursor:'pointer', fontFamily:"'Nunito',sans-serif" },
 }
 
 const r = {
@@ -307,11 +384,6 @@ const s = {
   completedBadge: { display:'inline-block', fontSize:'11px', fontWeight:'700', padding:'4px 12px', borderRadius:'20px', border:'1px solid' },
   contentArea: { flex:1, padding:'16px 20px', display:'flex', flexDirection:'column', gap:'12px' },
   rawContent: { background:'#fff', borderRadius:'14px', padding:'16px', fontSize:'14px', color:'#3A3A3A', lineHeight:1.8 },
-  noteCard: { background:'#fff', borderRadius:'14px', padding:'16px 18px', border:'1px solid rgba(201,168,76,0.2)' },
-  noteHeader: { display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'10px' },
-  noteLabel: { fontSize:'12px', fontWeight:'700', color:'#5C3A1E', letterSpacing:'0.3px' },
-  noteStatus: { fontSize:'11px', color:'#A0906E', fontWeight:'600' },
-  noteTextarea: { width:'100%', border:'none', outline:'none', resize:'none', fontSize:'14px', color:'#3A3A3A', lineHeight:1.8, fontFamily:"'Nunito',sans-serif", background:'transparent', padding:0 },
   bottomBar: { padding:'14px 20px 28px', background:'#fff', borderTop:'1px solid rgba(0,0,0,0.06)', position:'sticky', bottom:0, display:'flex', flexDirection:'column', gap:'10px' },
   navRow: { display:'flex', gap:'8px' },
   navBtn: { flex:1, padding:'11px', borderRadius:'10px', background:'#fff', color:'#5A5A5A', fontWeight:'600', fontSize:'13px', cursor:'pointer', fontFamily:"'Nunito',sans-serif", WebkitTapHighlightColor:'transparent' },
