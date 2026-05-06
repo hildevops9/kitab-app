@@ -144,4 +144,59 @@ const getKitabBySlug = async (req, res) => {
   }
 }
 
-module.exports = { getAllKitab, getKitabBySlug }
+
+const getKitabMateris = async (req, res) => {
+  try {
+    const { slug } = req.params
+    const userId = req.user?.id
+
+    const kitab = await prisma.kitab.findUnique({
+      where: { slug },
+      include: {
+        babs: {
+          orderBy: { orderNum: 'asc' },
+          include: {
+            materis: {
+              orderBy: { orderNum: 'asc' },
+              select: { id: true, title: true, orderNum: true, content: true }
+            }
+          }
+        }
+      }
+    })
+
+    if (!kitab || !kitab.isPublished)
+      return res.status(404).json({ message: 'Kitab tidak ditemukan.' })
+
+    // Flatten semua materi dari semua bab
+    const allMateris = kitab.babs.flatMap(b => b.materis)
+    const allMateriIds = allMateris.map(m => m.id)
+
+    let progressSet = new Set()
+    if (userId && allMateriIds.length > 0) {
+      const progress = await prisma.progress.findMany({
+        where: { userId, materiId: { in: allMateriIds }, isCompleted: true },
+        select: { materiId: true }
+      })
+      progressSet = new Set(progress.map(p => p.materiId))
+    }
+
+    const completedCount = allMateriIds.filter(id => progressSet.has(id)).length
+
+    res.json({
+      kitab: {
+        id: kitab.id, slug: kitab.slug, title: kitab.title,
+        arabicTitle: kitab.arabicTitle, author: kitab.author,
+        coverColor: kitab.coverColor, type: kitab.type,
+        totalMateri: allMateriIds.length, completedCount,
+        progressPct: allMateriIds.length > 0 ? Math.round((completedCount / allMateriIds.length) * 100) : 0,
+      },
+      materis: allMateris.map(m => ({ ...m, isCompleted: progressSet.has(m.id) }))
+    })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Terjadi kesalahan server.' })
+  }
+}
+
+module.exports = { getAllKitab, getKitabBySlug, getKitabMateris }
