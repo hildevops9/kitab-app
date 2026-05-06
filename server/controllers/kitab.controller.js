@@ -51,7 +51,10 @@ const getAllKitab = async (req, res) => {
           const kitabMateriIds = new Set(k.babs.flatMap(b => b.materis.map(m => m.id)))
           const last = allProgressWithMateri.find(p => kitabMateriIds.has(p.materiId))
           if (last) {
-            lastProgressMap.set(k.id, `${last.materi.bab.title} : ${last.materi.title}`)
+            lastProgressMap.set(k.id, k.type === 'HIKAM'
+              ? last.materi.title
+              : `${last.materi.bab.title} : ${last.materi.title}`
+            )
           }
         })
       }
