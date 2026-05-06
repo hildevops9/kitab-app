@@ -122,7 +122,9 @@ export default function MateriPage() {
     setCompleting(true)
     try {
       const res = await api.post(`/materi/${materiId}/complete`)
-      setData(prev => ({ ...prev, isCompleted: res.data.isCompleted }))
+      const updated = { ...data, isCompleted: res.data.isCompleted }
+      setData(updated)
+      setCache(`materi_${materiId}`, updated) // sync cache agar tidak stale saat balik
       // Invalidate cache bab agar progress terupdate
       const babKey = `bab_${data?.materi?.bab?.kitab?.slug}_${data?.materi?.bab?.slug}`
       sessionStorage.removeItem(babKey)
