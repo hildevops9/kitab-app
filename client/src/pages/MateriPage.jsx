@@ -2,11 +2,11 @@ import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import api from '../lib/api'
 
-const CACHE_TTL = 10 * 60 * 1000 // 10 menit — konten jarang berubah
+const CACHE_TTL = 10 * 60 * 1000
 
 function getCache(key) {
   try {
-    const raw = sessionStorage.getItem(key) // sessionStorage: per session, lebih cepat dari localStorage
+    const raw = sessionStorage.getItem(key)
     if (!raw) return null
     const { data, ts } = JSON.parse(raw)
     if (Date.now() - ts > CACHE_TTL) return null
@@ -17,15 +17,14 @@ function setCache(key, data) {
   try { sessionStorage.setItem(key, JSON.stringify({ data, ts: Date.now() })) } catch {}
 }
 
-async function fetchMateri(materiId) {
+async function prefetchMateri(materiId) {
   const cacheKey = `materi_${materiId}`
-  const cached = getCache(cacheKey)
-  if (cached) return cached
+  if (getCache(cacheKey)) return
   const res = await api.get(`/materi/${materiId}`)
   setCache(cacheKey, res.data)
-  return res.data
 }
 
+// ── QuranContent ──────────────────────────────────────────────────────────────
 function QuranContent({ content }) {
   return (
     <div style={r.wrap}>
@@ -35,10 +34,7 @@ function QuranContent({ content }) {
       </div>
       {content.terjemahan && (
         <div style={r.section}>
-          <div style={r.sectionHead}>
-            <div style={{ ...r.dot, background:'#1C3D2E' }}/>
-            <span style={r.sectionLabel}>Terjemahan</span>
-          </div>
+          <div style={r.sectionHead}><div style={{ ...r.dot, background:'#1C3D2E' }}/><span style={r.sectionLabel}>Terjemahan</span></div>
           <p style={r.sectionText}>{content.terjemahan}</p>
         </div>
       )}
@@ -46,6 +42,7 @@ function QuranContent({ content }) {
   )
 }
 
+// ── HikamContent ──────────────────────────────────────────────────────────────
 function HikamContent({ content }) {
   return (
     <div style={r.wrap}>
@@ -55,19 +52,13 @@ function HikamContent({ content }) {
       </div>
       {content.terjemahan && (
         <div style={r.section}>
-          <div style={r.sectionHead}>
-            <div style={{ ...r.dot, background:'#5C3A1E' }}/>
-            <span style={r.sectionLabel}>Terjemahan</span>
-          </div>
+          <div style={r.sectionHead}><div style={{ ...r.dot, background:'#5C3A1E' }}/><span style={r.sectionLabel}>Terjemahan</span></div>
           <p style={r.sectionTextItalic}>{content.terjemahan}</p>
         </div>
       )}
       {content.penjelasan && (
         <div style={r.section}>
-          <div style={r.sectionHead}>
-            <div style={{ ...r.dot, background:'#C9A84C' }}/>
-            <span style={r.sectionLabel}>Penjelasan</span>
-          </div>
+          <div style={r.sectionHead}><div style={{ ...r.dot, background:'#C9A84C' }}/><span style={r.sectionLabel}>Penjelasan</span></div>
           <p style={r.sectionText}>{content.penjelasan}</p>
         </div>
       )}
@@ -89,69 +80,96 @@ function HikamContent({ content }) {
   )
 }
 
-function NoteSection({ note, onSave, onDelete, noteSaving, barColor }) {
-  const [mode, setMode] = useState(note ? 'view' : 'empty') // 'empty' | 'edit' | 'view'
-  const [draft, setDraft] = useState(note || '')
+// ── NoteSection ───────────────────────────────────────────────────────────────
+// savedNote : string | null  (dari server, di-pass parent)
+// onSave(text) : async       (simpan ke server)
+// onDelete() : async         (hapus dari server)
+function NoteSection({ savedNote, onSave, onDelete, barColor }) {
+  const [mode, setMode] = useState(savedNote ? 'view' : 'empty')
+  const [draft, setDraft] = useState(savedNote || '')
+  const [saving, setSaving] = useState(false)
 
-  // Sync kalau note berubah dari luar (navigasi antar materi)
+  // Reset setiap kali pindah materi
   useEffect(() => {
-    setDraft(note || '')
-    setMode(note ? 'view' : 'empty')
-  }, [note])
+    setMode(savedNote ? 'view' : 'empty')
+    setDraft(savedNote || '')
+  }, [savedNote])
 
-  const handleSave = async () => {
+  const doSave = async () => {
     if (!draft.trim()) return
-    await onSave(draft)
-    setMode('view')
+    setSaving(true)
+    try {
+      await onSave(draft.trim())
+      setMode('view')
+    } finally {
+      setSaving(false)
+    }
   }
 
-  const handleDelete = async () => {
-    await onDelete()
-    setDraft('')
-    setMode('empty')
+  const doDelete = async () => {
+    setSaving(true)
+    try {
+      await onDelete()
+      setDraft('')
+      setMode('empty')
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
     <div style={n.card}>
+      {/* Header */}
       <div style={n.header}>
         <span style={n.label}>📝 Catatan Pribadi</span>
         {mode === 'view' && (
-          <div style={{ display:'flex', gap:'8px' }}>
-            <button onClick={() => { setDraft(note); setMode('edit') }} style={{ ...n.actionBtn, color: barColor, border: `1px solid ${barColor}30` }}>
+          <div style={{ display:'flex', gap:'6px' }}>
+            <button
+              onClick={() => { setDraft(savedNote || ''); setMode('edit') }}
+              style={{ ...n.chip, color: barColor, borderColor: `${barColor}50` }}>
               ✏️ Edit
             </button>
-            <button onClick={handleDelete} style={{ ...n.actionBtn, color:'#C0392B', border:'1px solid #C0392B30' }}>
+            <button
+              onClick={doDelete}
+              disabled={saving}
+              style={{ ...n.chip, color:'#C0392B', borderColor:'#C0392B50' }}>
               🗑️ Hapus
             </button>
           </div>
         )}
       </div>
 
+      {/* View mode */}
       {mode === 'view' && (
-        <p style={n.noteText}>{note}</p>
+        <p style={n.noteText}>{savedNote}</p>
       )}
 
+      {/* Edit / Empty mode */}
       {(mode === 'edit' || mode === 'empty') && (
         <>
           <textarea
+            autoFocus
             style={n.textarea}
             placeholder="Tulis catatanmu di sini..."
             value={draft}
             onChange={e => e.target.value.length <= 1000 && setDraft(e.target.value)}
             rows={4}
-            autoFocus={mode === 'edit'}
           />
           <div style={n.footer}>
             <span style={n.counter}>{draft.length}/1000</span>
             <div style={{ display:'flex', gap:'8px' }}>
               {mode === 'edit' && (
-                <button onClick={() => setMode('view')} style={n.cancelBtn}>Batal</button>
+                <button
+                  onClick={() => { setDraft(savedNote || ''); setMode('view') }}
+                  style={n.cancelBtn}>
+                  Batal
+                </button>
               )}
               <button
-                onClick={handleSave}
-                disabled={noteSaving || !draft.trim()}
-                style={{ ...n.saveBtn, background: barColor, opacity: (!draft.trim() || noteSaving) ? 0.5 : 1 }}>
-                {noteSaving ? 'Menyimpan...' : 'Simpan'}
+                onClick={doSave}
+                disabled={saving || !draft.trim()}
+                style={{ ...n.saveBtn, background: barColor, opacity: (!draft.trim() || saving) ? 0.4 : 1 }}>
+                {saving ? 'Menyimpan...' : 'Simpan'}
               </button>
             </div>
           </div>
@@ -161,46 +179,35 @@ function NoteSection({ note, onSave, onDelete, noteSaving, barColor }) {
   )
 }
 
+// ── MateriPage ────────────────────────────────────────────────────────────────
 export default function MateriPage() {
   const { materiId } = useParams()
   const navigate = useNavigate()
   const [data, setData] = useState(() => getCache(`materi_${materiId}`))
   const [loading, setLoading] = useState(() => !getCache(`materi_${materiId}`))
   const [completing, setCompleting] = useState(false)
-  const [note, setNote] = useState('')
-  const [noteSaving, setNoteSaving] = useState(false)
   const prefetchedRef = useRef(new Set())
 
   useEffect(() => {
+    prefetchedRef.current = new Set()
     setLoading(!getCache(`materi_${materiId}`))
-    fetchMateri(materiId)
-      .then(d => { setData(d); setNote(d.note ?? '') })
+    // Selalu fetch fresh dari API agar note selalu terbaru
+    api.get(`/materi/${materiId}`)
+      .then(res => { setData(res.data); setCache(`materi_${materiId}`, res.data) })
       .catch(() => navigate(-1))
       .finally(() => setLoading(false))
   }, [materiId])
 
-  // Prefetch prev/next setelah data loaded
+  // Prefetch prev/next (background, tidak block UI)
   useEffect(() => {
     if (!data) return
-    const { prev, next } = data
-    ;[prev, next].forEach(item => {
+    ;[data.prev, data.next].forEach(item => {
       if (item && !prefetchedRef.current.has(item.id)) {
         prefetchedRef.current.add(item.id)
-        fetchMateri(item.id).catch(() => {}) // silent prefetch
+        prefetchMateri(item.id).catch(() => {})
       }
     })
   }, [data])
-
-  const saveNote = async (val) => {
-    setNoteSaving(true)
-    try {
-      await api.post(`/materi/${materiId}/note`, { content: val })
-      setNote(val)
-      const cached = getCache(`materi_${materiId}`)
-      if (cached) setCache(`materi_${materiId}`, { ...cached, note: val })
-    } catch (e) { console.error(e) }
-    finally { setNoteSaving(false) }
-  }
 
   const handleComplete = async () => {
     if (completing) return
@@ -219,19 +226,24 @@ export default function MateriPage() {
   const handleBookmark = async () => {
     try {
       const res = await api.post(`/materi/${materiId}/bookmark`)
-      setData(prev => ({ ...prev, isBookmarked: res.data.isBookmarked }))
+      const updated = { ...data, isBookmarked: res.data.isBookmarked }
+      setData(updated)
+      setCache(`materi_${materiId}`, updated)
     } catch (e) { console.error(e) }
   }
 
-  const goTo = (id) => {
-    if (!id) return
-    const cached = getCache(`materi_${id}`)
-    if (cached) {
-      setData(cached)
-      navigate(`/materi/${id}`, { replace: false })
-    } else {
-      navigate(`/materi/${id}`)
-    }
+  const handleNoteSave = async (text) => {
+    await api.post(`/materi/${materiId}/note`, { content: text })
+    const updated = { ...data, note: text }
+    setData(updated)
+    setCache(`materi_${materiId}`, updated)
+  }
+
+  const handleNoteDelete = async () => {
+    await api.post(`/materi/${materiId}/note`, { content: '' })
+    const updated = { ...data, note: null }
+    setData(updated)
+    setCache(`materi_${materiId}`, updated)
   }
 
   if (loading && !data) return (
@@ -239,7 +251,7 @@ export default function MateriPage() {
   )
   if (!data) return null
 
-  const { materi, isCompleted, isBookmarked, prev, next } = data
+  const { materi, isCompleted, isBookmarked, note, prev, next } = data
   const kitab = materi.bab.kitab
   const barColor = kitab.coverColor || '#1C3D2E'
   const content = materi.content
@@ -255,19 +267,12 @@ export default function MateriPage() {
         } style={s.backBtn}>
           ← {kitab.type === 'HIKAM' ? kitab.title : materi.bab.title}
         </button>
-        <div style={s.topRight}>
-          <button onClick={handleBookmark} style={s.iconBtn}>
-            {isBookmarked ? (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill={barColor} stroke={barColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-              </svg>
-            ) : (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-              </svg>
-            )}
-          </button>
-        </div>
+        <button onClick={handleBookmark} style={s.iconBtn}>
+          {isBookmarked
+            ? <svg width="20" height="20" viewBox="0 0 24 24" fill={barColor} stroke={barColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            : <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          }
+        </button>
       </div>
 
       <div style={{ ...s.titleSection, borderBottom: `3px solid ${barColor}20` }}>
@@ -276,7 +281,7 @@ export default function MateriPage() {
         </p>
         <h1 style={s.title}>{materi.title}</h1>
         {isCompleted && (
-          <div style={{ ...s.completedBadge, color: barColor, borderColor: barColor + '40', background: barColor + '10' }}>
+          <div style={{ ...s.completedBadge, color: barColor, borderColor: barColor+'40', background: barColor+'10' }}>
             ✓ Sudah dipelajari
           </div>
         )}
@@ -285,35 +290,23 @@ export default function MateriPage() {
       <div style={s.contentArea}>
         {content?.type === 'quran' && <QuranContent content={content}/>}
         {content?.type === 'hikam' && <HikamContent content={content}/>}
-        {!content?.type && (
-          <div style={s.rawContent}><p>{JSON.stringify(content)}</p></div>
-        )}
+        {!content?.type && <div style={s.rawContent}><p>{JSON.stringify(content)}</p></div>}
 
-        {/* Catatan Pribadi */}
         <NoteSection
-          note={note}
-          onSave={saveNote}
-          onDelete={async () => {
-            try {
-              await api.post(`/materi/${materiId}/note`, { content: '' })
-              const cached = getCache(`materi_${materiId}`)
-              if (cached) setCache(`materi_${materiId}`, { ...cached, note: null })
-              setNote('')
-              setNoteSaved(false)
-            } catch (e) { console.error(e) }
-          }}
-          noteSaving={noteSaving}
+          savedNote={note ?? null}
+          onSave={handleNoteSave}
+          onDelete={handleNoteDelete}
           barColor={barColor}
         />
       </div>
 
       <div style={s.bottomBar}>
         <div style={s.navRow}>
-          <button onClick={() => goTo(prev?.id)} disabled={!prev}
-            style={{ ...s.navBtn, opacity: prev ? 1 : 0.3, border: `1.5px solid ${barColor}30` }}>
+          <button onClick={() => prev && navigate(`/materi/${prev.id}`)} disabled={!prev}
+            style={{ ...s.navBtn, opacity: prev ? 1 : 0.3, border:`1.5px solid ${barColor}30` }}>
             ← Sebelumnya
           </button>
-          <button onClick={() => goTo(next?.id)} disabled={!next}
+          <button onClick={() => next && navigate(`/materi/${next.id}`)} disabled={!next}
             style={{ ...s.navBtnNext, opacity: next ? 1 : 0.3, background: next ? barColor : '#ccc' }}>
             Selanjutnya →
           </button>
@@ -321,7 +314,7 @@ export default function MateriPage() {
         <button onClick={handleComplete} disabled={completing}
           style={{
             ...s.completeBtn,
-            background: isCompleted ? barColor + '15' : barColor,
+            background: isCompleted ? barColor+'15' : barColor,
             color: isCompleted ? barColor : '#fff',
             border: isCompleted ? `1.5px solid ${barColor}40` : 'none',
           }}>
@@ -332,17 +325,18 @@ export default function MateriPage() {
   )
 }
 
+// ── Styles ────────────────────────────────────────────────────────────────────
 const n = {
-  card: { background:'#fff', borderRadius:'14px', padding:'16px 18px', border:'1px solid rgba(201,168,76,0.25)' },
+  card: { background:'#fff', borderRadius:'14px', padding:'16px 18px', border:'1px solid #EDE7D9' },
   header: { display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'10px' },
   label: { fontSize:'12px', fontWeight:'700', color:'#5C3A1E' },
-  noteText: { fontSize:'14px', color:'#3A3A3A', lineHeight:1.8, whiteSpace:'pre-wrap' },
-  textarea: { width:'100%', border:'1px solid #E5DDD0', borderRadius:'10px', padding:'10px 12px', fontSize:'14px', color:'#3A3A3A', lineHeight:1.8, fontFamily:"'Nunito',sans-serif", resize:'none', outline:'none', background:'#FDFAF5' },
+  noteText: { fontSize:'14px', color:'#3A3A3A', lineHeight:1.9, whiteSpace:'pre-wrap', wordBreak:'break-word' },
+  textarea: { width:'100%', border:'1px solid #E5DDD0', borderRadius:'10px', padding:'10px 12px', fontSize:'14px', color:'#3A3A3A', lineHeight:1.8, fontFamily:"'Nunito',sans-serif", resize:'none', outline:'none', background:'#FDFAF5', display:'block', boxSizing:'border-box' },
   footer: { display:'flex', justifyContent:'space-between', alignItems:'center', marginTop:'10px' },
   counter: { fontSize:'11px', color:'#A0906E' },
-  saveBtn: { padding:'8px 20px', borderRadius:'8px', border:'none', color:'#fff', fontWeight:'700', fontSize:'13px', cursor:'pointer', fontFamily:"'Nunito',sans-serif" },
+  saveBtn: { padding:'8px 22px', borderRadius:'8px', border:'none', color:'#fff', fontWeight:'700', fontSize:'13px', cursor:'pointer', fontFamily:"'Nunito',sans-serif" },
   cancelBtn: { padding:'8px 16px', borderRadius:'8px', border:'1px solid #E5DDD0', background:'#fff', color:'#6B6B6B', fontWeight:'600', fontSize:'13px', cursor:'pointer', fontFamily:"'Nunito',sans-serif" },
-  actionBtn: { padding:'5px 12px', borderRadius:'8px', background:'#fff', fontWeight:'600', fontSize:'12px', cursor:'pointer', fontFamily:"'Nunito',sans-serif" },
+  chip: { padding:'4px 10px', borderRadius:'8px', background:'#fff', fontWeight:'600', fontSize:'11px', cursor:'pointer', fontFamily:"'Nunito',sans-serif", border:'1px solid' },
 }
 
 const r = {
@@ -368,6 +362,7 @@ const css = `
   html,body,#root { background:#F8F5EF; }
   @keyframes spin { to { transform:rotate(360deg); } }
   .spin { animation:spin 0.8s linear infinite; }
+  textarea:focus { border-color: #C9A84C !important; outline: none; }
 `
 
 const s = {
@@ -376,13 +371,12 @@ const s = {
   spinner: { width:'32px', height:'32px', border:'3px solid #E8E0D0', borderTop:'3px solid #1C3D2E', borderRadius:'50%' },
   topBar: { display:'flex', justifyContent:'space-between', alignItems:'center', padding:'16px 20px', background:'#F8F5EF', position:'sticky', top:0, zIndex:10, borderBottom:'1px solid rgba(0,0,0,0.05)' },
   backBtn: { background:'none', border:'none', color:'#6B6B6B', fontSize:'13px', fontWeight:'600', cursor:'pointer', padding:0, fontFamily:"'Nunito',sans-serif", WebkitTapHighlightColor:'transparent' },
-  topRight: { display:'flex', gap:'8px' },
   iconBtn: { background:'none', border:'none', cursor:'pointer', padding:'4px', display:'flex', alignItems:'center', WebkitTapHighlightColor:'transparent' },
   titleSection: { padding:'16px 20px 18px', background:'#fff', marginBottom:'2px' },
   kitabBreadcrumb: { fontSize:'11px', fontWeight:'700', letterSpacing:'0.5px', marginBottom:'6px' },
   title: { fontFamily:'Lora,serif', fontSize:'20px', fontWeight:'700', color:'#1C3D2E', lineHeight:1.3, marginBottom:'8px' },
   completedBadge: { display:'inline-block', fontSize:'11px', fontWeight:'700', padding:'4px 12px', borderRadius:'20px', border:'1px solid' },
-  contentArea: { flex:1, padding:'16px 20px', display:'flex', flexDirection:'column', gap:'12px' },
+  contentArea: { flex:1, padding:'16px 20px 28px', display:'flex', flexDirection:'column', gap:'12px' },
   rawContent: { background:'#fff', borderRadius:'14px', padding:'16px', fontSize:'14px', color:'#3A3A3A', lineHeight:1.8 },
   bottomBar: { padding:'14px 20px 28px', background:'#fff', borderTop:'1px solid rgba(0,0,0,0.06)', position:'sticky', bottom:0, display:'flex', flexDirection:'column', gap:'10px' },
   navRow: { display:'flex', gap:'8px' },
