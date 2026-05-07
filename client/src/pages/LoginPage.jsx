@@ -105,7 +105,7 @@ const s = {
   heroWrap: { position: 'relative', width: '100%', overflow: 'hidden' },
   heroImg: { width: '100%', display: 'block', objectFit: 'cover', objectPosition: 'center' },
   topNav: {
-    position: 'absolute', top: 16, left: 0, right: 0,
+    position: 'absolute', top: 'max(16px, env(safe-area-inset-top, 16px))', left: 0, right: 0,
     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
     padding: '0 20px', zIndex: 2,
   },

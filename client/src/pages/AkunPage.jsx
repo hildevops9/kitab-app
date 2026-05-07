@@ -16,7 +16,7 @@ export default function AkunPage() {
       <style>{css}</style>
 
       {/* Profile header */}
-      <div style={s.header}>
+      <div style={s.header} className="header-safe">
         <div style={s.avatarWrap}>
           {user?.avatarUrl
             ? <img src={user.avatarUrl} alt="" style={s.avatarImg}/>

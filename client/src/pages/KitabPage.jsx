@@ -141,7 +141,7 @@ export default function KitabPage() {
       <style>{css}</style>
 
       {/* Header */}
-      <div style={{ ...s.header, background: `linear-gradient(160deg, ${barColor}F0, ${barColor})` }}>
+      <div style={{ ...s.header, background: `linear-gradient(160deg, ${barColor}F0, ${barColor})` }} className="header-safe">
         <button onClick={() => navigate('/kitab')} style={s.backBtn}>← Kembali</button>
         <div style={s.headerContent}>
           {kitab.arabicTitle && <div style={s.arabicTitle}>{kitab.arabicTitle}</div>}

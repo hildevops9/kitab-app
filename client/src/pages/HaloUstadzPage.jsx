@@ -16,7 +16,7 @@ export default function HaloUstadzPage() {
       <style>{css}</style>
 
       {/* Header */}
-      <div style={s.header}>
+      <div style={s.header} className="header-safe">
         <div style={s.headerAr}>السُّؤَالُ</div>
         <h1 style={s.headerTitle}>Halo Ustadz</h1>
         <p style={s.headerSub}>Ada yang ingin kamu tanyakan?</p>

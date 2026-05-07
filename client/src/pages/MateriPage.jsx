@@ -260,7 +260,7 @@ export default function MateriPage() {
     <div style={s.root} className="page-root">
       <style>{css}</style>
 
-      <div style={s.topBar}>
+      <div style={s.topBar} className="topbar-safe">
         <button onClick={() => kitab.type === 'HIKAM'
           ? navigate(`/kitab/${kitab.slug}`)
           : navigate(`/kitab/${kitab.slug}/${materi.bab.slug}`)

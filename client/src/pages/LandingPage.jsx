@@ -256,14 +256,14 @@ const s = {
   // Navbar
   nav: {
     position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-    padding: '20px 40px',
+    padding: 'max(20px, calc(env(safe-area-inset-top, 0px) + 12px)) 40px 20px',
     transition: 'all 0.3s ease',
   },
   navScrolled: {
     background: 'rgba(248,244,237,0.92)',
     backdropFilter: 'blur(12px)',
     borderBottom: '1px solid rgba(201,168,76,0.15)',
-    padding: '14px 40px',
+    padding: 'max(14px, calc(env(safe-area-inset-top, 0px) + 8px)) 40px 14px',
     boxShadow: '0 4px 30px rgba(28,61,46,0.06)',
   },
   navInner: {

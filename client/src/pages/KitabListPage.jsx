@@ -64,7 +64,7 @@ export default function KitabListPage() {
     <div style={s.root} className="page-root">
       <style>{css}</style>
 
-      <div style={s.header}>
+      <div style={s.header} className="topbar-safe">
         <h1 style={s.title}>Kitab</h1>
         <div style={s.searchWrap}>
           <span style={s.searchIcon}>🔍</span>

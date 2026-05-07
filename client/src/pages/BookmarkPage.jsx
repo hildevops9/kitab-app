@@ -32,7 +32,7 @@ export default function BabPage() {
       <style>{css}</style>
 
       {/* Header */}
-      <div style={{ ...s.header, background: `linear-gradient(160deg,${barColor}F0,${barColor})` }}>
+      <div style={{ ...s.header, background: `linear-gradient(160deg,${barColor}F0,${barColor})` }} className="header-safe">
         <button onClick={() => navigate(`/kitab/${kitabSlug}`)} style={s.backBtn}>
           ← {kitab.title}
         </button>

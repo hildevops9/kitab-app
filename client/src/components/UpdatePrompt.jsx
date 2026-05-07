@@ -59,12 +59,13 @@ export default function UpdatePrompt() {
 
 const s = {
   banner: {
-    position: 'fixed', bottom: 20, left: 16, right: 16, zIndex: 9999,
+    position: 'fixed',
+    bottom: 'calc(72px + env(safe-area-inset-bottom, 0px))', // di atas BottomNav
+    left: 16, right: 16, zIndex: 9999,
     background: '#1C3D2E', borderRadius: '14px',
     padding: '14px 16px',
     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
     boxShadow: '0 8px 32px rgba(0,0,0,0.25)',
-    maxWidth: '398px', margin: '0 auto',
   },
   text: { fontSize: '14px', fontWeight: '600', color: '#F2E8D5' },
   btn: {

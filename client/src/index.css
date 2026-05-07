@@ -5,14 +5,23 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+:root {
+  /* Safe area insets — dipakai semua komponen via var(--sat) dll */
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+}
+
 html {
-  /* Kunci: font-size responsif berdasarkan lebar layar */
-  /* Minimum 14px, maksimum 18px, scaling linear */
   font-size: clamp(14px, 4vw, 18px);
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   height: 100%;
   height: -webkit-fill-available;
+  /* Background html = warna header utama, 
+     agar notch iPhone tidak tampak polos */
+  background: #1C3D2E;
 }
 
 body {
@@ -24,7 +33,6 @@ body {
   background: #F8F5EF;
   font-family: -apple-system, BlinkMacSystemFont, 'Nunito', sans-serif;
   -webkit-font-smoothing: antialiased;
-  /* Penting: font-size body ikut html */
   font-size: 1rem;
 }
 

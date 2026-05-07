@@ -4,7 +4,7 @@ export function CatatanPage() {
   return (
     <div style={s.root} className="page-root">
       <style>{css}</style>
-      <div style={s.header}><h1 style={s.title}>Catatan</h1></div>
+      <div style={s.header} className="topbar-safe"><h1 style={s.title}>Catatan</h1></div>
       <div style={s.body}>
         <div style={s.empty}>
           <div style={{ fontSize:'48px', marginBottom:'16px' }}>📝</div>

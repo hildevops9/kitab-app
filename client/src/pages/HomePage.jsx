@@ -66,7 +66,7 @@ export default function HomePage() {
       <style>{css}</style>
 
       {/* Header */}
-      <div style={s.header}>
+      <div style={s.header} className="header-safe">
         <div style={s.headerTop}>
           <div>
             <p style={s.salam}>Assalamu'alaikum,</p>
