@@ -21,6 +21,7 @@ export function AuthProvider({ children }) {
       .catch(() => {
         setUser(null)
         localStorage.removeItem('kitab_user')
+        // Jangan hapus guest flag di sini
       })
       .finally(() => setLoading(false))
   }, [])
@@ -28,12 +29,13 @@ export function AuthProvider({ children }) {
   const login = (userData) => {
     setUser(userData)
     localStorage.setItem('kitab_user', JSON.stringify(userData))
+    localStorage.removeItem('guest') // hapus guest mode saat login
   }
 
   const logout = async () => {
     await api.post('/auth/logout')
     setUser(null)
-    // Bersihkan semua cache saat logout
+    localStorage.removeItem('guest')
     Object.keys(localStorage)
       .filter(k => k.startsWith('kitab_'))
       .forEach(k => localStorage.removeItem(k))

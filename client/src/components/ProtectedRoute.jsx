@@ -1,7 +1,7 @@
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 
-export const isGuest = () => sessionStorage.getItem('guest') === 'true'
+export const isGuest = () => localStorage.getItem('guest') === 'true'
 
 export default function ProtectedRoute({ children, roles = [] }) {
   const { user, loading } = useAuth()

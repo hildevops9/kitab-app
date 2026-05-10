@@ -14,17 +14,11 @@ export default function LoginPage() {
     setError(''); setLoading(true)
     try {
       const res = await api.post('/auth/google', { idToken: credentialResponse.credential })
-      sessionStorage.removeItem('guest')
       login(res.data.user)
       navigate('/home')
     } catch {
       setError('Login gagal. Pastikan kamu menggunakan akun Google yang valid.')
     } finally { setLoading(false) }
-  }
-
-  const handleGuest = () => {
-    sessionStorage.setItem('guest', 'true')
-    navigate('/home')
   }
 
   return (
@@ -54,7 +48,7 @@ export default function LoginPage() {
 
         {error && <div style={s.errorBox}>⚠ {error}</div>}
 
-        {/* Google button */}
+        {/* Google button — satu-satunya cara masuk */}
         <div style={s.googleSection}>
           {loading ? (
             <div style={s.loadingBox}>
@@ -73,17 +67,6 @@ export default function LoginPage() {
             />
           )}
         </div>
-
-        {/* Divider */}
-        <div style={s.divider}>
-          <div style={s.dividerLine}/><span style={s.dividerText}>atau</span><div style={s.dividerLine}/>
-        </div>
-
-        {/* Tombol guest */}
-        <button onClick={handleGuest} style={s.guestBtn}>
-          Lanjutkan tanpa akun →
-        </button>
-        <p style={s.guestNote}>Tanpa akun, progress belajar tidak tersimpan</p>
 
         {/* Info box */}
         <div style={s.infoBox}>
@@ -176,9 +159,4 @@ const s = {
   infoDesc: { fontSize: '12px', color: '#8A7A65', lineHeight: 1.6 },
   footer: { textAlign: 'center', fontSize: '13px', color: '#8A7A65', marginTop: 'auto' },
   link: { color: '#1C3D2E', fontWeight: '700', textDecoration: 'none' },
-  divider: { display:'flex', alignItems:'center', gap:'12px', marginBottom:'16px' },
-  dividerLine: { flex:1, height:'1px', background:'#E5DDD0' },
-  dividerText: { fontSize:'12px', color:'#A0906E', fontWeight:'600', flexShrink:0 },
-  guestBtn: { width:'100%', padding:'14px', borderRadius:'12px', border:'1.5px solid #D4C9B8', background:'#fff', color:'#1C3D2E', fontWeight:'700', fontSize:'15px', cursor:'pointer', fontFamily:"'Nunito',sans-serif", marginBottom:'10px' },
-  guestNote: { textAlign:'center', fontSize:'11px', color:'#A0906E', marginBottom:'20px' },
 }
