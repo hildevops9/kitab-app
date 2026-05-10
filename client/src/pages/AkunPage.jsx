@@ -1,16 +1,63 @@
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import BottomNav from '../components/BottomNav'
+import { isGuest } from '../components/ProtectedRoute'
 
 export default function AkunPage() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const guest = isGuest()
 
   const handleLogout = async () => {
     await logout()
     navigate('/login')
   }
 
+  const handleLogin = () => {
+    sessionStorage.removeItem('guest')
+    navigate('/login')
+  }
+
+  // ── Tampilan untuk guest ────────────────────────────────────────────────────
+  if (guest || !user) return (
+    <div style={s.root} className="page-root">
+      <style>{css}</style>
+      <div style={s.header} className="header-safe">
+        <div style={s.avatarWrap}>
+          <div style={{ ...s.avatarPlaceholder, fontSize:'36px', background:'rgba(255,255,255,0.15)' }}>👤</div>
+        </div>
+        <h2 style={s.name}>Tamu</h2>
+        <p style={s.email}>Belum masuk ke akun</p>
+      </div>
+      <div style={s.body}>
+        <div style={s.guestCard}>
+          <div style={s.guestIcon}>🔐</div>
+          <h3 style={s.guestTitle}>Masuk untuk fitur lengkap</h3>
+          <p style={s.guestDesc}>Login dengan Google untuk menyimpan progress belajar, bookmark, dan catatan pribadimu.</p>
+          <button onClick={handleLogin} style={s.loginBtn}>
+            Masuk dengan Google
+          </button>
+        </div>
+        {[
+          { icon:'📖', label:'Baca kitab', done: true },
+          { icon:'📊', label:'Simpan progress belajar', done: false },
+          { icon:'🔖', label:'Bookmark materi', done: false },
+          { icon:'📝', label:'Catatan pribadi', done: false },
+        ].map(f => (
+          <div key={f.label} style={{ ...s.featureItem, opacity: f.done ? 1 : 0.5 }}>
+            <span style={s.featureIcon}>{f.icon}</span>
+            <span style={s.featureLabel}>{f.label}</span>
+            <span style={{ fontSize:'14px', color: f.done ? '#2D6A4F' : '#A0906E' }}>
+              {f.done ? '✓' : '🔒'}
+            </span>
+          </div>
+        ))}
+      </div>
+      <BottomNav active="akun"/>
+    </div>
+  )
+
+  // ── Tampilan untuk user login ───────────────────────────────────────────────
   return (
     <div style={s.root} className="page-root">
       <style>{css}</style>
@@ -81,4 +128,12 @@ const s = {
   menuSub: { fontSize:'12px', color:'#A0906E' },
   menuArrow: { fontSize:'20px', color:'#C9C0B0' },
   logoutBtn: { marginTop:'8px', width:'100%', padding:'15px', borderRadius:'12px', border:'1.5px solid #DC2626', background:'transparent', color:'#DC2626', fontWeight:'700', fontSize:'15px', cursor:'pointer', fontFamily:"'Nunito',sans-serif" },
+  guestCard: { background:'#fff', borderRadius:'16px', padding:'24px 20px', textAlign:'center', marginBottom:'12px', border:'1px solid rgba(28,61,46,0.1)' },
+  guestIcon: { fontSize:'40px', marginBottom:'12px' },
+  guestTitle: { fontFamily:'Lora,serif', fontSize:'18px', fontWeight:'700', color:'#1C3D2E', marginBottom:'8px' },
+  guestDesc: { fontSize:'13px', color:'#8A7A65', lineHeight:1.6, marginBottom:'20px' },
+  loginBtn: { width:'100%', padding:'14px', borderRadius:'12px', border:'none', background:'#1C3D2E', color:'#fff', fontWeight:'700', fontSize:'15px', cursor:'pointer', fontFamily:"'Nunito',sans-serif" },
+  featureItem: { background:'#fff', borderRadius:'12px', padding:'14px 16px', display:'flex', alignItems:'center', gap:'12px' },
+  featureIcon: { fontSize:'18px', flexShrink:0 },
+  featureLabel: { flex:1, fontSize:'14px', fontWeight:'600', color:'#1C3D2E' },
 }
