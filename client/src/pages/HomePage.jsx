@@ -36,6 +36,8 @@ function setCache(data) {
 
 export default function HomePage() {
   const { user } = useAuth()
+  const isGuest = !user && localStorage.getItem('guest') === 'true'
+  const displayName = user?.name?.split(' ').slice(0,2).join(' ') || (isGuest ? 'Tamu' : 'Ikhwan')
   const navigate = useNavigate()
 
   const [kitabs, setKitabs] = useState(() => getCache() || [])
@@ -66,11 +68,11 @@ export default function HomePage() {
       <style>{css}</style>
 
       {/* Header */}
-      <div style={s.header} className="header-safe">
+      <div style={s.header}>
         <div style={s.headerTop}>
           <div>
             <p style={s.salam}>Assalamu'alaikum,</p>
-            <h1 style={s.name}>{user?.name?.split(' ').slice(0, 2).join(' ')} 👋</h1>
+            <h1 style={s.name}>{displayName} 👋</h1>
             <p style={s.motto}>Semangat belajar hari ini!</p>
           </div>
           <div style={s.avatarWrap}>
@@ -78,7 +80,7 @@ export default function HomePage() {
             <div style={s.avatar} onClick={() => navigate('/akun')}>
               {user?.avatarUrl
                 ? <img src={user.avatarUrl} alt="" style={s.avatarImg}/>
-                : <span style={s.avatarLetter}>{user?.name?.[0]?.toUpperCase()}</span>
+                : <span style={s.avatarLetter}>{user?.name?.[0]?.toUpperCase() || '👤'}</span>
               }
             </div>
           </div>
