@@ -4,8 +4,8 @@ const { getAllKitab, getKitabBySlug, getKitabMateris } = require('../controllers
 const { protect } = require('../middleware/auth.middleware')
 const { optionalProtect } = require('../middleware/auth.middleware')
 
-router.get('/', optionalProtect, protect, getAllKitab)
-router.get('/:slug/materis', protect, optionalProtect, getKitabMateris)  // flat materi (untuk HIKAM)
-router.get('/:slug', protect, optionalProtect, getKitabBySlug)
+router.get('/', optionalProtect, /*protect,*/ getAllKitab)
+router.get('/:slug/materis', /*protect,*/ optionalProtect, getKitabMateris)  // flat materi (untuk HIKAM)
+router.get('/:slug', /*protect,*/ optionalProtect, getKitabBySlug)
 
 module.exports = router
